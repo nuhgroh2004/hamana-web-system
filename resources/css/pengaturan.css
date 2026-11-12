@@ -1,0 +1,265 @@
+main.set-page {
+    padding-left: 20px;
+    padding-right: 32px;
+}
+
+.set {
+    display: flex;
+    gap: 32px;
+    align-items: flex-start;
+}
+
+.spn {
+    flex: none;
+    width: 240px;
+    position: sticky;
+    top: 0;
+}
+
+.scn {
+    flex: 1;
+    min-width: 0;
+}
+
+.srch {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    height: 32px;
+    padding: 0 10px;
+    margin-bottom: 16px;
+    border: 1px solid var(--bd);
+    border-radius: 6px;
+    background: var(--bg);
+    color: var(--mute);
+}
+
+.srch:focus-within {
+    border-color: var(--blue);
+    box-shadow: 0 0 0 1px var(--blue);
+}
+
+.srch input {
+    flex: 1;
+    min-width: 0;
+    border: 0;
+    outline: 0;
+    background: transparent;
+    color: var(--fg);
+    font: inherit;
+}
+
+.si {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding: 8px 12px;
+    margin: 2px 0;
+    border: 0;
+    border-radius: 6px;
+    background: transparent;
+    color: var(--fg);
+    text-align: left;
+    transition: background 0.15s;
+}
+
+.si:hover {
+    background: var(--hov);
+}
+
+.si .ic {
+    display: grid;
+    place-items: center;
+    color: var(--mute);
+}
+
+.si.on {
+    background: var(--hov);
+    font-weight: 600;
+}
+
+.si.on::before {
+    content: "";
+    position: absolute;
+    left: -10px;
+    top: 8px;
+    bottom: 8px;
+    width: 4px;
+    border-radius: 6px;
+    background: #fd8c73;
+}
+
+.scn h2 {
+    font-size: 28px;
+    font-weight: 400;
+    margin: 0 0 16px;
+    padding: 0 0 12px;
+    border-bottom: 1px solid var(--bd);
+}
+
+.ds {
+    color: var(--mute);
+    margin: 0 0 16px;
+}
+
+.cd {
+    background: var(--bg);
+    border: 1px solid var(--bd);
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+.hd {
+    padding: 12px 16px;
+    background: var(--bg2);
+    font-weight: 600;
+}
+
+.lr {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    width: 100%;
+    padding: 12px 16px;
+    border: 0;
+    border-top: 1px solid var(--bd);
+    background: transparent;
+    text-align: left;
+    color: var(--fg);
+}
+
+.lr:hover {
+    background: var(--bg2);
+}
+
+.lr .cc {
+    display: inline-grid;
+    place-items: center;
+    min-width: 30px;
+    height: 22px;
+    padding: 0 6px;
+    border: 1px solid var(--bd);
+    border-radius: 6px;
+    background: var(--bg2);
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.lr span b,
+.lr span small {
+    display: block;
+}
+
+.lr span b {
+    font-weight: 600;
+}
+
+.lr span small {
+    color: var(--mute);
+    font-size: 12.5px;
+}
+
+.lr > svg {
+    margin-left: auto;
+    color: var(--bar);
+    stroke-width: 2.2;
+}
+
+.lr .check {
+    visibility: hidden;
+}
+
+.lr.selected .check {
+    visibility: visible;
+}
+
+.nt {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--mute);
+    font-size: 13px;
+    margin: 12px 0 0;
+}
+
+.nt svg {
+    color: var(--bar);
+}
+
+.tr {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    padding: 12px 16px;
+    border-top: 1px solid var(--bd);
+    cursor: pointer;
+}
+
+.tr:hover {
+    background: var(--bg2);
+}
+
+.tr input {
+    display: none;
+}
+
+.tk {
+    flex: none;
+    width: 40px;
+    height: 24px;
+    border-radius: 12px;
+    border: 1px solid var(--bd);
+    background: var(--bg2);
+    position: relative;
+    transition: background 0.2s, border-color 0.2s;
+}
+
+.tk::after {
+    content: "";
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--mute);
+    transition: transform 0.2s, background 0.2s;
+}
+
+.tr input:checked + .tk {
+    background: var(--green);
+    border-color: var(--green);
+}
+
+.tr input:checked + .tk::after {
+    transform: translateX(16px);
+    background: #fff;
+}
+
+.em {
+    padding: 32px;
+    text-align: center;
+    color: var(--mute);
+    border-top: 1px solid var(--bd);
+}
+
+@media (max-width: 900px) {
+    main.set-page {
+        padding-left: 16px;
+        padding-right: 16px;
+    }
+
+    .set {
+        flex-direction: column;
+        gap: 16px;
+        align-items: stretch;
+    }
+
+    .spn {
+        width: auto;
+        position: static;
+    }
+}
