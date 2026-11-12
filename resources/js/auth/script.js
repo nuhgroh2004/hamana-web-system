@@ -24,6 +24,20 @@
     email.addEventListener('input', clear);
     pw.addEventListener('input', clear);
 
+    var toggle = document.getElementById('toggle-pw');
+
+    if (toggle) {
+        toggle.addEventListener('click', function () {
+            var visible = pw.type === 'text';
+
+            pw.type = visible ? 'password' : 'text';
+            toggle.classList.toggle('is-visible', !visible);
+            toggle.setAttribute('aria-label', visible ? 'Tampilkan password' : 'Sembunyikan password');
+            toggle.setAttribute('aria-pressed', String(!visible));
+            pw.focus();
+        });
+    }
+
     f.addEventListener('submit', function (e) {
         e.preventDefault();
         clear();

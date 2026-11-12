@@ -17,6 +17,15 @@ h1 span{display:block;color:#004098}
 .fld{width:100%;height:50px;padding:0 20px;border:1px solid var(--bd);border-radius:999px;background:var(--bg);color:var(--fg);font:inherit;outline:0;transition:border-color .2s,box-shadow .2s}
 .fld:focus{border-color:var(--fg);box-shadow:0 0 0 3px rgba(127,127,127,.18)}
 .fld.bad{border-color:var(--err)}
+.fld-wrap{position:relative}
+.fld-wrap .fld{padding-right:52px}
+.eye{position:absolute;top:50%;right:10px;transform:translateY(-50%);display:grid;place-items:center;width:34px;height:34px;padding:0;border:0;border-radius:50%;background:transparent;color:var(--mute2);cursor:pointer;transition:background .2s,color .2s}
+.eye:hover{background:rgba(127,127,127,.15);color:var(--fg)}
+.eye:focus-visible{outline:2px solid var(--fg);outline-offset:2px}
+.eye svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.eye .eye-hide{display:none}
+.eye.is-visible .eye-show{display:none}
+.eye.is-visible .eye-hide{display:block}
 .go{width:100%;height:50px;margin-top:12px;border:0;border-radius:999px;background:#004098;color:#fff;font:inherit;font-weight:600;cursor:pointer;transition:opacity .2s,transform .1s}
 .go:hover{opacity:.88}.go:active{transform:scale(.99)}.go:disabled{opacity:.6;cursor:default}
 .row{margin-bottom:14px}
