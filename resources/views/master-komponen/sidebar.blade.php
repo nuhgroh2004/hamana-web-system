@@ -3,7 +3,7 @@
 @php
     $menu = [
         'HRIS',
-        ['icon' => 'dash', 'label' => 'Dashboard'],
+        ['icon' => 'dash', 'label' => 'Dashboard', 'href' => route('home')],
         ['icon' => 'req', 'label' => 'Permohonan', 'children' => [
             'Permohonan Masuk',
             'Permohonan Saya',
@@ -94,7 +94,7 @@
                     $isActive = $current === $item['label'];
                 @endphp
                 <li class="t{{ $hasChildren ? ' has' : '' }}{{ $isActive ? ' act' : '' }}">
-                    <a href="{{ $href }}" @if ($href === '#') data-placeholder="true" @endif @if ($isActive) aria-current="page" @endif>
+                    <a href="{{ $href }}" @if ($href === '#') data-placeholder="true" @else wire:navigate @endif @if ($isActive) aria-current="page" @endif>
                         <x-master-komponen::icon :name="$item['icon']" />
                         {{ $item['label'] }}
                         @if ($hasChildren)

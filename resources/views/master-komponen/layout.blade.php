@@ -8,6 +8,7 @@
     <title>{{ $title }}</title>
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @livewireStyles
 </head>
 <body>
     <x-master-komponen::navbar :title="$title" />
@@ -20,5 +21,7 @@
             {{ $slot }}
         </main>
     </div>
+
+    @livewireScripts
 </body>
 </html>

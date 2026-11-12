@@ -1,4 +1,6 @@
 const LANG_KEY = 'lang';
+const initializedRoots = new WeakSet();
+let hashChangeHandler = null;
 
 function readSetting(key, fallback) {
     try {
@@ -19,9 +21,11 @@ function writeSetting(key, value) {
 
 function initPengaturan() {
     const root = document.getElementById('set-page');
-    if (!root) {
+    if (!root || initializedRoots.has(root)) {
         return;
     }
+
+    initializedRoots.add(root);
 
     const nav = root.querySelector('#sl');
     const content = root.querySelector('#scn');
@@ -111,12 +115,18 @@ function initPengaturan() {
         });
     });
 
-    window.addEventListener('hashchange', () => {
+    if (hashChangeHandler) {
+        window.removeEventListener('hashchange', hashChangeHandler);
+    }
+
+    hashChangeHandler = () => {
         const name = decodeURIComponent(window.location.hash.slice(1));
         if (findButtonByName(name)) {
             activate(name);
         }
-    });
+    };
+
+    window.addEventListener('hashchange', hashChangeHandler);
 
     if (nav) {
         nav.addEventListener('click', (event) => {
@@ -132,3 +142,5 @@ if (document.readyState === 'loading') {
 } else {
     initPengaturan();
 }
+
+document.addEventListener('livewire:navigated', initPengaturan);
