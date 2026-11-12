@@ -32,7 +32,7 @@ class Login extends Component
 
         session()->regenerate();
 
-        return $this->redirectIntended(route('dashboard'), navigate: true);
+        return $this->redirectIntended(route('dashboard'));
     }
 
     /**
