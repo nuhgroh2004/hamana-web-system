@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>HWI · Halaman</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<!--
+  Halaman yang tersedia (ganti lewat hash URL atau fungsi goTo()):
+    #dashboard   -> Dashboard Pegawai   (default)
+    #pengaturan  -> Pengaturan (Bahasa, Hak Akses Admin, Absensi by Foto, Daftar Hitam Presensi)
+    #education   -> GitHub Education
+  Sidebar & navbar sudah dihapus: pasang milik sistem Anda,
+  lalu panggil goTo('Dashboard') / goTo('Pengaturan') atau dengarkan event "navigate".
+-->
+<main id="main"><div class="in" id="home">
+    <h2 class="t">GitHub Education</h2>
+    <section class="hero">
+      <div class="tx">
+        <h3>Sumber daya pengembang GitHub gratis untuk siswa dan guru.</h3>
+        <p>Dapatkan Copilot secara gratis, 180 jam Codespaces per bulan untuk coding berbasis cloud, repositori pribadi tak terbatas dengan GitHub Pro atau Team, dan puluhan alat premium dalam Student Developer Pack.</p>
+        <button class="btn" onclick="window.open('https://education.github.com','_blank')">Pelajari selengkapnya</button>
+      </div>
+      <div class="art" aria-hidden="true">
+        <i style="left:120px;top:-30px;width:120px;height:50px;border-radius:50%;background:#f4c542"></i>
+        <i style="left:90px;top:40px;width:230px;height:190px;border-radius:14px;background:#7b6fd0;transform:rotate(-6deg)"></i>
+        <i style="left:140px;top:70px;width:170px;height:120px;border-radius:10px;background:#f5e2a6;transform:rotate(-6deg)"></i>
+        <i style="left:170px;top:20px;width:70px;height:70px;border-radius:18px;background:#3d3590"></i>
+        <i style="left:10px;top:150px;width:360px;height:260px;border-radius:120px 120px 20px 20px;background:#f2806a;transform:rotate(-8deg)"></i>
+        <i style="left:0;top:270px;width:80px;height:80px;border-radius:50%;background:#9a8fe0"></i>
+        <i style="left:360px;top:150px;width:34px;height:34px;border-radius:50%;background:#8b83d6"></i>
+        <i style="left:300px;top:60px;width:30px;height:30px;transform:rotate(45deg);background:#8fd694"></i>
+        <i style="left:340px;top:100px;width:30px;height:30px;transform:rotate(45deg);background:#8fd694"></i>
+      </div>
+    </section>
+    <section class="card">
+      <div class="ch1">
+        <svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M20 6L3 14l17 8 17-8z"/><path d="M9 18v8c0 3 5 6 11 6s11-3 11-6v-8M37 14v12"/></svg>
+        <div><b>Manfaat Pendidikan</b><span>Lengkapi formulir pendaftaran guru atau siswa untuk membuka akses ke berbagai alat dan sumber daya untuk perjalanan pendidikan Anda.</span></div>
+        <button class="go" id="go">Mulai aplikasi</button>
+      </div>
+      <div class="row" id="row">
+        <button class="tg" id="tg" aria-label="Buka/tutup"><svg class="i" viewBox="0 0 16 16"><path d="M3 6l5 5 5-5"/></svg></button>
+        <b style="font-weight:600;font-size:13px">Disetujui</b>
+        <div class="bar"><i id="fill"></i></div>
+        <span class="d">Dikirim 2 hari yang lalu</span>
+      </div>
+      <div class="det" id="det">
+        <div class="ok"><span><b>Menunggu Manfaat</b> <small>(disetujui pada 09 November 2026)</small></span><span><b>Jenis Aplikasi:</b> Mahasiswa</span></div>
+      </div>
+    </section>
+  </div>
+  <div id="dash"><div class="dw">
+    <section class="cd pf">
+      <svg class="avatar" id="av3" width="72" height="72" viewBox="0 0 5 5"></svg>
+      <div><small>Selamat datang di HWI</small><h2>Nuhgroh Ramadani</h2></div>
+    </section>
+    <div class="g2">
+      <section class="cd pad">
+        <div class="rw"><b>Kelengkapan data</b><b class="pc">72%</b></div>
+        <div class="pbar"><i id="pfill"></i></div>
+        <p class="mt">Lengkapi <a class="lk" data-go="Anggota Keluarga">Anggota Keluarga</a> dan <a class="lk" data-go="Tanda Tangan">Tanda Tangan</a> agar data Anda valid.</p>
+      </section>
+      <section class="cd pad rw">
+        <div><small>Sisa cuti</small><div class="big">8 <span>hari</span></div></div>
+        <svg class="cal" viewBox="0 0 16 16"><rect x="2" y="3" width="12" height="11" rx="1.5"/><path d="M2 7h12M5 1.5v3M11 1.5v3"/></svg>
+      </section>
+    </div>
+    <h3 class="dh">Akses Cepat</h3>
+    <section class="cd"><div class="qa" id="qa"></div></section>
+    <h3 class="dh">Permohonan Terakhir</h3>
+    <section class="cd">
+      <div class="hd rw"><span>Permohonan</span><a class="lk" data-go="Permohonan Saya">Lihat semua</a></div>
+      <div class="tabs" id="tabs"></div>
+      <div id="rl"></div>
+    </section>
+  </div></div>
+  <div id="set"><div class="spn" id="spn"></div><div class="scn" id="scn"></div></div></main>
+<script src="script.js"></script>
+</body>
+</html>

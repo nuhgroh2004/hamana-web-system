@@ -8,9 +8,10 @@ class Dashboard extends Component
 {
     public function render()
     {
-        return view('page-awal')->layout('components.layouts.app', [
+        return view('hris.dashboard.index')->layout('components.layouts.app', [
             'title' => 'Dashboard',
             'active' => 'Dashboard',
+            'main' => 'dash-on',
         ]);
     }
 }
