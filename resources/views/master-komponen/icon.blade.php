@@ -29,6 +29,7 @@
         'search' => '<circle cx="7" cy="7" r="4.5"/><path d="M10.5 10.5L14 14"/>',
         'check' => '<path d="M3 8.5l3.5 3.5L13 4.5"/>',
         'info' => '<circle cx="8" cy="8" r="6.2"/><path d="M8 7.2v4M8 5v.1"/>',
+        'logout' => '<path d="M6 2H2.5v12H6M9 11l3-3-3-3M12 8H5.5"/>',
     ];
 @endphp
 

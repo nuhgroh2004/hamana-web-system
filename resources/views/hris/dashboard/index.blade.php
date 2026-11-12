@@ -9,7 +9,7 @@
         'Form Absensi' => route('module', 'form-absensi'),
         'Anggota Keluarga' => route('module', 'profil-anggota-keluarga'),
         'Tanda Tangan' => route('module', 'tanda-tangan'),
-        'Dashboard' => route('home'),
+        'Dashboard' => route('dashboard'),
         'Pengaturan' => route('pengaturan'),
     ];
 @endphp

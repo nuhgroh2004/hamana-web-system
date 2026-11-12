@@ -234,6 +234,10 @@ main.set-page {
     border-color: var(--green);
 }
 
+.tr input:disabled + .tk {
+    opacity: 0.65;
+}
+
 .tr input:checked + .tk::after {
     transform: translateX(16px);
     background: #fff;
@@ -244,6 +248,193 @@ main.set-page {
     text-align: center;
     color: var(--mute);
     border-top: 1px solid var(--bd);
+}
+
+.us {
+    display: grid;
+    gap: 12px;
+    padding: 12px;
+    background: var(--bg2);
+}
+
+.uc {
+    border: 1px solid var(--bd);
+    border-radius: 8px;
+    background: var(--bg);
+    overflow: hidden;
+}
+
+.uh {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 16px;
+}
+
+.ua {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: var(--hov);
+    color: var(--blue);
+    font-weight: 700;
+}
+
+.ui {
+    flex: 1;
+    min-width: 0;
+}
+
+.ui b {
+    display: block;
+    font-size: 14px;
+}
+
+.ui small {
+    display: block;
+    color: var(--mute);
+    font-size: 12.5px;
+}
+
+.ub {
+    flex: none;
+    padding: 2px 10px;
+    border: 1px solid var(--bd);
+    border-radius: 999px;
+    background: var(--bg2);
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: capitalize;
+}
+
+.ub.admin {
+    color: #8250df;
+    border-color: #d8c4f5;
+    background: #f6f0ff;
+}
+
+.ub.karyawan {
+    color: var(--blue);
+    border-color: #b6d4f5;
+    background: #eef6ff;
+}
+
+.un {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+    padding: 12px 16px;
+    border-top: 1px solid var(--bd);
+    color: var(--mute);
+    font-size: 13px;
+}
+
+.un svg {
+    color: var(--bar);
+}
+
+.ud {
+    border-top: 1px solid var(--bd);
+}
+
+.ud summary {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    cursor: pointer;
+    font-weight: 600;
+    list-style: none;
+}
+
+.ud summary::-webkit-details-marker {
+    display: none;
+}
+
+.ud summary:hover {
+    background: var(--bg2);
+}
+
+.ud summary::after {
+    content: "";
+    width: 8px;
+    height: 8px;
+    margin-left: auto;
+    border-right: 1.6px solid var(--mute);
+    border-bottom: 1.6px solid var(--mute);
+    transform: rotate(45deg);
+    transition: transform 0.2s;
+}
+
+.ud[open] summary::after {
+    transform: rotate(-135deg);
+}
+
+.cnt {
+    color: var(--mute);
+    font-size: 12.5px;
+    font-weight: 500;
+}
+
+.ug {
+    border-top: 1px solid var(--bd);
+}
+
+.ugh {
+    padding: 10px 16px 4px;
+    color: var(--mute);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.ugs {
+    padding: 8px 16px 2px;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.uf {
+    padding: 12px 16px;
+    border-top: 1px solid var(--bd);
+    background: var(--bg2);
+}
+
+.rst {
+    padding: 7px 12px;
+    border: 1px solid var(--bd);
+    border-radius: 6px;
+    background: var(--bg);
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.rst:hover {
+    background: var(--hov);
+}
+
+.rst:disabled {
+    opacity: 0.6;
+    cursor: default;
+}
+
+@media (prefers-color-scheme: dark) {
+    .ub.admin {
+        color: #d2a8ff;
+        border-color: #553098;
+        background: #271c3a;
+    }
+
+    .ub.karyawan {
+        color: #79c0ff;
+        border-color: #1f4b7a;
+        background: #0d2236;
+    }
 }
 
 @media (max-width: 900px) {

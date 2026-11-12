@@ -1,7 +1,7 @@
 @props(['active' => null])
 
 @php
-    $groups = \App\Support\Modules::menu();
+    $groups = \App\Support\Modules::menuFor(auth()->user());
     $current = $active;
 
     if (! $current && request()->routeIs('pengaturan')) {
@@ -67,5 +67,18 @@
                 </li>
             @endforeach
         @endforeach
+    </ul>
+
+    <ul class="lf">
+        <li class="sep"></li>
+        <li class="t">
+            <form method="POST" action="{{ route('logout') }}">
+                @csrf
+                <button type="submit" class="lo">
+                    <x-master-komponen::icon name="logout" />
+                    Logout
+                </button>
+            </form>
+        </li>
     </ul>
 </nav>

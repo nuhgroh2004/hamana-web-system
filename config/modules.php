@@ -5,7 +5,7 @@ return [
         [
             'label' => 'HRIS',
             'items' => [
-                ['label' => 'Dashboard', 'icon' => 'dash', 'slug' => 'dashboard', 'route' => 'home'],
+                ['label' => 'Dashboard', 'icon' => 'dash', 'slug' => 'dashboard', 'route' => 'dashboard'],
                 ['label' => 'Permohonan', 'icon' => 'req', 'children' => [
                     ['label' => 'Permohonan Masuk', 'slug' => 'permohonan-masuk'],
                     ['label' => 'Permohonan Saya', 'slug' => 'permohonan-saya'],

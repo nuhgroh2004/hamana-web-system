@@ -1,4 +1,7 @@
 @php
+    $isAdmin = auth()->user()?->isAdmin() ?? false;
+    $totalModules = count(\App\Support\Modules::all());
+
     $languages = [
         ['ID', 'Bahasa Indonesia', 'Bahasa Indonesia'],
         ['GB', 'English', 'Bahasa Inggris'],
@@ -12,19 +15,17 @@
             'description' => 'Pilih bahasa tampilan aplikasi. Pilihan ini akan tersimpan pada perangkat Anda dan tetap berlaku setelah refresh maupun logout.',
             'type' => 'language',
         ],
-        [
+    ];
+
+    if ($isAdmin) {
+        $settings[] = [
             'name' => 'Hak Akses Admin',
             'icon' => 'shield',
-            'description' => 'Atur hal-hal yang boleh dilakukan oleh admin.',
-            'type' => 'toggles',
-            'options' => [
-                'Admin dapat menyetujui permohonan',
-                'Admin dapat mengubah data pegawai',
-                'Admin dapat melihat slip gaji',
-            ],
-            'defaults' => [1, 1, 0],
-        ],
-        [
+            'description' => 'Atur halaman yang dapat diakses oleh setiap pengguna. Admin selalu memiliki akses penuh.',
+            'type' => 'users',
+        ];
+
+        $settings[] = [
             'name' => 'Absensi by Foto',
             'icon' => 'camera',
             'description' => 'Atur apakah absensi pegawai harus disertai foto.',
@@ -34,14 +35,17 @@
                 'Wajibkan foto saat absen pulang',
             ],
             'defaults' => [1, 0],
-        ],
-        [
+        ];
+
+        $settings[] = [
             'name' => 'Daftar Hitam Presensi',
             'icon' => 'ban',
             'description' => 'Pegawai dalam daftar ini tidak dapat melakukan presensi.',
             'type' => 'empty',
-        ],
-    ];
+        ];
+    }
+
+    $opened = false;
 @endphp
 
 <div class="set" id="set-page">
@@ -88,6 +92,87 @@
                                     <x-master-komponen::icon name="check" class="check" />
                                 </button>
                             @endforeach
+                        @elseif ($setting['type'] === 'users')
+                            <div class="us">
+                                @foreach ($users as $user)
+                                    @php
+                                        $locked = $user->isAdmin();
+                                        $open = ! $locked && ! $opened;
+                                        $opened = $opened || $open;
+                                    @endphp
+
+                                    <article class="uc" wire:key="user-{{ $user->id }}">
+                                        <div class="uh">
+                                            <span class="ua">{{ mb_strtoupper(mb_substr($user->name, 0, 1)) }}</span>
+                                            <div class="ui">
+                                                <b>{{ $user->name }}</b>
+                                                <small>{{ $user->nik }} · {{ $user->position }}</small>
+                                            </div>
+                                            <span class="ub {{ $user->role }}">{{ ucfirst($user->role) }}</span>
+                                        </div>
+
+                                        <details class="ud" @if ($open) open @endif>
+                                            <summary>
+                                                <span>{{ $locked ? 'Akses penuh (tidak dapat diubah)' : 'Atur akses halaman' }}</span>
+                                                <span class="cnt">{{ count($user->permissionList()) }}/{{ $totalModules }} aktif</span>
+                                            </summary>
+
+                                            @if ($locked)
+                                                <p class="un">
+                                                    <x-master-komponen::icon name="shield" />
+                                                    Admin memiliki akses penuh ke semua halaman.
+                                                </p>
+                                            @endif
+
+                                            <div class="ug-list">
+                                                @foreach ($moduleGroups as $group)
+                                                    <div class="ug" wire:key="g-{{ $user->id }}-{{ $loop->index }}">
+                                                        <div class="ugh">{{ $group['label'] ?? 'Lainnya' }}</div>
+
+                                                        @foreach ($group['items'] ?? [] as $item)
+                                                            @if (! empty($item['children']))
+                                                                <div class="ugs">{{ $item['label'] }}</div>
+
+                                                                @foreach ($item['children'] as $child)
+                                                                    <label class="tr" wire:key="m-{{ $user->id }}-{{ $child['slug'] }}">
+                                                                        <span>{{ $child['label'] }}</span>
+                                                                        <input type="checkbox"
+                                                                               @disabled($locked)
+                                                                               wire:click="toggleAccess({{ $user->id }}, '{{ $child['slug'] }}')"
+                                                                               @checked($user->canAccess($child['slug']))>
+                                                                        <i class="tk"></i>
+                                                                    </label>
+                                                                @endforeach
+                                                            @else
+                                                                <label class="tr" wire:key="m-{{ $user->id }}-{{ $item['slug'] }}">
+                                                                    <span>{{ $item['label'] }}</span>
+                                                                    <input type="checkbox"
+                                                                           @disabled($locked)
+                                                                           wire:click="toggleAccess({{ $user->id }}, '{{ $item['slug'] }}')"
+                                                                           @checked($user->canAccess($item['slug']))>
+                                                                    <i class="tk"></i>
+                                                                </label>
+                                                            @endif
+                                                        @endforeach
+                                                    </div>
+                                                @endforeach
+                                            </div>
+
+                                            @unless ($locked)
+                                                <div class="uf">
+                                                    <button type="button"
+                                                            class="rst"
+                                                            wire:click="resetAccess({{ $user->id }})"
+                                                            wire:loading.attr="disabled"
+                                                            wire:target="resetAccess({{ $user->id }})">
+                                                        Kembalikan akses default
+                                                    </button>
+                                                </div>
+                                            @endunless
+                                        </details>
+                                    </article>
+                                @endforeach
+                            </div>
                         @elseif ($setting['type'] === 'toggles')
                             <div class="hd">Opsi</div>
                             @foreach ($setting['options'] as $i => $option)

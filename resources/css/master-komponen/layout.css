@@ -258,6 +258,42 @@ nav li.grp {
     padding: 8px 12px;
 }
 
+nav .lf {
+    margin-top: 10px;
+}
+
+nav .lf form {
+    margin: 0;
+}
+
+nav .lf .lo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding: 8px 12px;
+    margin: 2px 0;
+    border: 0;
+    border-radius: 6px;
+    background: transparent;
+    color: var(--fg);
+    text-align: left;
+    transition: background 0.15s, color 0.15s;
+}
+
+nav .lf .lo:hover {
+    background: var(--hov);
+    color: #cf222e;
+}
+
+nav .lf .lo > svg {
+    color: var(--mute);
+}
+
+nav .lf .lo:hover > svg {
+    color: inherit;
+}
+
 .dot {
     position: relative;
 }

@@ -19,6 +19,7 @@ class ModulePage extends Component
         $data = Modules::find($slug);
 
         abort_unless($data, 404);
+        abort_unless(auth()->user()?->canAccess($slug), 403);
 
         $this->slug = $slug;
         $this->title = $data['label'];
