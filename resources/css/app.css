@@ -1,6 +1,6 @@
 @import 'tailwindcss';
-@import './layout.css';
-@import './pengaturan.css';
+@import './master-komponen/layout.css';
+@import './pengaturan/pengaturan.css';
 
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';

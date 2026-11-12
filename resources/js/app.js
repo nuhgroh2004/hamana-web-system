@@ -1,3 +1,3 @@
 import './bootstrap';
-import './layout';
-import './pengaturan';
+import './master-komponen/layout';
+import './pengaturan/pengaturan';
