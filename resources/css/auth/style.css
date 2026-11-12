@@ -23,9 +23,10 @@ h1 span{display:block;color:#004098}
 .eye:hover{background:rgba(127,127,127,.15);color:var(--fg)}
 .eye:focus-visible{outline:2px solid var(--fg);outline-offset:2px}
 .eye svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
-.eye .eye-hide{display:none}
-.eye.is-visible .eye-show{display:none}
-.eye.is-visible .eye-hide{display:block}
+.eye .eye-show{display:none}
+.eye .eye-hide{display:block}
+.eye.is-visible .eye-show{display:block}
+.eye.is-visible .eye-hide{display:none}
 .go{width:100%;height:50px;margin-top:12px;border:0;border-radius:999px;background:#004098;color:#fff;font:inherit;font-weight:600;cursor:pointer;transition:opacity .2s,transform .1s}
 .go:hover{opacity:.88}.go:active{transform:scale(.99)}.go:disabled{opacity:.6;cursor:default}
 .row{margin-bottom:14px}
