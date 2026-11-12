@@ -1,7 +1,12 @@
 <?php
 
+use App\Livewire\Dashboard;
+use App\Livewire\ModulePage;
+use App\Livewire\Pengaturan;
 use Illuminate\Support\Facades\Route;
 
-Route::view('/', 'page-awal')->name('home');
+Route::get('/', Dashboard::class)->name('home');
 
-Route::view('/pengaturan', 'pengaturan.index')->name('pengaturan');
+Route::get('/pengaturan', Pengaturan::class)->name('pengaturan');
+
+Route::get('/modul/{module}', ModulePage::class)->name('module');

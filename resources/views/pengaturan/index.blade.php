@@ -44,8 +44,7 @@
     ];
 @endphp
 
-<x-master-komponen::layout title="Pengaturan" main="set-page" active="Pengaturan">
-    <div class="set" id="set-page">
+<div class="set" id="set-page">
         <aside class="spn">
             <label class="srch">
                 <x-master-komponen::icon name="search" />
@@ -114,4 +113,3 @@
             @endforeach
         </section>
     </div>
-</x-master-komponen::layout>

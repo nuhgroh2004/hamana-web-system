@@ -1,0 +1,16 @@
+<?php
+
+namespace App\Livewire;
+
+use Livewire\Component;
+
+class Dashboard extends Component
+{
+    public function render()
+    {
+        return view('page-awal')->layout('components.layouts.app', [
+            'title' => 'Dashboard',
+            'active' => 'Dashboard',
+        ]);
+    }
+}
