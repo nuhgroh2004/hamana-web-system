@@ -14,7 +14,7 @@ class Login extends Component
     #[Validate('required|string|min:6')]
     public string $password = '';
 
-    public bool $remember = false;
+    public bool $remember = true;
 
     public function login()
     {

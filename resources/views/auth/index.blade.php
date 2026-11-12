@@ -36,7 +36,7 @@
                     </div>
                 </div>
                 <label class="rem" for="remember">
-                    <input id="remember" type="checkbox" wire:model="remember">
+                    <input id="remember" type="checkbox" wire:model="remember" @checked($remember)>
                     <span>Ingat saya</span>
                 </label>
                 <div class="err" id="err" role="alert" aria-live="polite">@if ($errors->any()){{ $errors->first() }}@endif</div>
