@@ -390,6 +390,11 @@
     color: var(--mute);
 }
 
+/* Pesan kesalahan di dalam modal tetap merah. */
+#data-admin-list-admin .db p.er {
+    color: var(--err);
+}
+
 #data-admin-list-admin .f label {
     display: block;
     margin: 0 0 6px;

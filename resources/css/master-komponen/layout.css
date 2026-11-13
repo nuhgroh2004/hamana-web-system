@@ -9,6 +9,8 @@
     --okbg: #dafbe1;
     --okbd: #aceebb;
     --blue: #0969da;
+    --err: #cf222e;
+    --warn: #9a6700;
     --bar: #1a7f37;
     --track: #d1f5d9;
     --hh: calc(72px + env(safe-area-inset-top, 0px));
@@ -30,6 +32,8 @@
         --okbg: #0f2e1a;
         --okbd: #1f6f3a;
         --blue: #4493f8;
+        --err: #ff7b72;
+        --warn: #d29922;
         --bar: #2ea043;
         --track: #12361f;
         color-scheme: dark;

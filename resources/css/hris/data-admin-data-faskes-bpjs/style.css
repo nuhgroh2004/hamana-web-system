@@ -468,6 +468,11 @@
     color: var(--mute);
 }
 
+/* Pesan kesalahan di dalam modal tetap merah. */
+#data-admin-data-faskes-bpjs .db p.er {
+    color: var(--err);
+}
+
 #data-admin-data-faskes-bpjs .f label {
     display: block;
     margin: 0 0 6px;

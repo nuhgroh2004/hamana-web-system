@@ -176,6 +176,7 @@ function initDataPegawai() {
             '<circle cx="6" cy="5" r="2.5"/><path d="M1.5 14c0-3 2-4.5 4.5-4.5s4.5 1.5 4.5 4.5zM10.5 3a2.5 2.5 0 010 4.5M12 9.8c1.6.4 2.5 1.7 2.5 4.2"/>',
         fisik: '<circle cx="8" cy="3" r="1.5"/><path d="M3 6h10M8 6v4M5 14l3-4 3 4"/>',
         file: '<path d="M1.5 3.5h4l1.5 1.5h7.5v8h-13z"/>',
+        hapus: '<path d="M2.5 4.5h11M6.5 4.5V2.5h3v2M4.5 4.5l.6 9h5.8l.6-9M6.5 7v4M9.5 7v4"/>',
     };
     var ITEMS = [
         ['profil', 'Profil Karyawan'],
@@ -189,25 +190,56 @@ function initDataPegawai() {
         var nik = btn.dataset.menu;
 
         mn.setAttribute('role', 'menu');
-        mn.innerHTML = ITEMS.map(function (it) {
-            return (
-                '<a role="menuitem" href="' +
-                (ROUTES[it[0]] || '#') +
-                '?nik=' +
-                encodeURIComponent(nik) +
-                '&from=data-pegawai' +
-                '" data-aksi="' +
-                it[0] +
-                '" data-nik="' +
-                esc(nik) +
-                '"><svg class="i" viewBox="0 0 16 16">' +
-                IC[it[0]] +
-                '</svg>' +
-                it[1] +
-                '</a>'
-            );
-        }).join('');
+        mn.innerHTML =
+            ITEMS.map(function (it) {
+                return (
+                    '<a role="menuitem" href="' +
+                    (ROUTES[it[0]] || '#') +
+                    '?nik=' +
+                    encodeURIComponent(nik) +
+                    '&from=data-pegawai' +
+                    '" data-aksi="' +
+                    it[0] +
+                    '" data-nik="' +
+                    esc(nik) +
+                    '"><svg class="i" viewBox="0 0 16 16">' +
+                    IC[it[0]] +
+                    '</svg>' +
+                    it[1] +
+                    '</a>'
+                );
+            }).join('') +
+            '<div class="sep" role="separator"></div>' +
+            '<button type="button" role="menuitem" class="dg" data-aksi="hapus" data-nik="' +
+            esc(nik) +
+            '"><svg class="i" viewBox="0 0 16 16">' +
+            IC.hapus +
+            '</svg>Hapus Pegawai</button>';
         place(btn, 230);
+    }
+
+    // ---- hapus pegawai ----
+    function confirmDelete(p) {
+        open(
+            'Hapus data pegawai?',
+            '<p>Pegawai <b>' +
+                esc(p.nama) +
+                '</b> (' +
+                esc(p.nik) +
+                ') akan dihapus. Tindakan ini tidak dapat dibatalkan.</p>',
+            '<button type="button" class="btn" data-close>Batal</button><button type="button" class="btn dgb" id="ok">Hapus</button>',
+        );
+
+        document.getElementById('ok').onclick = function () {
+            all = all.filter(function (x) {
+                return x.nik !== p.nik;
+            });
+            persist();
+            close();
+            render();
+            emit('pegawai-hapus', p);
+            say('Pegawai ' + p.nama + ' berhasil dihapus.');
+        };
     }
 
     function openDD(btn) {
@@ -276,8 +308,14 @@ function initDataPegawai() {
                 return x.nik === a.dataset.nik;
             })[0];
 
-            emit('pegawai-aksi', { aksi: a.dataset.aksi, pegawai: p });
             closeMenu();
+
+            if (p && a.dataset.aksi === 'hapus') {
+                confirmDelete(p);
+                return;
+            }
+
+            emit('pegawai-aksi', { aksi: a.dataset.aksi, pegawai: p });
             return;
         }
 

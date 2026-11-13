@@ -175,6 +175,17 @@
     background: var(--green);
 }
 
+#data-pegawai .btn.dgb {
+    background: var(--err);
+    border-color: var(--err);
+    color: #fff;
+}
+
+#data-pegawai .btn.dgb:hover {
+    filter: brightness(1.1);
+    background: var(--err);
+}
+
 #data-pegawai .dd {
     justify-content: space-between;
     gap: 8px;
@@ -387,6 +398,26 @@
     visibility: visible;
 }
 
+/* pemisah + aksi berbahaya pada menu Aksi */
+#data-pegawai .mn .sep {
+    height: 1px;
+    margin: 4px 6px;
+    background: var(--bd);
+}
+
+#data-pegawai .mn button.dg {
+    color: var(--err);
+}
+
+#data-pegawai .mn button.dg svg {
+    color: inherit;
+}
+
+#data-pegawai .mn button.dg:hover {
+    background: var(--err);
+    color: #fff;
+}
+
 /* modal */
 #data-pegawai .ov2 {
     position: fixed;
@@ -449,6 +480,11 @@
 #data-pegawai .db p {
     margin: 0;
     color: var(--mute);
+}
+
+/* Pesan kesalahan di dalam modal tetap merah. */
+#data-pegawai .db p.er {
+    color: var(--err);
 }
 
 #data-pegawai .f label {

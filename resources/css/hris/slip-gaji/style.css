@@ -376,6 +376,11 @@
     color: var(--mute);
 }
 
+/* Pesan kesalahan di dalam modal tetap merah. */
+#slip-gaji .db p.er {
+    color: var(--err);
+}
+
 #slip-gaji .f label {
     display: block;
     margin: 0 0 6px;

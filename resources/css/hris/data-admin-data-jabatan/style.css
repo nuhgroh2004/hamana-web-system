@@ -387,6 +387,11 @@
     color: var(--mute);
 }
 
+/* Pesan kesalahan di dalam modal tetap merah. */
+#data-admin-data-jabatan .db p.er {
+    color: var(--err);
+}
+
 #data-admin-data-jabatan .f label {
     display: block;
     margin: 0 0 6px;
