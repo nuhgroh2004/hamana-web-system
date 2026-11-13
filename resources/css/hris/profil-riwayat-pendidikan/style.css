@@ -1,0 +1,267 @@
+#profil-riwayat-pendidikan :is(button, input, select, textarea) {
+    font: inherit;
+    color: inherit;
+}
+
+#profil-riwayat-pendidikan [hidden] {
+    display: none !important;
+}
+
+#profil-riwayat-pendidikan .pg {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 0 8px;
+}
+
+#profil-riwayat-pendidikan h1 {
+    margin: 0 0 4px;
+    padding: 0 0 12px;
+    font-size: 28px;
+    font-weight: 400;
+    line-height: 1.25;
+    border-bottom: 1px solid var(--bd);
+}
+
+#profil-riwayat-pendidikan .ds {
+    margin: 12px 0 16px;
+    color: var(--mute);
+}
+
+#profil-riwayat-pendidikan .note {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    margin-bottom: 16px;
+    border: 1px solid var(--bd);
+    border-radius: 6px;
+    background: var(--bg2);
+}
+
+#profil-riwayat-pendidikan .note svg {
+    color: var(--blue);
+}
+
+#profil-riwayat-pendidikan .note b {
+    color: var(--err);
+    font-weight: 600;
+}
+
+#profil-riwayat-pendidikan .box {
+    border: 1px solid var(--bd);
+    border-radius: 6px;
+    overflow: hidden;
+    background: var(--bg);
+}
+
+#profil-riwayat-pendidikan .tw {
+    overflow-x: auto;
+}
+
+#profil-riwayat-pendidikan table {
+    width: 100%;
+    min-width: 840px;
+    border-collapse: collapse;
+}
+
+#profil-riwayat-pendidikan th {
+    padding: 10px 14px;
+    background: var(--bg2);
+    border-bottom: 1px solid var(--bd);
+    text-align: left;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+#profil-riwayat-pendidikan td {
+    padding: 8px 14px;
+    border-top: 1px solid var(--bd);
+    vertical-align: middle;
+}
+
+#profil-riwayat-pendidikan tr.gs td {
+    border-top-color: var(--bd);
+}
+
+#profil-riwayat-pendidikan tr:not(.gs) td {
+    border-top-style: dashed;
+}
+
+#profil-riwayat-pendidikan .c1 {
+    width: 56px;
+    text-align: center;
+}
+
+#profil-riwayat-pendidikan .c2 {
+    width: 140px;
+    border-right: 1px solid var(--bd);
+    font-weight: 600;
+}
+
+#profil-riwayat-pendidikan .c6 {
+    width: 170px;
+    white-space: nowrap;
+    text-align: right;
+}
+
+#profil-riwayat-pendidikan th.c1 {
+    text-align: center;
+}
+
+#profil-riwayat-pendidikan td input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    accent-color: var(--green);
+    cursor: pointer;
+}
+
+#profil-riwayat-pendidikan .fld {
+    width: 100%;
+    min-height: 32px;
+    padding: 5px 12px;
+    border: 1px solid var(--bd);
+    border-radius: 6px;
+    background: var(--bg);
+    outline: 0;
+    text-transform: uppercase;
+    transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+#profil-riwayat-pendidikan .fld:focus {
+    border-color: var(--blue);
+    box-shadow: 0 0 0 1px var(--blue);
+}
+
+#profil-riwayat-pendidikan .fld:disabled {
+    background: var(--hov);
+    opacity: 0.6;
+}
+
+#profil-riwayat-pendidikan .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    height: 32px;
+    padding: 0 14px;
+    border: 1px solid var(--bd);
+    border-radius: 6px;
+    background: var(--bg2);
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s, filter 0.15s;
+}
+
+#profil-riwayat-pendidikan .btn:hover {
+    background: var(--hov);
+}
+
+#profil-riwayat-pendidikan .btn.sm {
+    height: 28px;
+    padding: 0 10px;
+    font-size: 12.5px;
+}
+
+#profil-riwayat-pendidikan .btn.go {
+    background: var(--green);
+    border-color: var(--green);
+    color: #fff;
+}
+
+#profil-riwayat-pendidikan .btn.go:hover {
+    filter: brightness(1.1);
+    background: var(--green);
+}
+
+#profil-riwayat-pendidikan .del {
+    display: inline-grid;
+    place-items: center;
+    width: 28px;
+    height: 28px;
+    border: 1px solid transparent;
+    border-radius: 6px;
+    background: transparent;
+    color: var(--mute);
+    cursor: pointer;
+}
+
+#profil-riwayat-pendidikan .del:hover {
+    background: var(--hov);
+    color: var(--err);
+    border-color: var(--bd);
+}
+
+#profil-riwayat-pendidikan .del[hidden] {
+    display: none;
+}
+
+#profil-riwayat-pendidikan .ft {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+    padding: 12px 16px;
+    border-top: 1px solid var(--bd);
+    background: var(--bg);
+}
+
+#profil-riwayat-pendidikan .pn {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+#profil-riwayat-pendidikan .pn button {
+    min-width: 32px;
+    height: 30px;
+    padding: 0 12px;
+    border: 1px solid transparent;
+    border-radius: 6px;
+    background: transparent;
+    color: var(--mute);
+}
+
+#profil-riwayat-pendidikan .pn button.on {
+    border-color: var(--bd);
+    background: var(--bg2);
+    color: var(--fg);
+    font-weight: 600;
+}
+
+#profil-riwayat-pendidikan .act {
+    margin-top: 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+#profil-riwayat-pendidikan .toast {
+    position: fixed;
+    left: 50%;
+    bottom: calc(24px + env(safe-area-inset-bottom, 0px));
+    transform: translate(-50%, 20px);
+    padding: 10px 16px;
+    border-radius: 6px;
+    background: var(--fg);
+    color: var(--bg);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s, transform 0.25s;
+    z-index: 80;
+}
+
+#profil-riwayat-pendidikan .toast.on {
+    opacity: 1;
+    transform: translate(-50%, 0);
+}
+
+@media (max-width: 700px) {
+    #profil-riwayat-pendidikan .pg {
+        padding: 0 0 8px;
+    }
+
+    #profil-riwayat-pendidikan h1 {
+        font-size: 22px;
+    }
+}

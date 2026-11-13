@@ -23,12 +23,14 @@ class ModulePage extends Component
 
         $this->slug = $slug;
         $this->title = $data['label'];
-        $this->active = $data['label'];
+        $this->active = $slug;
     }
 
     public function render()
     {
-        return view('livewire.module-page')->layout('components.layouts.app', [
+        $view = 'hris.'.$this->slug.'.index';
+
+        return view(view()->exists($view) ? $view : 'livewire.module-page')->layout('components.layouts.app', [
             'title' => $this->title,
             'active' => $this->active,
         ]);

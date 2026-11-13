@@ -1,0 +1,57 @@
+.lr {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    width: 100%;
+    padding: 12px 16px;
+    border: 0;
+    border-top: 1px solid var(--bd);
+    background: transparent;
+    text-align: left;
+    color: var(--fg);
+}
+
+.lr:hover {
+    background: var(--bg2);
+}
+
+.lr .cc {
+    display: inline-grid;
+    place-items: center;
+    min-width: 30px;
+    height: 22px;
+    padding: 0 6px;
+    border: 1px solid var(--bd);
+    border-radius: 6px;
+    background: var(--bg2);
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.lr span b,
+.lr span small {
+    display: block;
+}
+
+.lr span b {
+    font-weight: 600;
+}
+
+.lr span small {
+    color: var(--mute);
+    font-size: 12.5px;
+}
+
+.lr > svg {
+    margin-left: auto;
+    color: var(--bar);
+    stroke-width: 2.2;
+}
+
+.lr .check {
+    visibility: hidden;
+}
+
+.lr.selected .check {
+    visibility: visible;
+}

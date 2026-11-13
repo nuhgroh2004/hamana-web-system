@@ -1,0 +1,215 @@
+#profil-ciri-fisik :is(button, input, select, textarea) {
+    font: inherit;
+    color: inherit;
+}
+
+#profil-ciri-fisik [hidden] {
+    display: none !important;
+}
+
+#profil-ciri-fisik .pg {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 0 8px;
+}
+
+#profil-ciri-fisik .hdr {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 0 0 12px;
+    border-bottom: 1px solid var(--bd);
+}
+
+#profil-ciri-fisik h1 {
+    margin: 0;
+    font-size: 28px;
+    font-weight: 400;
+    line-height: 1.25;
+}
+
+#profil-ciri-fisik .ds {
+    margin: 12px 0 16px;
+    color: var(--mute);
+}
+
+#profil-ciri-fisik .note {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    margin-bottom: 16px;
+    border: 1px solid var(--bd);
+    border-radius: 6px;
+    background: var(--bg2);
+}
+
+#profil-ciri-fisik .note svg {
+    color: var(--blue);
+}
+
+#profil-ciri-fisik .note b {
+    color: var(--err);
+    font-weight: 600;
+}
+
+#profil-ciri-fisik .box {
+    border: 1px solid var(--bd);
+    border-radius: 6px;
+    overflow: hidden;
+    background: var(--bg);
+}
+
+#profil-ciri-fisik .gr {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px 24px;
+    padding: 24px;
+}
+
+#profil-ciri-fisik .lb {
+    display: block;
+    margin: 0 0 6px;
+    font-weight: 600;
+    font-size: 13px;
+}
+
+#profil-ciri-fisik .fld {
+    width: 100%;
+    min-height: 32px;
+    padding: 5px 12px;
+    border: 1px solid var(--bd);
+    border-radius: 6px;
+    background: var(--bg);
+    outline: 0;
+    transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+#profil-ciri-fisik .fld:focus {
+    border-color: var(--blue);
+    box-shadow: 0 0 0 1px var(--blue);
+}
+
+#profil-ciri-fisik .fld:disabled {
+    background: var(--bg2);
+    color: var(--fg);
+    -webkit-text-fill-color: var(--fg);
+    opacity: 1;
+}
+
+#profil-ciri-fisik .fld:disabled::placeholder {
+    color: var(--mute);
+    -webkit-text-fill-color: var(--mute);
+}
+
+#profil-ciri-fisik .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    height: 32px;
+    padding: 0 16px;
+    border: 1px solid var(--bd);
+    border-radius: 6px;
+    background: var(--bg2);
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s, filter 0.15s;
+}
+
+#profil-ciri-fisik .btn:hover:not(:disabled) {
+    background: var(--hov);
+}
+
+#profil-ciri-fisik .btn:disabled {
+    opacity: 0.5;
+    cursor: default;
+}
+
+#profil-ciri-fisik .btn.go {
+    background: var(--green);
+    border-color: var(--green);
+    color: #fff;
+}
+
+#profil-ciri-fisik .btn.go:hover:not(:disabled) {
+    filter: brightness(1.1);
+    background: var(--green);
+}
+
+#profil-ciri-fisik .bar {
+    /* Reset aturan .bar global dari dashboard (progress bar). */
+    flex: none;
+    height: auto;
+    max-width: none;
+    margin-left: 0;
+    overflow: visible;
+    position: sticky;
+    bottom: 0;
+    z-index: 5;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 16px;
+    padding: 12px 16px calc(12px + env(safe-area-inset-bottom, 0px));
+    background: var(--bg);
+    border: 1px solid var(--bd);
+    border-bottom: 0;
+    border-radius: 6px 6px 0 0;
+    box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.08);
+}
+
+/*
+ * Tutup celah padding bawah area konten dengan kartu putih, supaya bar aksi
+ * tidak terlihat mengambang di atas latar halaman.
+ */
+#profil-ciri-fisik .bar::after {
+    content: "";
+    position: absolute;
+    left: -1px;
+    right: -1px;
+    top: 100%;
+    height: calc(var(--mpb) + 8px);
+    background: var(--bg);
+    border: 1px solid var(--bd);
+    border-top: 0;
+    border-radius: 0 0 6px 6px;
+    pointer-events: none;
+}
+
+#profil-ciri-fisik .toast {
+    position: fixed;
+    left: 50%;
+    bottom: calc(24px + env(safe-area-inset-bottom, 0px));
+    transform: translate(-50%, 20px);
+    padding: 10px 16px;
+    border-radius: 6px;
+    background: var(--fg);
+    color: var(--bg);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s, transform 0.25s;
+    z-index: 80;
+}
+
+#profil-ciri-fisik .toast.on {
+    opacity: 1;
+    transform: translate(-50%, 0);
+}
+
+@media (max-width: 700px) {
+    #profil-ciri-fisik .pg {
+        padding: 0 0 8px;
+    }
+
+    #profil-ciri-fisik h1 {
+        font-size: 22px;
+    }
+
+    #profil-ciri-fisik .gr {
+        grid-template-columns: 1fr;
+        padding: 16px;
+    }
+}

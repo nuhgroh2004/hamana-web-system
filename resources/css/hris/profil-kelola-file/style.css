@@ -1,0 +1,463 @@
+#profil-kelola-file {
+    --err: #cf222e;
+    --ok: #1a7f37;
+}
+
+@media (prefers-color-scheme: dark) {
+    #profil-kelola-file {
+        --err: #ff7b72;
+        --ok: #3fb950;
+    }
+}
+
+#profil-kelola-file :is(button, input, select, textarea) {
+    font: inherit;
+    color: inherit;
+}
+
+#profil-kelola-file [hidden] {
+    display: none !important;
+}
+
+#profil-kelola-file .pg {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 0 8px;
+}
+
+#profil-kelola-file h1 {
+    margin: 0 0 4px;
+    padding: 0 0 12px;
+    font-size: 28px;
+    font-weight: 400;
+    line-height: 1.25;
+    border-bottom: 1px solid var(--bd);
+}
+
+#profil-kelola-file .ds {
+    margin: 12px 0 16px;
+    color: var(--mute);
+}
+
+#profil-kelola-file .note {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    margin-bottom: 8px;
+    border: 1px solid var(--bd);
+    border-radius: 6px;
+    background: var(--bg2);
+}
+
+#profil-kelola-file .note svg {
+    color: var(--blue);
+}
+
+#profil-kelola-file .note b {
+    color: var(--err);
+    font-weight: 600;
+}
+
+#profil-kelola-file .sh {
+    margin: 24px 0 8px;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+#profil-kelola-file .box {
+    border: 1px solid var(--bd);
+    border-radius: 6px;
+    overflow: hidden;
+    background: var(--bg);
+    margin-bottom: 16px;
+}
+
+#profil-kelola-file .hd {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px 20px;
+    background: var(--bg2);
+    border-bottom: 1px solid var(--bd);
+}
+
+#profil-kelola-file .hd h3 {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 600;
+}
+
+#profil-kelola-file .bdg {
+    flex: none;
+    padding: 0 8px;
+    border-radius: 2em;
+    border: 1px solid var(--bd);
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 22px;
+    color: var(--mute);
+}
+
+#profil-kelola-file .bdg.ok {
+    color: var(--ok);
+    background: rgba(46, 160, 67, 0.12);
+    border-color: rgba(46, 160, 67, 0.4);
+}
+
+#profil-kelola-file .bd2 {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 20px;
+    padding: 20px;
+}
+
+#profil-kelola-file .bd2.one {
+    grid-template-columns: 1fr;
+}
+
+#profil-kelola-file .lb {
+    display: block;
+    margin: 0 0 6px;
+    font-weight: 600;
+    font-size: 13px;
+}
+
+#profil-kelola-file .rq {
+    color: var(--err);
+}
+
+#profil-kelola-file .fld {
+    width: 100%;
+    min-height: 32px;
+    padding: 5px 12px;
+    border: 1px solid var(--bd);
+    border-radius: 6px;
+    background: var(--bg);
+    outline: 0;
+    transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+#profil-kelola-file .fld:focus {
+    border-color: var(--blue);
+    box-shadow: 0 0 0 1px var(--blue);
+}
+
+#profil-kelola-file .fld.bad {
+    border-color: var(--err);
+    box-shadow: 0 0 0 1px var(--err);
+}
+
+#profil-kelola-file .hint {
+    margin: 4px 0 0;
+    color: var(--mute);
+    font-size: 12px;
+}
+
+#profil-kelola-file .er {
+    margin: 6px 0 0;
+    color: var(--err);
+    font-size: 12.5px;
+    min-height: 0;
+}
+
+#profil-kelola-file .er:empty {
+    display: none;
+}
+
+#profil-kelola-file .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    height: 32px;
+    padding: 0 14px;
+    border: 1px solid var(--bd);
+    border-radius: 6px;
+    background: var(--bg2);
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s, filter 0.15s;
+}
+
+#profil-kelola-file .btn:hover {
+    background: var(--hov);
+}
+
+#profil-kelola-file .btn.sm {
+    height: 28px;
+    padding: 0 10px;
+    font-size: 12.5px;
+}
+
+#profil-kelola-file .btn.dg {
+    color: var(--err);
+}
+
+#profil-kelola-file .btn.dg:hover {
+    border-color: var(--err);
+}
+
+#profil-kelola-file .btn.go {
+    background: var(--green);
+    border-color: var(--green);
+    color: #fff;
+}
+
+#profil-kelola-file .btn.go:hover {
+    filter: brightness(1.1);
+    background: var(--green);
+}
+
+#profil-kelola-file .dz {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 20px 16px;
+    text-align: center;
+    border: 1px dashed var(--bd);
+    border-radius: 6px;
+    color: var(--mute);
+    transition: background 0.15s, border-color 0.15s;
+}
+
+#profil-kelola-file .dz.ov {
+    background: var(--hov);
+    border-color: var(--blue);
+}
+
+#profil-kelola-file .dz svg {
+    width: 24px;
+    height: 24px;
+}
+
+#profil-kelola-file .dz p {
+    margin: 0;
+}
+
+#profil-kelola-file .dz small {
+    font-size: 12px;
+}
+
+#profil-kelola-file .fr {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    border: 1px solid var(--bd);
+    border-radius: 6px;
+}
+
+#profil-kelola-file .th {
+    width: 44px;
+    height: 44px;
+    flex: none;
+    border-radius: 6px;
+    overflow: hidden;
+    background: var(--hov);
+    display: grid;
+    place-items: center;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--err);
+}
+
+#profil-kelola-file .th img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+#profil-kelola-file .fi {
+    flex: 1;
+    min-width: 0;
+}
+
+#profil-kelola-file .fi b {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+#profil-kelola-file .fi small {
+    color: var(--mute);
+    font-size: 12px;
+}
+
+#profil-kelola-file .ac {
+    display: flex;
+    gap: 6px;
+    flex: none;
+}
+
+#profil-kelola-file .lst {
+    display: grid;
+    gap: 8px;
+    margin-top: 12px;
+}
+
+#profil-kelola-file .lst:empty {
+    display: none;
+}
+
+#profil-kelola-file .ov2 {
+    position: fixed;
+    inset: 0;
+    z-index: 50;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background: rgba(1, 4, 9, 0.6);
+}
+
+#profil-kelola-file .dlg {
+    width: 100%;
+    max-width: 420px;
+    max-height: calc(100dvh - 40px);
+    display: flex;
+    flex-direction: column;
+    background: var(--bg);
+    border: 1px solid var(--bd);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.4);
+}
+
+#profil-kelola-file .dlg.big {
+    max-width: 900px;
+    height: calc(100dvh - 40px);
+}
+
+#profil-kelola-file .dh {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--bd);
+    background: var(--bg2);
+}
+
+#profil-kelola-file .dh b {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+#profil-kelola-file .x {
+    display: grid;
+    place-items: center;
+    width: 28px;
+    height: 28px;
+    border: 0;
+    border-radius: 6px;
+    background: transparent;
+    cursor: pointer;
+    color: var(--mute);
+}
+
+#profil-kelola-file .x:hover {
+    background: var(--hov);
+}
+
+#profil-kelola-file .db {
+    flex: 1;
+    min-height: 0;
+    padding: 16px;
+    overflow: auto;
+}
+
+#profil-kelola-file .dlg.big .db {
+    position: relative;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg2);
+}
+
+#profil-kelola-file .db iframe {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+    background: #fff;
+}
+
+#profil-kelola-file .db img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+
+#profil-kelola-file .df {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    padding: 12px 16px;
+    border-top: 1px solid var(--bd);
+}
+
+#profil-kelola-file .df a {
+    margin-right: auto;
+    color: var(--blue);
+    align-self: center;
+    text-decoration: none;
+}
+
+#profil-kelola-file .df a:hover {
+    text-decoration: underline;
+}
+
+#profil-kelola-file .toast {
+    position: fixed;
+    left: 50%;
+    bottom: calc(24px + env(safe-area-inset-bottom, 0px));
+    transform: translate(-50%, 20px);
+    padding: 10px 16px;
+    border-radius: 6px;
+    background: var(--fg);
+    color: var(--bg);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s, transform 0.25s;
+    z-index: 60;
+}
+
+#profil-kelola-file .toast.on {
+    opacity: 1;
+    transform: translate(-50%, 0);
+}
+
+@media (max-width: 700px) {
+    #profil-kelola-file .pg {
+        padding: 0 0 8px;
+    }
+
+    #profil-kelola-file h1 {
+        font-size: 22px;
+    }
+
+    #profil-kelola-file .bd2 {
+        grid-template-columns: 1fr;
+        padding: 16px;
+    }
+
+    #profil-kelola-file .fr {
+        flex-wrap: wrap;
+    }
+
+    #profil-kelola-file .ac {
+        width: 100%;
+    }
+
+    #profil-kelola-file .ac .btn {
+        flex: 1;
+    }
+}

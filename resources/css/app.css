@@ -1,7 +1,22 @@
 @import 'tailwindcss';
 @import './master-komponen/layout.css';
 @import './pengaturan/pengaturan.css';
+@import './pengaturan/bahasa/style.css';
+@import './pengaturan/hak-akses-admin/style.css';
+@import './pengaturan/absensi-by-foto/style.css';
+@import './pengaturan/daftar-hitam-presensi/style.css';
+@import './pengaturan/ubah-password/style.css';
 @import './hris/dashboard/style.css';
+@import './hris/profil-data-pribadi/style.css';
+@import './hris/profil-anggota-keluarga/style.css';
+@import './hris/profil-ciri-fisik/style.css';
+@import './hris/profil-riwayat-pendidikan/style.css';
+@import './hris/profil-kelola-file/style.css';
+@import './hris/data-admin-data-faskes-bpjs/style.css';
+@import './hris/data-admin-data-jabatan/style.css';
+@import './hris/data-admin-list-admin/style.css';
+@import './hris/data-pegawai/style.css';
+@import './hris/slip-gaji/style.css';
 
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';

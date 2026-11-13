@@ -26,8 +26,8 @@ h2.t{font-size:28px;font-weight:400;margin:0 0 16px;padding:0 0 12px;border-bott
 .row{display:flex;align-items:center;gap:24px;padding:16px 28px;border-top:1px solid var(--bd)}
 .tg{background:none;border:0;display:flex;padding:0}
 .tg svg{transition:transform .2s}.row.closed .tg svg{transform:rotate(-90deg)}
-.bar{flex:1;height:12px;border-radius:6px;background:var(--track);overflow:hidden;max-width:400px;margin-left:120px}
-.bar i{display:block;height:100%;width:0;background:var(--bar);transition:width 1.2s ease}
+#dash .bar{flex:1;height:12px;border-radius:6px;background:var(--track);overflow:hidden;max-width:400px;margin-left:120px}
+#dash .bar i{display:block;height:100%;width:0;background:var(--bar);transition:width 1.2s ease}
 .row .d{margin-left:auto;color:var(--mute);font-size:13px}
 .det{padding:0 28px 20px}.det.hide{display:none}
 .ok{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:16px 20px;background:var(--okbg);border:1px solid var(--okbd);border-radius:6px}
@@ -106,5 +106,5 @@ main.set-on #set{display:flex}main.set-on #home{display:none}
   .qic{width:40px;height:40px}
   .pf{padding:16px}.pf h2{font-size:22px}
   .art{display:none}.hero h3{font-size:28px}.hero .tx{padding:24px}
-  .row{flex-wrap:wrap;gap:12px}.bar{margin-left:0}.ch1{flex-wrap:wrap}.go{margin-left:0}
+  .row{flex-wrap:wrap;gap:12px}#dash .bar{margin-left:0}.ch1{flex-wrap:wrap}.go{margin-left:0}
 }

@@ -13,6 +13,8 @@
     --track: #d1f5d9;
     --hh: calc(72px + env(safe-area-inset-top, 0px));
     --nw: 292px;
+    /* Ruang bawah area konten; dipakai juga oleh bar aksi halaman modul. */
+    --mpb: calc(64px + env(safe-area-inset-bottom, 0px));
     color-scheme: light;
 }
 
@@ -102,12 +104,6 @@ header {
     height: 40px;
     flex: none;
     display: block;
-}
-
-header h1 {
-    font-size: 14px;
-    font-weight: 600;
-    margin: 0;
 }
 
 .sp {
@@ -325,7 +321,7 @@ main {
     overflow-y: auto;
     scroll-behavior: smooth;
     overscroll-behavior: contain;
-    padding: 24px 32px calc(64px + env(safe-area-inset-bottom, 0px));
+    padding: 24px 32px var(--mpb);
 }
 
 .in {
@@ -369,6 +365,10 @@ main {
     }
 
     main {
-        padding: 16px 16px calc(48px + env(safe-area-inset-bottom, 0px));
+        padding: 16px 16px var(--mpb);
+    }
+
+    :root {
+        --mpb: calc(48px + env(safe-area-inset-bottom, 0px));
     }
 }

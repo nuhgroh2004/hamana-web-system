@@ -1,0 +1,540 @@
+#data-admin-data-faskes-bpjs :is(button, input, select, textarea) {
+    font: inherit;
+    color: inherit;
+}
+
+#data-admin-data-faskes-bpjs [hidden] {
+    display: none !important;
+}
+
+#data-admin-data-faskes-bpjs .pg {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 0 8px;
+}
+
+#data-admin-data-faskes-bpjs h1 {
+    margin: 0 0 4px;
+    padding: 0 0 12px;
+    font-size: 28px;
+    font-weight: 400;
+    line-height: 1.25;
+    border-bottom: 1px solid var(--bd);
+}
+
+#data-admin-data-faskes-bpjs .ds {
+    margin: 12px 0 16px;
+    color: var(--mute);
+}
+
+#data-admin-data-faskes-bpjs .sum {
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+}
+
+#data-admin-data-faskes-bpjs .sc {
+    padding: 0;
+    border: 0;
+    background: none;
+    cursor: pointer;
+    color: var(--mute);
+    text-align: left;
+}
+
+#data-admin-data-faskes-bpjs .sc:hover {
+    color: var(--fg);
+}
+
+#data-admin-data-faskes-bpjs .sc b {
+    margin-left: 4px;
+    color: var(--fg);
+    font-weight: 400;
+}
+
+#data-admin-data-faskes-bpjs .sc.warn b {
+    color: var(--warn, #9a6700);
+}
+
+#data-admin-data-faskes-bpjs .sc.on {
+    color: var(--blue);
+    text-decoration: underline;
+    text-underline-offset: 4px;
+}
+
+#data-admin-data-faskes-bpjs .tbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+}
+
+#data-admin-data-faskes-bpjs .tl,
+#data-admin-data-faskes-bpjs .tr {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+#data-admin-data-faskes-bpjs .srch {
+    position: relative;
+    display: block;
+    width: 340px;
+    max-width: 100%;
+    height: auto;
+    padding: 0;
+    margin: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    color: inherit;
+}
+
+#data-admin-data-faskes-bpjs .srch:focus-within {
+    border-color: transparent;
+    box-shadow: none;
+}
+
+#data-admin-data-faskes-bpjs .srch svg {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--mute);
+    pointer-events: none;
+}
+
+#data-admin-data-faskes-bpjs .srch .fld {
+    padding-left: 32px;
+}
+
+#data-admin-data-faskes-bpjs .fld {
+    width: 100%;
+    min-height: 32px;
+    padding: 5px 12px;
+    border: 1px solid var(--bd);
+    border-radius: 6px;
+    background: var(--bg);
+    outline: 0;
+    transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+#data-admin-data-faskes-bpjs .fld:focus {
+    border-color: var(--blue);
+    box-shadow: 0 0 0 1px var(--blue);
+}
+
+#data-admin-data-faskes-bpjs .fld.bad {
+    border-color: var(--err);
+    box-shadow: 0 0 0 1px var(--err);
+}
+
+#data-admin-data-faskes-bpjs .fld.up {
+    text-transform: uppercase;
+}
+
+#data-admin-data-faskes-bpjs .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    height: 32px;
+    padding: 0 14px;
+    border: 1px solid var(--bd);
+    border-radius: 6px;
+    background: var(--bg2);
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 0.15s, filter 0.15s;
+}
+
+#data-admin-data-faskes-bpjs .btn:hover {
+    background: var(--hov);
+}
+
+#data-admin-data-faskes-bpjs .btn.sm {
+    height: 28px;
+    padding: 0 10px;
+    font-size: 12.5px;
+}
+
+#data-admin-data-faskes-bpjs .btn.dg {
+    color: var(--err);
+}
+
+#data-admin-data-faskes-bpjs .btn.dg:hover {
+    border-color: var(--err);
+}
+
+#data-admin-data-faskes-bpjs .btn.go {
+    background: var(--green);
+    border-color: var(--green);
+    color: #fff;
+}
+
+#data-admin-data-faskes-bpjs .btn.go:hover {
+    filter: brightness(1.1);
+    background: var(--green);
+}
+
+#data-admin-data-faskes-bpjs .btn.dgb {
+    background: var(--err);
+    border-color: var(--err);
+    color: #fff;
+}
+
+#data-admin-data-faskes-bpjs .btn.dgb:hover {
+    filter: brightness(1.1);
+    background: var(--err);
+}
+
+#data-admin-data-faskes-bpjs .dd {
+    justify-content: space-between;
+    gap: 8px;
+    font-weight: 400;
+}
+
+#data-admin-data-faskes-bpjs .dd b {
+    font-weight: 400;
+}
+
+#data-admin-data-faskes-bpjs .dd .mu {
+    color: var(--mute);
+    font-weight: 400;
+}
+
+#data-admin-data-faskes-bpjs .box {
+    border: 1px solid var(--bd);
+    border-radius: 6px;
+    overflow: hidden;
+    background: var(--bg);
+}
+
+#data-admin-data-faskes-bpjs .tw {
+    overflow-x: auto;
+}
+
+#data-admin-data-faskes-bpjs table {
+    width: 100%;
+    min-width: 1180px;
+    border-collapse: collapse;
+}
+
+#data-admin-data-faskes-bpjs th {
+    padding: 10px 14px;
+    background: var(--bg2);
+    border-bottom: 1px solid var(--bd);
+    text-align: left;
+    font-size: 13px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+#data-admin-data-faskes-bpjs td {
+    padding: 10px 14px;
+    border-top: 1px solid var(--bd);
+    vertical-align: top;
+}
+
+#data-admin-data-faskes-bpjs tbody tr:first-child td {
+    border-top: 0;
+}
+
+#data-admin-data-faskes-bpjs tbody tr:hover td {
+    background: var(--bg2);
+}
+
+#data-admin-data-faskes-bpjs .c1 {
+    width: 90px;
+    white-space: nowrap;
+}
+
+#data-admin-data-faskes-bpjs .nm {
+    font-weight: 600;
+}
+
+#data-admin-data-faskes-bpjs .nw {
+    white-space: nowrap;
+}
+
+#data-admin-data-faskes-bpjs .bdg {
+    display: inline-block;
+    padding: 0 8px;
+    border-radius: 2em;
+    border: 1px solid rgba(212, 167, 44, 0.5);
+    background: rgba(212, 167, 44, 0.15);
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 22px;
+    color: var(--warn, #9a6700);
+    white-space: nowrap;
+}
+
+#data-admin-data-faskes-bpjs .empty {
+    padding: 40px 16px;
+    text-align: center;
+    color: var(--mute);
+}
+
+#data-admin-data-faskes-bpjs .ft {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+    padding: 12px 16px;
+    border-top: 1px solid var(--bd);
+    color: var(--mute);
+}
+
+#data-admin-data-faskes-bpjs .pn {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex-wrap: wrap;
+}
+
+#data-admin-data-faskes-bpjs .pn button {
+    min-width: 32px;
+    height: 30px;
+    padding: 0 10px;
+    border: 1px solid transparent;
+    border-radius: 6px;
+    background: transparent;
+    color: var(--fg);
+    cursor: pointer;
+}
+
+#data-admin-data-faskes-bpjs .pn button:hover:not(:disabled):not(.on) {
+    border-color: var(--bd);
+    background: var(--bg2);
+}
+
+#data-admin-data-faskes-bpjs .pn button:disabled {
+    color: var(--mute);
+    cursor: default;
+}
+
+#data-admin-data-faskes-bpjs .pn button.on {
+    border-color: var(--blue);
+    background: var(--blue);
+    color: #fff;
+    font-weight: 600;
+}
+
+#data-admin-data-faskes-bpjs .pn span {
+    padding: 0 4px;
+    color: var(--mute);
+}
+
+#data-admin-data-faskes-bpjs .mn {
+    position: fixed;
+    z-index: 70;
+    padding: 4px;
+    background: var(--bg);
+    border: 1px solid var(--bd);
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(31, 35, 40, 0.2);
+    animation: faskes-pop 0.12s ease-out;
+    max-height: min(360px, calc(100dvh - 16px));
+    overflow-y: auto;
+}
+
+@keyframes faskes-pop {
+    from {
+        opacity: 0;
+        transform: translateY(-4px) scale(0.98);
+    }
+    to {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+#data-admin-data-faskes-bpjs .mn button {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding: 8px 12px;
+    border: 0;
+    border-radius: 8px;
+    background: transparent;
+    color: var(--fg);
+    text-align: left;
+    cursor: pointer;
+}
+
+#data-admin-data-faskes-bpjs .mn button:hover {
+    background: var(--hov);
+}
+
+#data-admin-data-faskes-bpjs .mn button .ck {
+    margin-left: auto;
+    color: var(--blue);
+    visibility: hidden;
+}
+
+#data-admin-data-faskes-bpjs .mn button.on .ck {
+    visibility: visible;
+}
+
+#data-admin-data-faskes-bpjs .ov2 {
+    position: fixed;
+    inset: 0;
+    z-index: 50;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background: rgba(1, 4, 9, 0.6);
+}
+
+#data-admin-data-faskes-bpjs .dlg {
+    width: 100%;
+    max-width: 440px;
+    max-height: calc(100dvh - 40px);
+    display: flex;
+    flex-direction: column;
+    background: var(--bg);
+    border: 1px solid var(--bd);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.4);
+}
+
+#data-admin-data-faskes-bpjs .dlg.w {
+    max-width: 680px;
+}
+
+#data-admin-data-faskes-bpjs .dh {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--bd);
+    background: var(--bg2);
+    font-weight: 600;
+}
+
+#data-admin-data-faskes-bpjs .x {
+    display: grid;
+    place-items: center;
+    width: 28px;
+    height: 28px;
+    border: 0;
+    border-radius: 6px;
+    background: transparent;
+    cursor: pointer;
+    color: var(--mute);
+}
+
+#data-admin-data-faskes-bpjs .x:hover {
+    background: var(--hov);
+}
+
+#data-admin-data-faskes-bpjs .db {
+    padding: 16px;
+    overflow: auto;
+    display: grid;
+    gap: 14px;
+}
+
+#data-admin-data-faskes-bpjs .db.g2 {
+    grid-template-columns: 1fr 1fr;
+}
+
+#data-admin-data-faskes-bpjs .db .wide {
+    grid-column: 1 / -1;
+}
+
+#data-admin-data-faskes-bpjs .db p {
+    margin: 0;
+    color: var(--mute);
+}
+
+#data-admin-data-faskes-bpjs .f label {
+    display: block;
+    margin: 0 0 6px;
+    font-weight: 600;
+    font-size: 13px;
+}
+
+#data-admin-data-faskes-bpjs .rq {
+    color: var(--err);
+}
+
+#data-admin-data-faskes-bpjs .er {
+    margin: 4px 0 0;
+    color: var(--err);
+    font-size: 12.5px;
+}
+
+#data-admin-data-faskes-bpjs .er:empty {
+    display: none;
+}
+
+#data-admin-data-faskes-bpjs .df {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    padding: 12px 16px;
+    border-top: 1px solid var(--bd);
+}
+
+#data-admin-data-faskes-bpjs .toast {
+    position: fixed;
+    left: 50%;
+    bottom: calc(24px + env(safe-area-inset-bottom, 0px));
+    transform: translate(-50%, 20px);
+    padding: 10px 16px;
+    border-radius: 6px;
+    background: var(--fg);
+    color: var(--bg);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s, transform 0.25s;
+    z-index: 80;
+}
+
+#data-admin-data-faskes-bpjs .toast.on {
+    opacity: 1;
+    transform: translate(-50%, 0);
+}
+
+@media (max-width: 700px) {
+    #data-admin-data-faskes-bpjs .pg {
+        padding: 0 0 8px;
+    }
+
+    #data-admin-data-faskes-bpjs h1 {
+        font-size: 22px;
+    }
+
+    #data-admin-data-faskes-bpjs .srch {
+        width: 100%;
+    }
+
+    #data-admin-data-faskes-bpjs .tl,
+    #data-admin-data-faskes-bpjs .tr {
+        width: 100%;
+    }
+
+    #data-admin-data-faskes-bpjs .tl .dd {
+        flex: 1;
+    }
+
+    #data-admin-data-faskes-bpjs .tr .btn {
+        flex: 1;
+    }
+
+    #data-admin-data-faskes-bpjs .db.g2 {
+        grid-template-columns: 1fr;
+    }
+}

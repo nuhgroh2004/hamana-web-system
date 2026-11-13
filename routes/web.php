@@ -14,9 +14,14 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/dashboard', Dashboard::class)->name('dashboard');
 
-    Route::get('/pengaturan', Pengaturan::class)
+    Route::redirect('/pengaturan', '/pengaturan/bahasa')->name('pengaturan');
+
+    Route::get('/pengaturan/{panel}', Pengaturan::class)
+        ->whereIn('panel', ['bahasa', 'hak-akses-admin', 'absensi-by-foto', 'daftar-hitam-presensi', 'ubah-password'])
         ->middleware('module.access:pengaturan')
-        ->name('pengaturan');
+        ->name('pengaturan.panel');
+
+    Route::redirect('/modul/ubah-password', '/pengaturan/ubah-password');
 
     Route::get('/modul/{module}', ModulePage::class)
         ->middleware('module.access')

@@ -9,6 +9,8 @@ use Livewire\Component;
 
 class Pengaturan extends Component
 {
+    public string $panel = 'bahasa';
+
     public bool $showUserForm = false;
 
     public ?int $editingUserId = null;
@@ -26,6 +28,50 @@ class Pengaturan extends Component
     public string $formPosition = '';
 
     public string $userStatus = '';
+
+    public string $newPassword = '';
+
+    public string $newPasswordConfirmation = '';
+
+    public string $passwordStatus = '';
+
+    /**
+     * Set the active settings panel from the URL.
+     */
+    public function mount(?string $panel = null): void
+    {
+        $panel = $panel ?: 'bahasa';
+
+        abort_unless(in_array($panel, array_column($this->panels(), 'slug'), true), 404);
+
+        $this->panel = $panel;
+    }
+
+    /**
+     * Settings panels available to the current user.
+     *
+     * @return list<array{slug: string, name: string, icon: string}>
+     */
+    public function panels(): array
+    {
+        $isAdmin = auth()->user()?->isAdmin() ?? false;
+
+        $panels = [
+            ['slug' => 'bahasa', 'name' => 'Bahasa', 'icon' => 'globe', 'admin' => false],
+            ['slug' => 'hak-akses-admin', 'name' => 'Hak Akses Admin', 'icon' => 'shield', 'admin' => true],
+            ['slug' => 'absensi-by-foto', 'name' => 'Absensi by Foto', 'icon' => 'camera', 'admin' => true],
+            ['slug' => 'daftar-hitam-presensi', 'name' => 'Daftar Hitam Presensi', 'icon' => 'ban', 'admin' => true],
+            ['slug' => 'ubah-password', 'name' => 'Ubah Password', 'icon' => 'lock', 'admin' => false],
+        ];
+
+        $panels = array_values(array_filter($panels, fn (array $item) => $isAdmin || ! $item['admin']));
+
+        return array_map(fn (array $item) => [
+            'slug' => $item['slug'],
+            'name' => $item['name'],
+            'icon' => $item['icon'],
+        ], $panels);
+    }
 
     /**
      * Open an empty user form.
@@ -197,9 +243,28 @@ class Pengaturan extends Component
         $user->save();
     }
 
+    /**
+     * Change the authenticated user's password.
+     */
+    public function updatePassword(): void
+    {
+        $this->resetErrorBag();
+        $this->passwordStatus = '';
+
+        $user = auth()->user();
+
+        $user->password = $this->newPassword;
+        $user->save();
+
+        $this->reset(['newPassword', 'newPasswordConfirmation']);
+        $this->passwordStatus = 'Password berhasil diubah.';
+    }
+
     public function render()
     {
         return view('pengaturan.index', [
+            'panels' => $this->panels(),
+            'panel' => $this->panel,
             'users' => User::query()
                 ->orderByRaw("case when role = 'admin' then 0 else 1 end")
                 ->orderBy('name')
@@ -207,7 +272,7 @@ class Pengaturan extends Component
             'moduleGroups' => Modules::menu(),
         ])->layout('components.layouts.app', [
             'title' => 'Pengaturan',
-            'active' => 'Pengaturan',
+            'active' => 'pengaturan',
             'main' => 'set-page',
         ]);
     }

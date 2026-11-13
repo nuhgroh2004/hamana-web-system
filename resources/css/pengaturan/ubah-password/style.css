@@ -1,0 +1,18 @@
+.pwarn {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    margin: 0;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--bd);
+    background: var(--bg);
+    color: #cf222e;
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 1.5;
+}
+
+.pwarn .i {
+    margin-top: 2px;
+    flex: none;
+}

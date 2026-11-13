@@ -3,7 +3,7 @@
 return [
     'groups' => [
         [
-            'label' => 'HRIS',
+            'label' => 'HRIS Sistem',
             'items' => [
                 ['label' => 'Dashboard', 'icon' => 'dash', 'slug' => 'dashboard', 'route' => 'dashboard'],
                 ['label' => 'Permohonan', 'icon' => 'req', 'children' => [
@@ -18,7 +18,7 @@ return [
                 ['label' => 'Absensi', 'icon' => 'clock', 'slug' => 'absensi'],
                 ['label' => 'Input', 'icon' => 'edit', 'children' => [
                     ['label' => 'Cuti dan Sakit', 'slug' => 'input-cuti-dan-sakit'],
-                    ['label' => 'Buku Hamana', 'slug' => 'input-buku-hamana'],
+                    ['label' => 'Input Buku Hamana', 'slug' => 'input-buku-hamana'],
                 ]],
                 ['label' => 'Slip Gaji', 'icon' => 'money', 'slug' => 'slip-gaji'],
                 ['label' => 'Buku Hamana', 'icon' => 'book', 'slug' => 'buku-hamana'],
@@ -47,7 +47,6 @@ return [
                     ['label' => 'Data Faskes BPJS', 'slug' => 'data-admin-faskes-bpjs'],
                 ]],
                 ['label' => 'Tanda Tangan', 'icon' => 'pen', 'slug' => 'tanda-tangan'],
-                ['label' => 'Ubah Password', 'icon' => 'lock', 'slug' => 'ubah-password'],
             ],
         ],
         [

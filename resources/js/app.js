@@ -1,4 +1,16 @@
 import './bootstrap';
 import './master-komponen/layout';
 import './pengaturan/pengaturan';
+import './pengaturan/bahasa/script';
+import './pengaturan/absensi-by-foto/script';
 import './hris/dashboard/script';
+import './hris/profil-data-pribadi/script';
+import './hris/profil-anggota-keluarga/script';
+import './hris/profil-ciri-fisik/script';
+import './hris/profil-riwayat-pendidikan/script';
+import './hris/profil-kelola-file/script';
+import './hris/data-admin-data-faskes-bpjs/script';
+import './hris/data-admin-data-jabatan/script';
+import './hris/data-admin-list-admin/script';
+import './hris/data-pegawai/script';
+import './hris/slip-gaji/script';

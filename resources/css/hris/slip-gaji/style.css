@@ -1,0 +1,525 @@
+#slip-gaji :is(button, input, select, textarea) {
+    font: inherit;
+    color: inherit;
+}
+
+#slip-gaji [hidden] {
+    display: none !important;
+}
+
+#slip-gaji .pg {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 0 8px;
+}
+
+#slip-gaji h1 {
+    margin: 0 0 4px;
+    padding: 0 0 12px;
+    font-size: 28px;
+    font-weight: 400;
+    line-height: 1.25;
+    border-bottom: 1px solid var(--bd);
+}
+
+#slip-gaji .ds {
+    margin: 12px 0 16px;
+    color: var(--mute);
+}
+
+#slip-gaji .tbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+}
+
+#slip-gaji .srch {
+    position: relative;
+    width: 340px;
+    max-width: 100%;
+}
+
+#slip-gaji .srch svg {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--mute);
+    pointer-events: none;
+}
+
+#slip-gaji .srch .fld {
+    padding-left: 32px;
+}
+
+#slip-gaji .fld {
+    width: 100%;
+    min-height: 32px;
+    padding: 5px 12px;
+    border: 1px solid var(--bd);
+    border-radius: 6px;
+    background: var(--bg);
+    outline: 0;
+    transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+#slip-gaji .fld:focus {
+    border-color: var(--blue);
+    box-shadow: 0 0 0 1px var(--blue);
+}
+
+#slip-gaji .fld.bad {
+    border-color: var(--err);
+    box-shadow: 0 0 0 1px var(--err);
+}
+
+#slip-gaji .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    height: 32px;
+    padding: 0 14px;
+    border: 1px solid var(--bd);
+    border-radius: 6px;
+    background: var(--bg2);
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 0.15s, filter 0.15s;
+}
+
+#slip-gaji .btn:hover {
+    background: var(--hov);
+}
+
+#slip-gaji .btn.sm {
+    height: 28px;
+    padding: 0 10px;
+    font-size: 12.5px;
+}
+
+#slip-gaji .btn.go {
+    background: var(--green);
+    border-color: var(--green);
+    color: #fff;
+}
+
+#slip-gaji .btn.go:hover {
+    filter: brightness(1.1);
+    background: var(--green);
+}
+
+#slip-gaji .btn.dgb {
+    background: var(--err);
+    border-color: var(--err);
+    color: #fff;
+}
+
+#slip-gaji .btn.dgb:hover {
+    filter: brightness(1.1);
+    background: var(--err);
+}
+
+#slip-gaji .box {
+    border: 1px solid var(--bd);
+    border-radius: 6px;
+    overflow: hidden;
+    background: var(--bg);
+}
+
+#slip-gaji .tw {
+    overflow-x: auto;
+}
+
+#slip-gaji table {
+    width: 100%;
+    min-width: 420px;
+    border-collapse: collapse;
+}
+
+#slip-gaji th {
+    padding: 10px 14px;
+    background: var(--bg2);
+    border-bottom: 1px solid var(--bd);
+    text-align: left;
+    font-size: 13px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+#slip-gaji td {
+    padding: 10px 14px;
+    border-top: 1px solid var(--bd);
+    vertical-align: middle;
+}
+
+#slip-gaji tbody tr:first-child td {
+    border-top: 0;
+}
+
+#slip-gaji tbody tr:hover td {
+    background: var(--bg2);
+}
+
+#slip-gaji .c1 {
+    width: 80px;
+}
+
+#slip-gaji .c2 {
+    width: 70px;
+    color: var(--mute);
+}
+
+#slip-gaji .bdg {
+    display: inline-block;
+    padding: 0 8px;
+    border-radius: 2em;
+    border: 1px solid var(--bd);
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 22px;
+    white-space: nowrap;
+    color: var(--mute);
+}
+
+#slip-gaji .bdg.off {
+    color: var(--err);
+    border-color: rgba(207, 34, 46, 0.5);
+    background: rgba(207, 34, 46, 0.1);
+}
+
+#slip-gaji .bdg.ok {
+    color: var(--ok, #1a7f37);
+    border-color: rgba(46, 160, 67, 0.5);
+    background: rgba(46, 160, 67, 0.12);
+}
+
+#slip-gaji .empty {
+    padding: 40px 16px;
+    text-align: center;
+    color: var(--mute);
+}
+
+#slip-gaji .ft {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+    padding: 12px 16px;
+    border-top: 1px solid var(--bd);
+    color: var(--mute);
+}
+
+#slip-gaji .pn {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex-wrap: wrap;
+}
+
+#slip-gaji .pn button {
+    min-width: 32px;
+    height: 30px;
+    padding: 0 10px;
+    border: 1px solid transparent;
+    border-radius: 6px;
+    background: transparent;
+    color: var(--fg);
+    cursor: pointer;
+}
+
+#slip-gaji .pn button:hover:not(:disabled):not(.on) {
+    border-color: var(--bd);
+    background: var(--bg2);
+}
+
+#slip-gaji .pn button:disabled {
+    color: var(--mute);
+    cursor: default;
+}
+
+#slip-gaji .pn button.on {
+    border-color: var(--blue);
+    background: var(--blue);
+    color: #fff;
+    font-weight: 600;
+}
+
+#slip-gaji .pn span {
+    padding: 0 4px;
+    color: var(--mute);
+}
+
+#slip-gaji .mn {
+    position: fixed;
+    z-index: 70;
+    width: 140px;
+    padding: 4px;
+    background: var(--bg);
+    border: 1px solid var(--bd);
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(31, 35, 40, 0.2);
+    animation: slip-pop 0.12s ease-out;
+    max-height: min(360px, calc(100dvh - 16px));
+    overflow-y: auto;
+}
+
+@keyframes slip-pop {
+    from {
+        opacity: 0;
+        transform: translateY(-4px) scale(0.98);
+    }
+    to {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+#slip-gaji .mn button {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding: 8px 12px;
+    border: 0;
+    border-radius: 8px;
+    background: transparent;
+    text-align: left;
+    cursor: pointer;
+}
+
+#slip-gaji .mn button:hover {
+    background: var(--hov);
+}
+
+#slip-gaji .mn .dg {
+    color: var(--err);
+}
+
+#slip-gaji .ov2 {
+    position: fixed;
+    inset: 0;
+    z-index: 50;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background: rgba(1, 4, 9, 0.6);
+}
+
+#slip-gaji .dlg {
+    width: 100%;
+    max-width: 440px;
+    max-height: calc(100dvh - 40px);
+    display: flex;
+    flex-direction: column;
+    background: var(--bg);
+    border: 1px solid var(--bd);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.4);
+}
+
+#slip-gaji .dlg.w {
+    max-width: 600px;
+}
+
+#slip-gaji .dh {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--bd);
+    background: var(--bg2);
+    font-weight: 600;
+}
+
+#slip-gaji .x {
+    display: grid;
+    place-items: center;
+    width: 28px;
+    height: 28px;
+    border: 0;
+    border-radius: 6px;
+    background: transparent;
+    cursor: pointer;
+    color: var(--mute);
+}
+
+#slip-gaji .x:hover {
+    background: var(--hov);
+}
+
+#slip-gaji .db {
+    padding: 16px;
+    overflow: auto;
+    display: grid;
+    gap: 14px;
+}
+
+#slip-gaji .db.g2 {
+    grid-template-columns: 1fr 1fr;
+}
+
+#slip-gaji .db .wide {
+    grid-column: 1 / -1;
+}
+
+#slip-gaji .db p {
+    margin: 0;
+    color: var(--mute);
+}
+
+#slip-gaji .f label {
+    display: block;
+    margin: 0 0 6px;
+    font-weight: 600;
+    font-size: 13px;
+}
+
+#slip-gaji .rq {
+    color: var(--err);
+}
+
+#slip-gaji .hint {
+    margin: 4px 0 0;
+    color: var(--mute);
+    font-size: 12.5px;
+}
+
+#slip-gaji .er {
+    margin: 4px 0 0;
+    color: var(--err);
+    font-size: 12.5px;
+}
+
+#slip-gaji .er:empty {
+    display: none;
+}
+
+#slip-gaji .df {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    padding: 12px 16px;
+    border-top: 1px solid var(--bd);
+}
+
+#slip-gaji .toast {
+    position: fixed;
+    left: 50%;
+    bottom: calc(24px + env(safe-area-inset-bottom, 0px));
+    transform: translate(-50%, 20px);
+    padding: 10px 16px;
+    border-radius: 6px;
+    background: var(--fg);
+    color: var(--bg);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s, transform 0.25s;
+    z-index: 80;
+}
+
+#slip-gaji .toast.on {
+    opacity: 1;
+    transform: translate(-50%, 0);
+}
+
+#slip-gaji .tl {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+#slip-gaji .dd {
+    justify-content: space-between;
+    gap: 8px;
+    font-weight: 400;
+}
+
+#slip-gaji .dd .mu {
+    color: var(--mute);
+}
+
+#slip-gaji .mn button .ck {
+    margin-left: auto;
+    color: var(--blue);
+    visibility: hidden;
+}
+
+#slip-gaji .mn button.on .ck {
+    visibility: visible;
+}
+
+#slip-gaji .ib {
+    display: inline-grid;
+    place-items: center;
+    width: 32px;
+    height: 28px;
+    border: 1px solid var(--bd);
+    border-radius: 6px;
+    background: var(--bg2);
+    color: var(--blue);
+    cursor: pointer;
+    transition: background 0.15s;
+}
+
+#slip-gaji .ib:hover {
+    background: var(--hov);
+}
+
+#slip-gaji .gate {
+    position: fixed;
+    inset: 0;
+    z-index: 90;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background: var(--bg);
+}
+
+#slip-gaji .gate .dlg {
+    max-width: 380px;
+    box-shadow: none;
+}
+
+#slip-gaji .pin {
+    text-align: center;
+    font-size: 22px;
+    letter-spacing: 0.5em;
+    padding-left: calc(12px + 0.5em);
+}
+
+@media (max-width: 700px) {
+    #slip-gaji .pg {
+        padding: 0 0 8px;
+    }
+
+    #slip-gaji h1 {
+        font-size: 22px;
+    }
+
+    #slip-gaji .srch {
+        width: 100%;
+    }
+
+    #slip-gaji .tbar > .btn {
+        width: 100%;
+    }
+
+    #slip-gaji .db.g2 {
+        grid-template-columns: 1fr;
+    }
+
+    #slip-gaji .tl,
+    #slip-gaji .tl .dd {
+        width: 100%;
+    }
+}

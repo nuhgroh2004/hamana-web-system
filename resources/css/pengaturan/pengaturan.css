@@ -62,6 +62,7 @@ main.set-page {
     background: transparent;
     color: var(--fg);
     text-align: left;
+    text-decoration: none;
     transition: background 0.15s;
 }
 
@@ -117,64 +118,6 @@ main.set-page {
     font-weight: 600;
 }
 
-.lr {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    width: 100%;
-    padding: 12px 16px;
-    border: 0;
-    border-top: 1px solid var(--bd);
-    background: transparent;
-    text-align: left;
-    color: var(--fg);
-}
-
-.lr:hover {
-    background: var(--bg2);
-}
-
-.lr .cc {
-    display: inline-grid;
-    place-items: center;
-    min-width: 30px;
-    height: 22px;
-    padding: 0 6px;
-    border: 1px solid var(--bd);
-    border-radius: 6px;
-    background: var(--bg2);
-    font-size: 12px;
-    font-weight: 600;
-}
-
-.lr span b,
-.lr span small {
-    display: block;
-}
-
-.lr span b {
-    font-weight: 600;
-}
-
-.lr span small {
-    color: var(--mute);
-    font-size: 12.5px;
-}
-
-.lr > svg {
-    margin-left: auto;
-    color: var(--bar);
-    stroke-width: 2.2;
-}
-
-.lr .check {
-    visibility: hidden;
-}
-
-.lr.selected .check {
-    visibility: visible;
-}
-
 .nt {
     display: flex;
     align-items: center;
@@ -188,76 +131,7 @@ main.set-page {
     color: var(--bar);
 }
 
-.tr {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 16px;
-    padding: 12px 16px;
-    border-top: 1px solid var(--bd);
-    cursor: pointer;
-}
-
-.tr:hover {
-    background: var(--bg2);
-}
-
-.tr input {
-    display: none;
-}
-
-.tk {
-    flex: none;
-    width: 40px;
-    height: 24px;
-    border-radius: 12px;
-    border: 1px solid var(--bd);
-    background: var(--bg2);
-    position: relative;
-    transition: background 0.2s, border-color 0.2s;
-}
-
-.tk::after {
-    content: "";
-    position: absolute;
-    top: 2px;
-    left: 2px;
-    width: 18px;
-    height: 18px;
-    border-radius: 50%;
-    background: var(--mute);
-    transition: transform 0.2s, background 0.2s;
-}
-
-.tr input:checked + .tk {
-    background: var(--green);
-    border-color: var(--green);
-}
-
-.tr input:disabled + .tk {
-    opacity: 0.65;
-}
-
-.tr input:checked + .tk::after {
-    transform: translateX(16px);
-    background: #fff;
-}
-
-.em {
-    padding: 32px;
-    text-align: center;
-    color: var(--mute);
-    border-top: 1px solid var(--bd);
-}
-
-.ua-bar {
-    display: flex;
-    justify-content: flex-end;
-    padding: 12px 16px;
-    background: var(--bg2);
-    border-bottom: 1px solid var(--bd);
-}
-
+/* Form dan tombol yang dipakai beberapa panel pengaturan */
 .ubtn {
     display: inline-flex;
     align-items: center;
@@ -287,33 +161,6 @@ main.set-page {
 .ubtn:disabled {
     opacity: 0.6;
     cursor: default;
-}
-
-.ua-actions {
-    display: flex;
-    gap: 2px;
-    margin-left: 4px;
-}
-
-.icb {
-    display: grid;
-    place-items: center;
-    width: 30px;
-    height: 30px;
-    border: 1px solid transparent;
-    border-radius: 6px;
-    background: transparent;
-    color: var(--mute);
-}
-
-.icb:hover {
-    background: var(--hov);
-    color: var(--fg);
-}
-
-.icb.danger:hover {
-    color: #cf222e;
-    background: #ffebe9;
 }
 
 .ufm {
@@ -392,197 +239,7 @@ main.set-page {
     color: #cf222e;
 }
 
-.us {
-    display: grid;
-    gap: 12px;
-    padding: 12px;
-    background: var(--bg2);
-}
-
-.uc {
-    border: 1px solid var(--bd);
-    border-radius: 8px;
-    background: var(--bg);
-    overflow: hidden;
-}
-
-.uh {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 14px 16px;
-}
-
-.ua {
-    flex: none;
-    display: grid;
-    place-items: center;
-    width: 38px;
-    height: 38px;
-    border-radius: 50%;
-    background: var(--hov);
-    color: var(--blue);
-    font-weight: 700;
-}
-
-.ui {
-    flex: 1;
-    min-width: 0;
-}
-
-.ui b {
-    display: block;
-    font-size: 14px;
-}
-
-.ui small {
-    display: block;
-    color: var(--mute);
-    font-size: 12.5px;
-}
-
-.ub {
-    flex: none;
-    padding: 2px 10px;
-    border: 1px solid var(--bd);
-    border-radius: 999px;
-    background: var(--bg2);
-    font-size: 12px;
-    font-weight: 600;
-    text-transform: capitalize;
-}
-
-.ub.admin {
-    color: #8250df;
-    border-color: #d8c4f5;
-    background: #f6f0ff;
-}
-
-.ub.karyawan {
-    color: var(--blue);
-    border-color: #b6d4f5;
-    background: #eef6ff;
-}
-
-.un {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin: 0;
-    padding: 12px 16px;
-    border-top: 1px solid var(--bd);
-    color: var(--mute);
-    font-size: 13px;
-}
-
-.un svg {
-    color: var(--bar);
-}
-
-.ud {
-    border-top: 1px solid var(--bd);
-}
-
-.ud summary {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 12px 16px;
-    cursor: pointer;
-    font-weight: 600;
-    list-style: none;
-}
-
-.ud summary::-webkit-details-marker {
-    display: none;
-}
-
-.ud summary:hover {
-    background: var(--bg2);
-}
-
-.ud summary::after {
-    content: "";
-    width: 8px;
-    height: 8px;
-    margin-left: auto;
-    border-right: 1.6px solid var(--mute);
-    border-bottom: 1.6px solid var(--mute);
-    transform: rotate(45deg);
-    transition: transform 0.2s;
-}
-
-.ud[open] summary::after {
-    transform: rotate(-135deg);
-}
-
-.cnt {
-    color: var(--mute);
-    font-size: 12.5px;
-    font-weight: 500;
-}
-
-.ug {
-    border-top: 1px solid var(--bd);
-}
-
-.ugh {
-    padding: 10px 16px 4px;
-    color: var(--mute);
-    font-size: 12px;
-    font-weight: 700;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-}
-
-.ugs {
-    padding: 8px 16px 2px;
-    font-size: 13px;
-    font-weight: 600;
-}
-
-.uf {
-    padding: 12px 16px;
-    border-top: 1px solid var(--bd);
-    background: var(--bg2);
-}
-
-.rst {
-    padding: 7px 12px;
-    border: 1px solid var(--bd);
-    border-radius: 6px;
-    background: var(--bg);
-    font-size: 13px;
-    font-weight: 600;
-}
-
-.rst:hover {
-    background: var(--hov);
-}
-
-.rst:disabled {
-    opacity: 0.6;
-    cursor: default;
-}
-
 @media (prefers-color-scheme: dark) {
-    .ub.admin {
-        color: #d2a8ff;
-        border-color: #553098;
-        background: #271c3a;
-    }
-
-    .ub.karyawan {
-        color: #79c0ff;
-        border-color: #1f4b7a;
-        background: #0d2236;
-    }
-
-    .icb.danger:hover {
-        color: #ff7b72;
-        background: #3d1d1f;
-    }
-
     .ustat.error {
         border-bottom-color: #6e2b2b;
         background: #3d1d1f;
@@ -613,13 +270,5 @@ main.set-page {
 
     .ufm-g {
         grid-template-columns: 1fr;
-    }
-
-    .uh {
-        flex-wrap: wrap;
-    }
-
-    .ua-actions {
-        margin-left: auto;
     }
 }

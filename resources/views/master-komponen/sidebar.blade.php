@@ -5,15 +5,14 @@
     $current = $active;
 
     if (! $current && request()->routeIs('pengaturan')) {
-        $current = 'Pengaturan';
+        $current = 'pengaturan';
     }
 
     if (! $current && request()->routeIs('module')) {
-        $module = \App\Support\Modules::find((string) request()->route('module'));
-        $current = $module['label'] ?? null;
+        $current = (string) request()->route('module');
     }
 
-    $current = $current ?: 'Dashboard';
+    $current = $current ?: 'dashboard';
 @endphp
 
 <nav id="nav" aria-label="Menu utama">
@@ -33,9 +32,9 @@
                     $href = $hasChildren
                         ? '#'
                         : (isset($item['route']) ? route($item['route']) : (isset($item['slug']) ? route('module', $item['slug']) : '#'));
-                    $isActive = $current === $item['label'];
+                    $isActive = $current === ($item['slug'] ?? null);
                     $childActive = $hasChildren && collect($item['children'])->contains(
-                        fn ($child) => $current === $child['label']
+                        fn ($child) => $current === ($child['slug'] ?? null)
                     );
                 @endphp
 
@@ -53,7 +52,7 @@
                             <ul>
                                 @foreach ($item['children'] as $child)
                                     @php
-                                        $childIsActive = $current === $child['label'];
+                                        $childIsActive = $current === ($child['slug'] ?? null);
                                     @endphp
                                     <li class="{{ $childIsActive ? 'act' : '' }}">
                                         <a href="{{ route('module', $child['slug']) }}" wire:navigate @if ($childIsActive) aria-current="page" @endif>

@@ -37,7 +37,6 @@ class User extends Authenticatable
         'profil-kelola-file',
         'saran',
         'tanda-tangan',
-        'ubah-password',
         'pengaturan',
     ];
 
