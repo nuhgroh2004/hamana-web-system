@@ -195,6 +195,7 @@ function initDataPegawai() {
                 (ROUTES[it[0]] || '#') +
                 '?nik=' +
                 encodeURIComponent(nik) +
+                '&from=data-pegawai' +
                 '" data-aksi="' +
                 it[0] +
                 '" data-nik="' +

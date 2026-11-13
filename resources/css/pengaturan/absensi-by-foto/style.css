@@ -1,8 +1,9 @@
 /*
  * Sakelar (toggle) dipakai bersama oleh panel Absensi by Foto
  * dan daftar akses pada panel Hak Akses Admin.
+ * Dibatasi pada halaman Pengaturan agar tidak bocor ke modul lain.
  */
-.tr {
+#set-page .tr {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -12,15 +13,15 @@
     cursor: pointer;
 }
 
-.tr:hover {
+#set-page .tr:hover {
     background: var(--bg2);
 }
 
-.tr input {
+#set-page .tr input {
     display: none;
 }
 
-.tk {
+#set-page .tk {
     flex: none;
     width: 40px;
     height: 24px;
@@ -31,7 +32,7 @@
     transition: background 0.2s, border-color 0.2s;
 }
 
-.tk::after {
+#set-page .tk::after {
     content: "";
     position: absolute;
     top: 2px;
@@ -43,16 +44,16 @@
     transition: transform 0.2s, background 0.2s;
 }
 
-.tr input:checked + .tk {
+#set-page .tr input:checked + .tk {
     background: var(--green);
     border-color: var(--green);
 }
 
-.tr input:disabled + .tk {
+#set-page .tr input:disabled + .tk {
     opacity: 0.65;
 }
 
-.tr input:checked + .tk::after {
+#set-page .tr input:checked + .tk::after {
     transform: translateX(16px);
     background: #fff;
 }

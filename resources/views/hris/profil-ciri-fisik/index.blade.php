@@ -1,5 +1,6 @@
 <div id="profil-ciri-fisik">
     <div class="pg">
+        <x-master-komponen::back />
         <div class="hdr">
             <h1>Ubah Ciri Fisik</h1>
             <button type="button" class="btn" id="edit">

@@ -1,0 +1,716 @@
+#saran-masuk {
+    --err: #cf222e;
+    --ok: #1a7f37;
+}
+
+@media (prefers-color-scheme: dark) {
+    #saran-masuk {
+        --err: #ff7b72;
+        --ok: #3fb950;
+    }
+}
+
+#saran-masuk :is(button, input, select, textarea) {
+    font: inherit;
+    color: inherit;
+}
+
+#saran-masuk [hidden] {
+    display: none !important;
+}
+
+#saran-masuk .pg {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 0 8px;
+}
+
+#saran-masuk h1 {
+    margin: 0 0 4px;
+    padding: 0 0 12px;
+    font-size: 28px;
+    font-weight: 400;
+    line-height: 1.25;
+    border-bottom: 1px solid var(--bd);
+}
+
+#saran-masuk .ds {
+    margin: 12px 0 16px;
+    color: var(--mute);
+}
+
+#saran-masuk .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    height: 34px;
+    min-width: 84px;
+    padding: 0 16px;
+    border: 1px solid var(--bd);
+    border-radius: 6px;
+    background: var(--bg2);
+    font-weight: 600;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: background 0.15s, filter 0.15s, transform 0.1s;
+}
+
+#saran-masuk .btn:hover {
+    background: var(--hov);
+}
+
+#saran-masuk .btn:active {
+    transform: scale(0.97);
+}
+
+#saran-masuk .btn:focus-visible {
+    outline: 2px solid var(--blue);
+    outline-offset: 2px;
+}
+
+#saran-masuk .btn.go {
+    background: var(--green);
+    border-color: var(--green);
+    color: #fff;
+}
+
+#saran-masuk .btn.go:hover {
+    filter: brightness(1.1);
+    background: var(--green);
+}
+
+#saran-masuk .btn.dgb {
+    background: var(--err);
+    border-color: var(--err);
+    color: #fff;
+}
+
+#saran-masuk .btn.dgb:hover {
+    filter: brightness(1.1);
+    background: var(--err);
+}
+
+#saran-masuk .box {
+    border: 1px solid var(--bd);
+    border-radius: 6px;
+    overflow: hidden;
+    background: var(--bg);
+}
+
+#saran-masuk .tw {
+    overflow-x: auto;
+}
+
+#saran-masuk table {
+    width: 100%;
+    min-width: 760px;
+    border-collapse: collapse;
+}
+
+#saran-masuk th {
+    padding: 10px 14px;
+    background: var(--bg2);
+    border-bottom: 1px solid var(--bd);
+    text-align: left;
+    font-size: 13px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+#saran-masuk td {
+    padding: 10px 14px;
+    border-top: 1px solid var(--bd);
+    vertical-align: middle;
+}
+
+#saran-masuk tbody tr:first-child td {
+    border-top: 0;
+}
+
+#saran-masuk tbody tr {
+    cursor: pointer;
+}
+
+#saran-masuk tbody tr:hover td {
+    background: var(--bg2);
+}
+
+#saran-masuk tbody tr:focus-visible {
+    outline: 2px solid var(--blue);
+    outline-offset: -2px;
+}
+
+#saran-masuk .nw {
+    white-space: nowrap;
+}
+
+#saran-masuk .sx {
+    max-width: 440px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+#saran-masuk .at {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+}
+
+#saran-masuk .at svg {
+    width: 18px;
+    height: 18px;
+}
+
+#saran-masuk .at .pdf {
+    color: var(--err);
+}
+
+#saran-masuk .at .img {
+    color: var(--blue);
+}
+
+#saran-masuk .mu {
+    color: var(--mute);
+}
+
+#saran-masuk .empty {
+    padding: 40px 16px;
+    text-align: center;
+    color: var(--mute);
+}
+
+#saran-masuk .ft {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+    padding: 12px 16px;
+    border-top: 1px solid var(--bd);
+    color: var(--mute);
+}
+
+#saran-masuk .pn {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex-wrap: wrap;
+}
+
+#saran-masuk .pn button {
+    min-width: 32px;
+    height: 30px;
+    padding: 0 10px;
+    border: 1px solid transparent;
+    border-radius: 6px;
+    background: transparent;
+    color: var(--fg);
+    cursor: pointer;
+}
+
+#saran-masuk .pn button:hover:not(:disabled):not(.on) {
+    border-color: var(--bd);
+    background: var(--bg2);
+}
+
+#saran-masuk .pn button:disabled {
+    color: var(--mute);
+    cursor: default;
+}
+
+#saran-masuk .pn button.on {
+    border-color: var(--blue);
+    background: var(--blue);
+    color: #fff;
+    font-weight: 600;
+}
+
+#saran-masuk .pn span {
+    padding: 0 4px;
+    color: var(--mute);
+}
+
+/* ---- modal detail ---- */
+#saran-masuk .md-ov {
+    position: fixed;
+    inset: 0;
+    z-index: 60;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background: rgba(1, 4, 9, 0.6);
+    animation: saran-masuk-fade 0.2s ease-out both;
+}
+
+#saran-masuk .md {
+    width: 100%;
+    max-width: 560px;
+    max-height: calc(100dvh - 40px);
+    display: flex;
+    flex-direction: column;
+    background: var(--bg);
+    border: 1px solid var(--bd);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.4);
+    animation: saran-masuk-pop 0.3s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+#saran-masuk .mh {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--bd);
+    background: var(--bg2);
+    font-weight: 600;
+}
+
+#saran-masuk .mx {
+    display: grid;
+    place-items: center;
+    width: 28px;
+    height: 28px;
+    border: 0;
+    border-radius: 6px;
+    background: transparent;
+    cursor: pointer;
+    color: var(--mute);
+}
+
+#saran-masuk .mx:hover {
+    background: var(--hov);
+}
+
+#saran-masuk .mb {
+    padding: 16px;
+    overflow: auto;
+}
+
+#saran-masuk .mf {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    padding: 12px 16px;
+    border-top: 1px solid var(--bd);
+}
+
+#saran-masuk .dl {
+    display: grid;
+    grid-template-columns: 90px 1fr;
+    gap: 8px 12px;
+    margin: 0 0 16px;
+}
+
+#saran-masuk .dl dt {
+    color: var(--mute);
+}
+
+#saran-masuk .dl dd {
+    margin: 0;
+    font-weight: 600;
+}
+
+#saran-masuk .lb {
+    margin: 0 0 6px;
+    font-weight: 600;
+}
+
+#saran-masuk .sb {
+    margin: 0 0 16px;
+    padding: 12px;
+    border: 1px solid var(--bd);
+    border-radius: 6px;
+    background: var(--bg2);
+    white-space: pre-wrap;
+    word-break: break-word;
+    line-height: 1.6;
+}
+
+#saran-masuk .al {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 8px;
+    padding: 8px 12px;
+    border: 1px solid var(--bd);
+    border-radius: 6px;
+    color: var(--fg);
+    text-decoration: none;
+    transition: background 0.15s;
+}
+
+#saran-masuk .al:hover {
+    background: var(--bg2);
+}
+
+#saran-masuk .al svg {
+    width: 20px;
+    height: 20px;
+}
+
+#saran-masuk .al .pdf {
+    color: var(--err);
+}
+
+#saran-masuk .al .img {
+    color: var(--blue);
+}
+
+#saran-masuk .al .n {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-weight: 600;
+}
+
+#saran-masuk .al .s {
+    color: var(--mute);
+    font-size: 12.5px;
+}
+
+/* ---- alert ---- */
+#saran-masuk .ov2 {
+    position: fixed;
+    inset: 0;
+    z-index: 90;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background: rgba(1, 4, 9, 0.55);
+    -webkit-backdrop-filter: blur(5px);
+    backdrop-filter: blur(5px);
+    animation: saran-masuk-fade 0.22s ease-out both;
+}
+
+#saran-masuk .ov2.out {
+    animation: saran-masuk-fadeo 0.17s ease-in forwards;
+}
+
+#saran-masuk .dlg {
+    position: relative;
+    width: 100%;
+    max-width: 400px;
+    padding: 32px 24px 22px;
+    text-align: center;
+    background: var(--bg);
+    border: 1px solid var(--bd);
+    border-radius: 12px;
+    box-shadow: 0 24px 64px rgba(1, 4, 9, 0.4);
+    will-change: transform, opacity;
+    animation: saran-masuk-pop 0.38s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+#saran-masuk .dlg.shake {
+    animation: saran-masuk-pop 0.38s cubic-bezier(0.22, 1, 0.36, 1) both, saran-masuk-shake 0.5s 0.3s ease-in-out both;
+}
+
+#saran-masuk .ov2.out .dlg {
+    animation: saran-masuk-outd 0.17s ease-in forwards;
+}
+
+#saran-masuk .icw {
+    position: relative;
+    width: 84px;
+    height: 84px;
+    margin: 0 auto 18px;
+}
+
+#saran-masuk .icw::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border: 2px solid currentColor;
+    border-radius: 50%;
+    opacity: 0;
+    animation: saran-masuk-ripple 0.85s 0.32s cubic-bezier(0.2, 0.6, 0.3, 1) both;
+}
+
+#saran-masuk .icw.ok {
+    color: var(--ok);
+}
+
+#saran-masuk .icw.er {
+    color: var(--err);
+}
+
+#saran-masuk .icw.q {
+    color: var(--blue);
+}
+
+#saran-masuk .ic {
+    position: relative;
+    width: 84px;
+    height: 84px;
+    overflow: visible;
+}
+
+#saran-masuk .ic * {
+    fill: none;
+    stroke: currentColor;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+#saran-masuk .ic .bg {
+    fill: currentColor;
+    stroke: none;
+    opacity: 0.12;
+    transform-origin: 42px 42px;
+    animation: saran-masuk-grow 0.4s 0.04s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+#saran-masuk .ic .rg {
+    stroke-width: 4;
+    stroke-dasharray: 240;
+    stroke-dashoffset: 240;
+    transform: rotate(-90deg);
+    transform-origin: 42px 42px;
+    animation: saran-masuk-draw 0.5s 0.06s cubic-bezier(0.45, 0, 0.2, 1) forwards;
+}
+
+#saran-masuk .ic .ck {
+    stroke-width: 5;
+    stroke-dasharray: 50;
+    stroke-dashoffset: 50;
+    animation: saran-masuk-draw 0.3s 0.38s cubic-bezier(0.45, 0, 0.2, 1) forwards;
+}
+
+#saran-masuk .ic .x1 {
+    stroke-width: 5;
+    stroke-dasharray: 36;
+    stroke-dashoffset: 36;
+    animation: saran-masuk-draw 0.22s 0.38s cubic-bezier(0.45, 0, 0.2, 1) forwards;
+}
+
+#saran-masuk .ic .x2 {
+    stroke-width: 5;
+    stroke-dasharray: 36;
+    stroke-dashoffset: 36;
+    animation: saran-masuk-draw 0.22s 0.5s cubic-bezier(0.45, 0, 0.2, 1) forwards;
+}
+
+#saran-masuk .ic .tri {
+    stroke-width: 4;
+    stroke-dasharray: 200;
+    stroke-dashoffset: 200;
+    animation: saran-masuk-draw 0.5s 0.06s cubic-bezier(0.45, 0, 0.2, 1) forwards;
+}
+
+#saran-masuk .ic .qm {
+    stroke-width: 5;
+    opacity: 0;
+    animation: saran-masuk-fade 0.25s 0.3s ease-out both;
+}
+
+#saran-masuk .icw.q .ic {
+    animation: saran-masuk-wob 0.45s 0.04s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+#saran-masuk .t {
+    margin: 0 0 6px;
+    font-size: 20px;
+    font-weight: 600;
+    line-height: 1.3;
+    animation: saran-masuk-up 0.4s 0.14s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+#saran-masuk .m {
+    margin: 0 0 22px;
+    color: var(--mute);
+    animation: saran-masuk-up 0.4s 0.19s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+#saran-masuk .f {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    animation: saran-masuk-up 0.4s 0.24s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+#saran-masuk .bar {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    height: 3px;
+    width: 100%;
+    background: var(--ok);
+    opacity: 0.8;
+    border-radius: 0 0 0 12px;
+    transform-origin: left;
+    animation: saran-masuk-bar var(--ms) linear both;
+}
+
+#saran-masuk .dlg.hold .bar {
+    animation-play-state: paused;
+}
+
+#saran-masuk .cf {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: var(--s);
+    height: var(--s);
+    background: var(--c);
+    border-radius: var(--rd);
+    opacity: 0;
+    pointer-events: none;
+    will-change: transform, opacity;
+    animation: saran-masuk-burst 1.1s var(--d) cubic-bezier(0.1, 0.7, 0.25, 1) both;
+}
+
+@keyframes saran-masuk-fade {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes saran-masuk-fadeo {
+    to {
+        opacity: 0;
+    }
+}
+
+@keyframes saran-masuk-pop {
+    from {
+        opacity: 0;
+        transform: translate3d(0, 14px, 0) scale(0.95);
+    }
+
+    to {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+@keyframes saran-masuk-outd {
+    to {
+        opacity: 0;
+        transform: translate3d(0, 4px, 0) scale(0.97);
+    }
+}
+
+@keyframes saran-masuk-draw {
+    to {
+        stroke-dashoffset: 0;
+    }
+}
+
+@keyframes saran-masuk-grow {
+    from {
+        transform: scale(0.5);
+        opacity: 0;
+    }
+
+    to {
+        transform: scale(1);
+        opacity: 0.12;
+    }
+}
+
+@keyframes saran-masuk-ripple {
+    from {
+        opacity: 0.35;
+        transform: scale(1);
+    }
+
+    to {
+        opacity: 0;
+        transform: scale(1.5);
+    }
+}
+
+@keyframes saran-masuk-up {
+    from {
+        opacity: 0;
+        transform: translate3d(0, 6px, 0);
+    }
+
+    to {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+@keyframes saran-masuk-shake {
+    0%,
+    100% {
+        translate: 0;
+    }
+
+    20% {
+        translate: -6px;
+    }
+
+    40% {
+        translate: 5px;
+    }
+
+    60% {
+        translate: -3px;
+    }
+
+    80% {
+        translate: 1.5px;
+    }
+}
+
+@keyframes saran-masuk-wob {
+    from {
+        transform: scale(0.7) rotate(-10deg);
+        opacity: 0;
+    }
+
+    to {
+        transform: none;
+        opacity: 1;
+    }
+}
+
+@keyframes saran-masuk-bar {
+    to {
+        transform: scaleX(0);
+    }
+}
+
+@keyframes saran-masuk-burst {
+    0% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.3);
+    }
+
+    8% {
+        opacity: 1;
+    }
+
+    60% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0;
+        transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy) + 55px)) rotate(var(--r)) scale(1);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    #saran-masuk * {
+        animation-duration: 0.01ms !important;
+        animation-delay: 0s !important;
+    }
+
+    #saran-masuk .cf {
+        display: none;
+    }
+}

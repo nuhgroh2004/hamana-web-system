@@ -329,6 +329,32 @@ main {
     margin: 0 auto;
 }
 
+/* Tombol kembali ke modul asal (mis. dari daftar Data Pegawai). */
+.back {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    height: 32px;
+    margin-bottom: 12px;
+    padding: 0 12px;
+    border: 1px solid var(--bd);
+    border-radius: 6px;
+    background: var(--bg);
+    color: var(--fg);
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: background 0.15s, border-color 0.15s;
+}
+
+.back:hover {
+    background: var(--hov);
+}
+
+.back .i {
+    color: var(--mute);
+}
+
 @media (max-width: 900px) {
     nav {
         position: fixed;

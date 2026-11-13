@@ -4,7 +4,7 @@
         'pendidikan' => route('module', 'profil-riwayat-pendidikan'),
         'keluarga' => route('module', 'profil-anggota-keluarga'),
         'fisik' => route('module', 'profil-ciri-fisik'),
-        'file' => route('module', 'dokumen-pegawai'),
+        'file' => route('module', 'profil-kelola-file'),
     ];
 @endphp
 

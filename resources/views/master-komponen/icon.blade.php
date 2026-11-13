@@ -31,6 +31,7 @@
         'info' => '<circle cx="8" cy="8" r="6.2"/><path d="M8 7.2v4M8 5v.1"/>',
         'warning' => '<path d="M8 1.8l6.2 11.4H1.8z"/><path d="M8 6v3.5M8 11.4v.1"/>',
         'logout' => '<path d="M6 2H2.5v12H6M9 11l3-3-3-3M12 8H5.5"/>',
+        'back' => '<path d="M13 8H3M7 4L3 8l4 4"/>',
         'plus' => '<path d="M8 3v10M3 8h10"/>',
         'trash' => '<path d="M2.5 4h11M6 4V2.5h4V4M4 4l.7 10h6.6L12 4M6.5 7v4M9.5 7v4"/>',
         'close' => '<path d="M4 4l8 8M12 4l-8 8"/>',

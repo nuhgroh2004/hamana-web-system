@@ -1,5 +1,6 @@
 <div id="profil-kelola-file">
     <div class="pg">
+        <x-master-komponen::back />
         <h1>Kelola Dokumen Pegawai</h1>
         <p class="ds">Unggah dan kelola dokumen pegawai Anda.</p>
         <div class="note">

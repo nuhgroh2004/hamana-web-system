@@ -1,5 +1,6 @@
 <div id="profil-riwayat-pendidikan">
     <div class="pg">
+        <x-master-komponen::back />
         <h1>Riwayat Pendidikan</h1>
         <p class="ds">Mengelola Riwayat Pendidikan Saya</p>
         <div class="note">
@@ -9,7 +10,7 @@
 
         <div class="box">
             <div class="tw">
-                <table>
+                <table id="tbl">
                     <thead>
                         <tr>
                             <th class="c1">#</th>
@@ -29,7 +30,13 @@
             </div>
         </div>
 
-        <div class="act"><button type="button" class="btn go" id="save">Simpan Pendidikan</button></div>
+        <div class="act">
+            <button type="button" class="btn" id="edit">
+                <svg class="i" viewBox="0 0 16 16"><path d="M2 14l1-3.5 8-8 2.5 2.5-8 8zM9.5 4l2.5 2.5"/></svg>
+                Edit
+            </button>
+            <button type="button" class="btn go" id="save" hidden>Simpan Pendidikan</button>
+        </div>
     </div>
 
     <div class="toast" id="toast" role="status" aria-live="polite"></div>

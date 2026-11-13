@@ -37,7 +37,11 @@ function initProfilRiwayatPendidikan() {
         };
     });
 
-    var tb = document.getElementById('tb'),
+    var editing = false,
+        tb = document.getElementById('tb'),
+        tbl = document.getElementById('tbl'),
+        editBtn = document.getElementById('edit'),
+        saveBtn = document.getElementById('save'),
         toast = document.getElementById('toast');
     var TRASH = '<svg class="i" viewBox="0 0 16 16"><path d="M3 4.5h10M6.5 4.5V3h3v1.5M4.5 4.5l.5 8.5h6l.5-8.5M7 7v4M9 7v4"/></svg>';
     var PLUS = '<svg class="i" viewBox="0 0 16 16"><path d="M8 3v10M3 8h10"/></svg>';
@@ -49,11 +53,15 @@ function initProfilRiwayatPendidikan() {
     function render() {
         var total = 0;
 
+        tbl.classList.toggle('ed', editing);
+
         tb.innerHTML = G.map(function (g, gi) {
             total += g.items.length;
 
             return g.items
                 .map(function (it, ii) {
+                    var off = !editing || !it.on ? ' disabled' : '';
+
                     function inp(k) {
                         return (
                             '<td><input class="fld" data-g="' +
@@ -65,8 +73,10 @@ function initProfilRiwayatPendidikan() {
                             '" value="' +
                             esc(it[k]) +
                             '"' +
-                            (it.on ? '' : ' disabled') +
-                            ' autocomplete="off"></td>'
+                            off +
+                            ' autocomplete="off"' +
+                            (editing ? '' : ' placeholder="-"') +
+                            '></td>'
                         );
                     }
 
@@ -82,38 +92,31 @@ function initProfilRiwayatPendidikan() {
                         ii +
                         '" data-k="on"' +
                         (it.on ? ' checked' : '') +
+                        (editing ? '' : ' disabled') +
                         ' aria-label="Aktifkan ' +
                         g.j +
-                        ' ' +
-                        (ii + 1) +
                         '"></td>' +
                         '<td class="c2">' +
                         g.j +
-                        ' ' +
-                        (ii + 1) +
                         '</td>' +
                         inp('kota') +
                         inp('jurusan') +
                         inp('tahun') +
                         '<td class="c6">' +
-                        (g.items.length > 1
+                        (editing && g.items.length > 1
                             ? '<button type="button" class="del" data-del="' +
                               gi +
                               ':' +
                               ii +
                               '" title="Hapus ' +
                               g.j +
-                              ' ' +
-                              (ii + 1) +
                               '" aria-label="Hapus ' +
                               g.j +
-                              ' ' +
-                              (ii + 1) +
                               '">' +
                               TRASH +
                               '</button>'
                             : '') +
-                        (last
+                        (editing && last
                             ? '<button type="button" class="btn sm" data-add="' +
                               gi +
                               '" title="Tambah sekolah di jenjang ' +
@@ -129,6 +132,9 @@ function initProfilRiwayatPendidikan() {
         }).join('');
 
         document.getElementById('cnt').textContent = 'Showing 1 to ' + total + ' of ' + total + ' entries';
+
+        editBtn.hidden = editing;
+        saveBtn.hidden = !editing;
     }
 
     tb.addEventListener('input', function (e) {
@@ -181,6 +187,17 @@ function initProfilRiwayatPendidikan() {
         }
     });
 
+    editBtn.onclick = function () {
+        editing = true;
+        render();
+
+        var f = tb.querySelector('.fld:not(:disabled)');
+
+        if (f) {
+            f.focus();
+        }
+    };
+
     document.getElementById('save').onclick = function () {
         G.forEach(function (g) {
             g.items.forEach(function (it) {
@@ -212,6 +229,7 @@ function initProfilRiwayatPendidikan() {
             // abaikan bila penyimpanan lokal penuh
         }
 
+        editing = false;
         render();
         document.dispatchEvent(new CustomEvent('pendidikan-save', { detail: out }));
         toast.textContent = 'Riwayat pendidikan berhasil disimpan.';

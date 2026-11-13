@@ -24,11 +24,21 @@ class ModulePage extends Component
         $this->slug = $slug;
         $this->title = $data['label'];
         $this->active = $slug;
+
+        // Halaman ini bisa dibuka dari modul lain (mis. daftar Data Pegawai).
+        // Sidebar tetap menyorot modul asal agar pengguna tidak kehilangan konteks.
+        $from = (string) request()->query('from', '');
+
+        if ($from !== '' && $from !== $slug && Modules::find($from) && auth()->user()?->canAccess($from)) {
+            $this->active = $from;
+        }
     }
 
     public function render()
     {
-        $view = 'hris.'.$this->slug.'.index';
+        // Sebagian modul memakai folder view yang berbeda dari slug-nya.
+        $data = Modules::find($this->slug);
+        $view = 'hris.'.($data['view'] ?? $this->slug).'.index';
 
         return view(view()->exists($view) ? $view : 'livewire.module-page')->layout('components.layouts.app', [
             'title' => $this->title,

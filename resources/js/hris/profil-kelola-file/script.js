@@ -62,6 +62,7 @@ function initProfilKelolaFile() {
 
     var docs = [],
         urls = {},
+        pending = null,
         toast = $('toast'),
         ov = $('ov');
 
@@ -187,15 +188,17 @@ function initProfilKelolaFile() {
     function row(d) {
         var th = isPdf(d) ? 'PDF' : '<img alt="" src="' + urlOf(d) + '">';
         var ty = isPdf(d) ? 'PDF' : /png$/i.test(d.name) ? 'PNG' : 'JPG';
+        var judul = d.title ? String(d.title).trim() : '';
+        // Judul opsional: bila kosong, nama file yang ditampilkan.
+        var judulSel = '<b title="' + esc(judul || d.name) + '">' + esc(judul || d.name) + '</b>';
 
         return (
             '<div class="fr"><div class="th">' +
             th +
-            '</div><div class="fi"><b title="' +
-            esc(d.name) +
-            '">' +
-            esc(d.name) +
-            '</b><small>' +
+            '</div><div class="fi">' +
+            judulSel +
+            '<small>' +
+            (judul ? esc(d.name) + ' · ' : '') +
             ty +
             ' · ' +
             size(d.size) +
@@ -255,6 +258,7 @@ function initProfilKelolaFile() {
             ' file</span></div>' +
             '<div class="bd2 one"><div>' +
             dz('LAIN', true) +
+            '<p class="hint">Setiap file bisa diberi judul saat diunggah. Judul bersifat opsional.</p>' +
             '<p class="er" id="ef-LAIN" role="alert"></p><div class="lst">' +
             ofCat('LAIN').map(row).join('') +
             '</div></div></div></section>';
@@ -274,6 +278,27 @@ function initProfilKelolaFile() {
     }
 
     // ---- unggah ----
+    function check(files) {
+        var errs = [],
+            ok = [];
+
+        Array.prototype.forEach.call(files, function (f) {
+            if (!EXT.test(f.name)) {
+                errs.push(f.name + ': format tidak didukung. Gunakan PDF, JPG, atau PNG.');
+            } else if (f.size > MAX) {
+                errs.push(f.name + ': ukuran ' + size(f.size) + ' melebihi batas 10 MB.');
+            } else {
+                ok.push(f);
+            }
+        });
+
+        return { errs: errs, ok: ok };
+    }
+
+    function fileType(f) {
+        return PDF.test(f.name) ? 'PDF' : /png$/i.test(f.name) ? 'PNG' : 'JPG';
+    }
+
     function handle(cid, files) {
         var c = cat(cid);
 
@@ -288,28 +313,78 @@ function initProfilKelolaFile() {
             showNumErr(c, '');
         }
 
-        var errs = [],
-            ok = [];
-
-        Array.prototype.forEach.call(files, function (f) {
-            if (!EXT.test(f.name)) {
-                errs.push(f.name + ': format tidak didukung. Gunakan PDF, JPG, atau PNG.');
-            } else if (f.size > MAX) {
-                errs.push(f.name + ': ukuran ' + size(f.size) + ' melebihi batas 10 MB.');
-            } else {
-                ok.push(f);
-            }
-        });
+        var v = check(files),
+            errs = v.errs,
+            ok = v.ok;
 
         if (c) {
             ok = ok.slice(0, 1);
         }
 
-        $('ef-' + cid).innerHTML = errs.map(esc).join('<br>');
+        var box = $('ef-' + cid);
+
+        if (box) {
+            box.innerHTML = errs.map(esc).join('<br>');
+        }
 
         if (!ok.length) {
             return;
         }
+
+        // Dokumen Lainnya: minta judul (opsional) sebelum disimpan.
+        if (cid === 'LAIN') {
+            askTitles(ok, errs);
+            return;
+        }
+
+        save(cid, ok, errs, null);
+    }
+
+    // Modal pemberian judul untuk tiap file yang akan diunggah.
+    function askTitles(files, errs) {
+        pending = { files: files, errs: errs };
+
+        var body =
+            '<p class="tlh">Beri judul untuk setiap dokumen. Judul bersifat opsional, boleh dikosongkan.</p>' +
+            '<div class="tlst2">' +
+            files
+                .map(function (f, i) {
+                    return (
+                        '<div class="trow"><div class="tn"><b title="' +
+                        esc(f.name) +
+                        '">' +
+                        esc(f.name) +
+                        '</b><small>' +
+                        fileType(f) +
+                        ' · ' +
+                        size(f.size) +
+                        '</small></div><input class="fld tt" data-i="' +
+                        i +
+                        '" maxlength="120" autocomplete="off" placeholder="Judul dokumen (opsional)" aria-label="Judul untuk ' +
+                        esc(f.name) +
+                        '"></div>'
+                    );
+                })
+                .join('') +
+            '</div>' +
+            (errs.length ? '<p class="er" role="alert">' + errs.map(esc).join('<br>') + '</p>' : '');
+
+        open(
+            'tit',
+            'Judul Dokumen',
+            body,
+            '<button type="button" class="btn" data-act="close">Batal</button><button type="button" class="btn go" data-act="save-title">Unggah</button>',
+        );
+
+        var first = ov.querySelector('.tt');
+
+        if (first) {
+            first.focus();
+        }
+    }
+
+    function save(cid, ok, errs, titles) {
+        var c = cat(cid);
 
         if (c) {
             ofCat(cid).forEach(function (d) {
@@ -317,11 +392,13 @@ function initProfilKelolaFile() {
             });
         }
 
-        ok.forEach(function (f) {
+        ok.forEach(function (f, i) {
+            var t = titles ? String(titles[i] || '').trim() : '';
             var d = {
                 id: Date.now().toString(36) + Math.random().toString(36).slice(2, 7),
                 cat: cid,
                 name: f.name,
+                title: t || null,
                 type: f.type || (PDF.test(f.name) ? 'application/pdf' : 'image/' + (/png$/i.test(f.name) ? 'png' : 'jpeg')),
                 size: f.size,
                 date: Date.now(),
@@ -332,11 +409,17 @@ function initProfilKelolaFile() {
             tx('readwrite', function (s) {
                 return s.put(d);
             });
-            emit('dokumen-upload', { kategori: cid, nomor: c ? nomor[cid].trim() : null, file: f });
+            emit('dokumen-upload', { kategori: cid, nomor: c ? nomor[cid].trim() : null, judul: d.title, file: f });
         });
 
         render();
-        $('ef-' + cid).innerHTML = errs.map(esc).join('<br>');
+
+        var box = $('ef-' + cid);
+
+        if (box) {
+            box.innerHTML = errs.map(esc).join('<br>');
+        }
+
         say(c ? 'Dokumen ' + c.title + ' berhasil diunggah.' : ok.length + ' dokumen berhasil diunggah.');
     }
 
@@ -378,6 +461,7 @@ function initProfilKelolaFile() {
     function close() {
         ov.hidden = true;
         ov.innerHTML = '';
+        pending = null;
         document.body.style.overflow = '';
     }
 
@@ -444,6 +528,21 @@ function initProfilKelolaFile() {
             view(d);
         } else if (a === 'del' && d) {
             confirmDel(d);
+        } else if (a === 'save-title') {
+            var titles = {},
+                p = pending;
+
+            if (!p) {
+                close();
+                return;
+            }
+
+            Array.prototype.forEach.call(ov.querySelectorAll('.tt'), function (el) {
+                titles[el.dataset.i] = el.value;
+            });
+
+            close();
+            save('LAIN', p.files, p.errs, titles);
         } else if (a === 'ok' && d) {
             remove(d);
             close();

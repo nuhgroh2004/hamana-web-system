@@ -104,6 +104,10 @@
     text-align: right;
 }
 
+#profil-riwayat-pendidikan table:not(.ed) .c6 {
+    display: none;
+}
+
 #profil-riwayat-pendidikan th.c1 {
     text-align: center;
 }
@@ -133,8 +137,15 @@
 }
 
 #profil-riwayat-pendidikan .fld:disabled {
-    background: var(--hov);
-    opacity: 0.6;
+    background: var(--bg);
+    color: var(--fg);
+    -webkit-text-fill-color: var(--fg);
+    opacity: 1;
+}
+
+#profil-riwayat-pendidikan .fld:disabled::placeholder {
+    color: var(--mute);
+    -webkit-text-fill-color: var(--mute);
 }
 
 #profil-riwayat-pendidikan .btn {

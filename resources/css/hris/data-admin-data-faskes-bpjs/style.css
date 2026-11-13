@@ -80,6 +80,14 @@
     flex-wrap: wrap;
 }
 
+/* Baris aksi selalu memakai lebar penuh agar pemisah di atasnya utuh. */
+#data-admin-data-faskes-bpjs .tr {
+    flex: 1 1 100%;
+    justify-content: flex-end;
+    padding-top: 12px;
+    border-top: 1px solid var(--bd);
+}
+
 #data-admin-data-faskes-bpjs .srch {
     position: relative;
     display: block;
@@ -221,23 +229,24 @@
 
 #data-admin-data-faskes-bpjs table {
     width: 100%;
-    min-width: 1180px;
+    min-width: 880px;
     border-collapse: collapse;
 }
 
 #data-admin-data-faskes-bpjs th {
-    padding: 10px 14px;
+    padding: 8px 10px;
     background: var(--bg2);
     border-bottom: 1px solid var(--bd);
     text-align: left;
-    font-size: 13px;
+    font-size: 12.5px;
     font-weight: 600;
     white-space: nowrap;
 }
 
 #data-admin-data-faskes-bpjs td {
-    padding: 10px 14px;
+    padding: 8px 10px;
     border-top: 1px solid var(--bd);
+    font-size: 12.5px;
     vertical-align: top;
 }
 
@@ -250,7 +259,7 @@
 }
 
 #data-admin-data-faskes-bpjs .c1 {
-    width: 90px;
+    width: 84px;
     white-space: nowrap;
 }
 

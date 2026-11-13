@@ -154,7 +154,8 @@ function initProfilAnggotaKeluarga() {
                 .join('');
         }).join('');
 
-        editBtn.disabled = editing;
+        editBtn.hidden = editing;
+        saveBtn.hidden = !editing;
         saveBtn.disabled = !editing;
     }
 

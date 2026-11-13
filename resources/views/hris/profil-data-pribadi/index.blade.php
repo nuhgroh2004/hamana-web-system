@@ -1,5 +1,6 @@
 <div id="profil-data-pribadi">
     <div class="pg">
+        <x-master-komponen::back />
         <div class="top cd">
             <div class="ph">
                 <svg id="av" class="av" viewBox="0 0 5 5" aria-hidden="true"></svg>

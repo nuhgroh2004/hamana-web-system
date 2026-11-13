@@ -1,5 +1,6 @@
 <div id="profil-anggota-keluarga">
     <div class="pg">
+        <x-master-komponen::back />
         <h1>Anggota Keluarga</h1>
         <p class="ds">Mengelola Anggota Keluarga Saya</p>
         <div class="note">
@@ -30,7 +31,7 @@
                 <svg class="i" viewBox="0 0 16 16"><path d="M2 14l1-3.5 8-8 2.5 2.5-8 8zM9.5 4l2.5 2.5"/></svg>
                 Edit
             </button>
-            <button type="button" class="btn go" id="save" disabled>Simpan</button>
+            <button type="button" class="btn go" id="save" hidden disabled>Simpan</button>
         </div>
     </div>
 

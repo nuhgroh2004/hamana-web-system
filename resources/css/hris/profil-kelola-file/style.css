@@ -304,6 +304,47 @@
     display: none;
 }
 
+/* Modal judul dokumen (Dokumen Lainnya) */
+#profil-kelola-file .dlg.tit {
+    max-width: 520px;
+}
+
+#profil-kelola-file .tlh {
+    margin: 0 0 12px;
+    color: var(--mute);
+    font-size: 13px;
+}
+
+#profil-kelola-file .tlst2 {
+    display: grid;
+    gap: 12px;
+}
+
+#profil-kelola-file .trow {
+    display: grid;
+    gap: 8px;
+    padding: 10px 12px;
+    border: 1px solid var(--bd);
+    border-radius: 6px;
+    background: var(--bg2);
+}
+
+#profil-kelola-file .tn b {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+#profil-kelola-file .tn small {
+    color: var(--mute);
+    font-size: 12px;
+}
+
+#profil-kelola-file .trow .fld {
+    background: var(--bg);
+}
+
 #profil-kelola-file .ov2 {
     position: fixed;
     inset: 0;
