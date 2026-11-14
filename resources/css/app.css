@@ -20,6 +20,7 @@
 @import './hris/saran/style.css';
 @import './hris/saran-masuk/style.css';
 @import './hris/tanda-tangan/style.css';
+@import './hris/permohonan-masuk/style.css';
 
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';
