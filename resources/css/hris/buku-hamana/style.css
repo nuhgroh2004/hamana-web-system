@@ -1,0 +1,547 @@
+#buku-hamana {
+    --err: #cf222e;
+    --ok: #1a7f37;
+}
+
+@media (prefers-color-scheme: dark) {
+    #buku-hamana {
+        --err: #ff7b72;
+        --ok: #3fb950;
+    }
+}
+
+#buku-hamana :is(button, input, textarea) {
+    font: inherit;
+    color: inherit;
+}
+
+#buku-hamana [hidden] {
+    display: none !important;
+}
+
+#buku-hamana svg.i {
+    width: 16px;
+    height: 16px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.6;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    flex: none;
+}
+
+#buku-hamana .pg {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 0 8px;
+}
+
+#buku-hamana h1 {
+    margin: 0 0 4px;
+    padding: 0 0 12px;
+    font-size: 28px;
+    font-weight: 400;
+    line-height: 1.25;
+    border-bottom: 1px solid var(--bd);
+}
+
+#buku-hamana .ds {
+    margin: 12px 0 16px;
+    color: var(--mute);
+}
+
+#buku-hamana .row {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+#buku-hamana .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    height: 34px;
+    min-width: 84px;
+    padding: 0 16px;
+    border: 1px solid var(--bd);
+    border-radius: 6px;
+    background: var(--bg2);
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 0.15s, filter 0.15s, transform 0.1s;
+}
+
+#buku-hamana .btn:hover {
+    background: var(--hov);
+}
+
+#buku-hamana .btn:active {
+    transform: scale(0.97);
+}
+
+#buku-hamana .btn:focus-visible {
+    outline: 2px solid var(--blue);
+    outline-offset: 2px;
+}
+
+#buku-hamana .btn.go {
+    background: var(--green);
+    border-color: var(--green);
+    color: #fff;
+}
+
+#buku-hamana .btn.go:hover {
+    filter: brightness(1.1);
+    background: var(--green);
+}
+
+#buku-hamana .btn.dgb {
+    background: var(--err);
+    border-color: var(--err);
+    color: #fff;
+}
+
+#buku-hamana .btn.dgb:hover {
+    filter: brightness(1.1);
+    background: var(--err);
+}
+
+#buku-hamana .fld {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid var(--bd);
+    border-radius: 6px;
+    background: var(--bg);
+    outline: 0;
+    transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+#buku-hamana .fld:focus {
+    border-color: var(--blue);
+    box-shadow: 0 0 0 1px var(--blue);
+}
+
+#buku-hamana .fld.bad {
+    border-color: var(--err);
+    box-shadow: 0 0 0 1px var(--err);
+}
+
+#buku-hamana .er {
+    margin: 6px 0 0;
+    color: var(--err);
+    font-size: 12.5px;
+}
+
+#buku-hamana .er:empty {
+    display: none;
+}
+
+#buku-hamana .hint {
+    margin: 0 0 8px;
+    color: var(--mute);
+    font-size: 12.5px;
+}
+
+#buku-hamana .md-ov {
+    position: fixed;
+    /* Mulai di bawah navbar aplikasi agar kepala modal tidak tertutup. */
+    inset: var(--hh, 0px) 0 0 0;
+    z-index: 60;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background: rgba(1, 4, 9, 0.6);
+    animation: buku-hamana-fade 0.2s ease-out both;
+}
+
+#buku-hamana .md {
+    width: 100%;
+    max-width: 560px;
+    max-height: calc(100dvh - var(--hh, 0px) - 40px);
+    display: flex;
+    flex-direction: column;
+    background: var(--bg);
+    border: 1px solid var(--bd);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.4);
+    animation: buku-hamana-pop 0.3s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+#buku-hamana .mh {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--bd);
+    background: var(--bg2);
+    font-weight: 600;
+}
+
+#buku-hamana .mx {
+    display: grid;
+    place-items: center;
+    width: 28px;
+    height: 28px;
+    border: 0;
+    border-radius: 6px;
+    background: transparent;
+    cursor: pointer;
+    color: var(--mute);
+}
+
+#buku-hamana .mx:hover {
+    background: var(--hov);
+}
+
+#buku-hamana .mb {
+    padding: 16px;
+    overflow: auto;
+}
+
+#buku-hamana .mf {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    padding: 12px 16px;
+    border-top: 1px solid var(--bd);
+}
+
+#buku-hamana .mu {
+    color: var(--mute);
+}
+
+#buku-hamana .btn.sm {
+    height: 28px;
+    min-width: 0;
+    padding: 0 10px;
+    font-size: 12.5px;
+}
+
+#buku-hamana .btn.dg {
+    color: var(--err);
+}
+
+#buku-hamana .btn.dg:hover {
+    background: var(--err);
+    border-color: var(--err);
+    color: #fff;
+}
+
+#buku-hamana .btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+#buku-hamana .tb {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+}
+
+#buku-hamana .cn2 {
+    color: var(--mute);
+}
+
+#buku-hamana .gr {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+}
+
+#buku-hamana .dc {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    border: 1px solid var(--bd);
+    border-radius: 6px;
+    background: var(--bg);
+    transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+#buku-hamana .dc:hover {
+    border-color: color-mix(in srgb, var(--blue) 50%, var(--bd));
+    box-shadow: 0 3px 12px rgba(1, 4, 9, 0.12);
+}
+
+#buku-hamana .th {
+    display: grid;
+    place-items: center;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    border-bottom: 1px solid var(--bd);
+    background: var(--bg2);
+}
+
+#buku-hamana .th img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+#buku-hamana .pi {
+    display: grid;
+    gap: 4px;
+    justify-items: center;
+    color: var(--err);
+    font-size: 12px;
+    font-weight: 600;
+}
+
+#buku-hamana .pi svg {
+    width: 42px;
+    height: 42px;
+    stroke-width: 1.2;
+}
+
+#buku-hamana .bd2 {
+    flex: 1;
+    padding: 12px 16px;
+}
+
+#buku-hamana .jd {
+    margin: 0 0 4px;
+    font-size: 15px;
+    font-weight: 600;
+    overflow-wrap: anywhere;
+}
+
+#buku-hamana .kt {
+    margin: 0 0 8px;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    overflow-wrap: anywhere;
+}
+
+#buku-hamana .mt2 {
+    margin: 0;
+    color: var(--mute);
+    font-size: 12px;
+    overflow-wrap: anywhere;
+}
+
+#buku-hamana .ac {
+    padding: 0 16px 16px;
+}
+
+#buku-hamana .ab {
+    display: flex;
+}
+
+#buku-hamana .ab .btn {
+    flex: 1;
+    min-width: 0;
+    gap: 4px;
+    padding: 0 4px;
+    justify-content: center;
+    border-radius: 0;
+    white-space: nowrap;
+}
+
+#buku-hamana .ab .btn + .btn {
+    margin-left: -1px;
+}
+
+#buku-hamana .ab .btn:first-child {
+    border-radius: 6px 0 0 6px;
+}
+
+#buku-hamana .ab .btn:last-child {
+    border-radius: 0 6px 6px 0;
+}
+
+#buku-hamana .ab .btn:only-child {
+    border-radius: 6px;
+}
+
+#buku-hamana .ab .btn:hover:not(:disabled),
+#buku-hamana .ab .btn:focus-visible {
+    position: relative;
+    z-index: 1;
+}
+
+#buku-hamana .emp2 {
+    padding: 44px 16px;
+    text-align: center;
+    color: var(--mute);
+    border: 1px dashed var(--bd);
+    border-radius: 6px;
+}
+
+#buku-hamana .fg {
+    margin-bottom: 16px;
+}
+
+#buku-hamana .fg > label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: 600;
+}
+
+#buku-hamana .rq {
+    color: var(--err);
+}
+
+#buku-hamana .fw {
+    font-weight: 400;
+}
+
+#buku-hamana textarea.fld {
+    min-height: 100px;
+    resize: vertical;
+    line-height: 1.5;
+}
+
+#buku-hamana .fsel {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+    margin-bottom: 8px;
+    padding: 8px 10px;
+    border: 1px solid var(--bd);
+    border-radius: 6px;
+    background: var(--bg2);
+}
+
+#buku-hamana .fsel svg {
+    width: 18px;
+    height: 18px;
+    color: var(--blue);
+}
+
+#buku-hamana .fsel svg.pdf {
+    color: var(--err);
+}
+
+#buku-hamana .fsel .tx {
+    flex: 1;
+    min-width: 0;
+}
+
+#buku-hamana .fsel .n {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-weight: 600;
+    font-size: 13px;
+}
+
+#buku-hamana .fsel .s {
+    color: var(--mute);
+    font-size: 12px;
+}
+
+#buku-hamana .mh span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+#buku-hamana .md.wd {
+    max-width: 920px;
+}
+
+#buku-hamana .pvi {
+    display: block;
+    max-width: 100%;
+    max-height: 70dvh;
+    margin: 0 auto;
+    border-radius: 6px;
+}
+
+#buku-hamana .pvf {
+    display: block;
+    width: 100%;
+    height: 70dvh;
+    border: 1px solid var(--bd);
+    border-radius: 6px;
+    background: #fff;
+}
+
+#buku-hamana .pva {
+    display: none;
+}
+
+#buku-hamana .pvk {
+    margin: 14px 0 0;
+    overflow-wrap: anywhere;
+}
+
+@media (max-width: 700px) {
+    #buku-hamana h1 {
+        font-size: 22px;
+    }
+
+    #buku-hamana .tb .btn {
+        width: 100%;
+    }
+
+    #buku-hamana .gr {
+        grid-template-columns: 1fr;
+    }
+
+    #buku-hamana .pvf {
+        display: none;
+    }
+
+    #buku-hamana .pva {
+        display: grid;
+        gap: 8px;
+        justify-items: center;
+        padding: 28px 0;
+        color: var(--mute);
+        text-align: center;
+    }
+
+    #buku-hamana .pva svg {
+        width: 44px;
+        height: 44px;
+        color: var(--err);
+    }
+
+    #buku-hamana .pva p {
+        margin: 0;
+    }
+
+    #buku-hamana .mf .btn {
+        flex: 1;
+    }
+}
+
+@keyframes buku-hamana-fade {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes buku-hamana-pop {
+    from {
+        opacity: 0;
+        transform: translate3d(0, 14px, 0) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    #buku-hamana * {
+        animation-duration: 0.01ms !important;
+        animation-delay: 0s !important;
+    }
+}
