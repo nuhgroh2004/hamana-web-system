@@ -6,6 +6,13 @@ return [
             'label' => 'HRIS Sistem',
             'items' => [
                 ['label' => 'Dashboard', 'icon' => 'dash', 'slug' => 'dashboard', 'route' => 'dashboard'],
+                ['label' => 'Profil', 'icon' => 'user', 'children' => [
+                    ['label' => 'Data Pribadi', 'slug' => 'profil-data-pribadi'],
+                    ['label' => 'Riwayat Pendidikan', 'slug' => 'profil-riwayat-pendidikan'],
+                    ['label' => 'Anggota Keluarga', 'slug' => 'profil-anggota-keluarga'],
+                    ['label' => 'Ciri Fisik', 'slug' => 'profil-ciri-fisik'],
+                    ['label' => 'Kelola File', 'slug' => 'profil-kelola-file'],
+                ]],
                 ['label' => 'Permohonan', 'icon' => 'req', 'children' => [
                     ['label' => 'Permohonan Masuk', 'slug' => 'permohonan-masuk'],
                     ['label' => 'Permohonan Saya', 'slug' => 'permohonan-saya'],
@@ -14,13 +21,6 @@ return [
                     ['label' => 'Izin Dinas Dalam Kota', 'slug' => 'izin-dinas-dalam-kota'],
                     ['label' => 'Izin Dinas Luar Kota', 'slug' => 'izin-dinas-luar-kota'],
                     ['label' => 'Form Absensi', 'slug' => 'form-absensi'],
-                ]],
-                ['label' => 'Profil', 'icon' => 'user', 'children' => [
-                    ['label' => 'Data Pribadi', 'slug' => 'profil-data-pribadi'],
-                    ['label' => 'Riwayat Pendidikan', 'slug' => 'profil-riwayat-pendidikan'],
-                    ['label' => 'Anggota Keluarga', 'slug' => 'profil-anggota-keluarga'],
-                    ['label' => 'Ciri Fisik', 'slug' => 'profil-ciri-fisik'],
-                    ['label' => 'Kelola File', 'slug' => 'profil-kelola-file'],
                 ]],
                 ['label' => 'Data Pegawai', 'icon' => 'users', 'slug' => 'data-pegawai'],
                 ['label' => 'Rekrutmen', 'icon' => 'brief', 'children' => [
