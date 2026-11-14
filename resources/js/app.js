@@ -18,3 +18,4 @@ import './hris/saran/script';
 import './hris/saran-masuk/script';
 import './hris/tanda-tangan/script';
 import './hris/permohonan-masuk/script';
+import './hris/permohonan-saya/script';
