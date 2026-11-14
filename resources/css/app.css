@@ -22,6 +22,7 @@
 @import './hris/tanda-tangan/style.css';
 @import './hris/permohonan-masuk/style.css';
 @import './hris/permohonan-saya/style.css';
+@import './hris/input-buku-hamana/style.css';
 
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';
