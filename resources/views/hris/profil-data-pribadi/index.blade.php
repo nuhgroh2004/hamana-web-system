@@ -80,6 +80,14 @@
                             <option>Intern</option>
                         </select>
                     </div>
+                    <div class="f">
+                        <label class="lb" for="status_pegawai">Status Pegawai <span class="rq">*</span></label>
+                        <select class="fld" id="status_pegawai" name="status_pegawai" required>
+                            <option value="">--Pilih--</option>
+                            <option>Aktif</option>
+                            <option>Tidak Aktif</option>
+                        </select>
+                    </div>
                     <div class="f"><label class="lb" for="departemen">Departemen <span class="rq">*</span></label><input class="fld" id="departemen" name="departemen" type="text" required></div>
                     <div class="f"><label class="lb" for="posisi">Posisi <span class="rq">*</span></label><input class="fld" id="posisi" name="posisi" type="text" required></div>
                     <div class="f"><label class="lb" for="tgl_gabung">Tanggal Bergabung <span class="rq">*</span></label><input class="fld" id="tgl_gabung" name="tgl_gabung" type="date" required></div>
