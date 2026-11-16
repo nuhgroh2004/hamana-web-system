@@ -9,7 +9,7 @@ main.set-page {
     padding-right: 32px;
 }
 
-#set-page .set {
+#set-page.set {
     display: flex;
     gap: 32px;
     align-items: flex-start;
@@ -263,7 +263,7 @@ main.set-page {
         padding-right: 16px;
     }
 
-    #set-page .set {
+    #set-page.set {
         flex-direction: column;
         gap: 16px;
         align-items: stretch;
