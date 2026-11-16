@@ -1,27 +1,39 @@
-/* Formulir Permintaan Cuti / Sakit — kertas A4 yang otomatis diskalakan. */
+/*
+ * Gaya halaman Input Cuti dan Sakit.
+ * Semua aturan dibatasi pada #input-cuti-dan-sakit agar tidak bocor ke modul lain.
+ */
 
-#input-cuti-dan-sakit .pg {
-    max-width: 794px;
-    margin: 0 auto;
-    padding: 0 0 8px;
+#input-cuti-dan-sakit {
+    --ok: var(--green);
+    --bad: var(--err);
+    --sel: rgba(9, 105, 218, 0.08);
+    --acsoft: rgba(9, 105, 218, 0.08);
+    --acline: rgba(9, 105, 218, 0.3);
+    --badsoft: rgba(207, 34, 46, 0.08);
+    --badline: rgba(207, 34, 46, 0.35);
+    --oksoft: rgba(31, 136, 61, 0.1);
+    --okline: rgba(31, 136, 61, 0.45);
 }
 
-#input-cuti-dan-sakit .stage {
-    width: 100%;
-    margin-bottom: 12px;
-}
-
-#input-cuti-dan-sakit .fit {
-    margin: 0 auto;
-}
-
-#input-cuti-dan-sakit [hidden] {
-    display: none !important;
+@media (prefers-color-scheme: dark) {
+    #input-cuti-dan-sakit {
+        --sel: rgba(68, 147, 248, 0.14);
+        --acsoft: rgba(68, 147, 248, 0.12);
+        --acline: rgba(68, 147, 248, 0.4);
+        --badsoft: rgba(255, 123, 114, 0.12);
+        --badline: rgba(255, 123, 114, 0.4);
+        --oksoft: rgba(63, 185, 80, 0.12);
+        --okline: rgba(63, 185, 80, 0.4);
+    }
 }
 
 #input-cuti-dan-sakit :is(button, input, select, textarea) {
     font: inherit;
     color: inherit;
+}
+
+#input-cuti-dan-sakit [hidden] {
+    display: none !important;
 }
 
 #input-cuti-dan-sakit svg.i {
@@ -35,400 +47,56 @@
     flex: none;
 }
 
-/* ===== Kertas A4 (794 x 1123 px) ===== */
-#input-cuti-dan-sakit .paper {
-    width: 794px;
-    min-height: 1123px;
-    padding: 44px 52px;
-    transform-origin: 0 0;
-    background: #fff;
-    color: #111;
-    font: 13px/1.45 Arial, Helvetica, sans-serif;
-    box-shadow: 0 1px 3px rgba(31, 35, 40, 0.18), 0 8px 24px rgba(31, 35, 40, 0.08);
-    --bg: #fff;
-    --bg2: #f6f8fa;
-    --fg: #111;
-    --mute: #59636e;
-    --bd: #d1d9e0;
-    --hov: #eff2f5;
-    --blue: #0969da;
-    --err: #e02424;
-    color-scheme: light;
+#input-cuti-dan-sakit .pg {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 0 8px;
 }
 
-#input-cuti-dan-sakit .hd {
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 52px;
-    margin-bottom: 24px;
-}
-
-#input-cuti-dan-sakit .hd img {
-    position: absolute;
-    left: 0;
-    top: 50%;
-    transform: translateY(-50%);
-    height: 52px;
-    width: auto;
-}
-
-#input-cuti-dan-sakit .hd h1 {
-    margin: 0;
-    font-size: 18px;
-    font-weight: 700;
+#input-cuti-dan-sakit h1 {
+    margin: 0 0 4px;
+    padding: 0 0 12px;
+    font-size: 28px;
+    font-weight: 400;
     line-height: 1.25;
-    text-align: center;
-}
-
-#input-cuti-dan-sakit .cb {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    margin-bottom: 8px;
-}
-
-#input-cuti-dan-sakit .cbx {
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    font-weight: 700;
-    cursor: pointer;
-    width: max-content;
-}
-
-#input-cuti-dan-sakit .cbx input,
-#input-cuti-dan-sakit .rdo input {
-    width: 16px;
-    height: 16px;
-    margin: 0;
-    accent-color: #111;
-}
-
-#input-cuti-dan-sakit .rw {
-    display: grid;
-    grid-template-columns: 150px 12px minmax(0, 1fr);
-    align-items: end;
-    gap: 0 6px;
-    margin: 12px 0;
-}
-
-#input-cuti-dan-sakit .rw.p {
-    grid-template-columns: 150px 12px minmax(0, 1fr) auto minmax(0, 1fr);
-}
-
-#input-cuti-dan-sakit .rw.p .sm {
-    padding: 0 2px 4px 14px;
-}
-
-#input-cuti-dan-sakit .rw > label {
-    padding-bottom: 4px;
-    white-space: nowrap;
-}
-
-#input-cuti-dan-sakit .rw > span {
-    padding-bottom: 4px;
-    text-align: center;
-}
-
-#input-cuti-dan-sakit .u {
-    width: 100%;
-    min-width: 0;
-    height: 30px;
-    padding: 2px;
-    border: 0;
-    border-bottom: 1px solid #111;
-    border-radius: 0;
-    background: transparent;
-    outline: 0;
-    font: inherit;
-    color: #111;
-    transition: border-color 0.15s, box-shadow 0.15s;
-}
-
-#input-cuti-dan-sakit .u:focus-visible {
-    border-bottom-color: var(--blue);
-    box-shadow: 0 1px 0 var(--blue);
-}
-
-#input-cuti-dan-sakit .u::placeholder {
-    color: #777;
-}
-
-#input-cuti-dan-sakit .u[readonly] {
-    cursor: default;
-}
-
-#input-cuti-dan-sakit .u.c {
-    text-align: center;
-}
-
-#input-cuti-dan-sakit select.u {
-    appearance: none;
-    -webkit-appearance: none;
-    padding-right: 22px;
-    border-radius: 0;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%23777' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 6l4 4 4-4'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 2px center;
-    background-size: 14px;
-}
-
-#input-cuti-dan-sakit select.u:invalid {
-    color: #777;
-}
-
-#input-cuti-dan-sakit select.u option {
-    color: #111;
-}
-
-#input-cuti-dan-sakit textarea.u {
-    height: auto;
-    min-height: 60px;
-    resize: vertical;
-    line-height: 1.5;
-    display: block;
-}
-
-#input-cuti-dan-sakit .rd {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px 24px;
-    margin: 14px 0 4px;
-}
-
-#input-cuti-dan-sakit .rdo {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    cursor: pointer;
-}
-
-#input-cuti-dan-sakit .kt {
-    margin: 22px 0 8px;
-}
-
-#input-cuti-dan-sakit ol {
-    margin: 0;
-    padding: 0;
-    list-style: none;
-    display: grid;
-    gap: 12px;
-}
-
-#input-cuti-dan-sakit ol li {
-    display: grid;
-    grid-template-columns: 18px minmax(0, 1fr);
-    gap: 2px;
-}
-
-#input-cuti-dan-sakit ol li > div {
-    display: grid;
-    gap: 4px;
-}
-
-#input-cuti-dan-sakit ol p {
-    margin: 0;
-}
-
-#input-cuti-dan-sakit .sg {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 56px;
-    margin-top: 28px;
-}
-
-#input-cuti-dan-sakit .col {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    min-width: 0;
-}
-
-#input-cuti-dan-sakit .col .rw {
-    grid-template-columns: 62px 12px minmax(0, 1fr);
-    margin: 4px 0;
-}
-
-#input-cuti-dan-sakit .ttl {
-    flex: 1;
-    margin: 0;
-    line-height: 1.6;
-}
-
-#input-cuti-dan-sakit .sigw {
-    position: relative;
-    margin-top: 6px;
-}
-
-#input-cuti-dan-sakit .sigb,
-#input-cuti-dan-sakit .sigx {
-    display: grid;
-    place-items: center;
-    width: 100%;
-    height: 100px;
-}
-
-#input-cuti-dan-sakit .sigx {
-    margin-top: 6px;
-}
-
-#input-cuti-dan-sakit .sigb {
-    border: 1.5px solid var(--err);
-    border-radius: 2px;
-    background: #fff;
-    cursor: pointer;
-    color: #8a8a8a;
-    font-size: 12px;
-    padding: 4px;
-    transition: background 0.15s;
-}
-
-#input-cuti-dan-sakit .sigb:hover {
-    background: var(--hov);
-}
-
-#input-cuti-dan-sakit .sigb:focus-visible {
-    outline: 2px solid var(--blue);
-    outline-offset: 1px;
-}
-
-#input-cuti-dan-sakit .sigb.ok {
-    border-color: transparent;
-}
-
-#input-cuti-dan-sakit .sigb svg {
-    max-width: 100%;
-    max-height: 92px;
-}
-
-#input-cuti-dan-sakit .par {
-    display: grid;
-    grid-template-columns: auto minmax(0, 1fr) auto;
-    align-items: end;
-    gap: 6px;
-    margin-top: 4px;
-}
-
-#input-cuti-dan-sakit .par > span {
-    padding-bottom: 4px;
-}
-
-#input-cuti-dan-sakit .mn {
-    position: absolute;
-    left: 0;
-    right: 0;
-    top: calc(100% + 4px);
-    z-index: 20;
-    border: 1px solid var(--bd);
-    border-radius: 6px;
-    background: #fff;
-    box-shadow: 0 8px 24px rgba(31, 35, 40, 0.22);
-    overflow: hidden;
-}
-
-#input-cuti-dan-sakit .mn b {
-    display: block;
-    padding: 8px 12px;
-    background: var(--bg2);
-    border-bottom: 1px solid var(--bd);
-    font-size: 13px;
-}
-
-#input-cuti-dan-sakit .mn button {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    width: 100%;
-    padding: 10px 12px;
-    border: 0;
-    background: transparent;
-    text-align: left;
-    cursor: pointer;
-}
-
-#input-cuti-dan-sakit .mn button:hover {
-    background: var(--hov);
-}
-
-#input-cuti-dan-sakit .mn .th {
-    width: 64px;
-    height: 30px;
-    border: 1px solid var(--bd);
-    border-radius: 4px;
-    background: #fff;
-    display: grid;
-    place-items: center;
-    flex: none;
-}
-
-/* ===== Kartu lampiran (di luar kertas) ===== */
-#input-cuti-dan-sakit .card {
-    border: 1px solid var(--bd);
-    border-radius: 6px;
-    background: var(--bg);
-    margin-bottom: 12px;
-    overflow: hidden;
-}
-
-#input-cuti-dan-sakit .ch {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 8px;
-    padding: 10px 16px;
-    background: var(--bg2);
     border-bottom: 1px solid var(--bd);
 }
 
-#input-cuti-dan-sakit .h {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin: 0;
-    font-size: 14px;
-    font-weight: 600;
-}
-
-#input-cuti-dan-sakit .bdg {
-    padding: 0 8px;
-    border: 1px solid var(--bd);
-    border-radius: 2em;
-    background: var(--bg);
+#input-cuti-dan-sakit .ds {
+    margin: 12px 0 16px;
     color: var(--mute);
-    font-size: 12px;
-    font-weight: 500;
-    line-height: 20px;
-    white-space: nowrap;
-}
-
-#input-cuti-dan-sakit .cbd {
-    padding: 16px;
-    display: grid;
-    gap: 12px;
 }
 
 #input-cuti-dan-sakit .note {
-    margin: 0;
+    margin: 12px 0 0;
     color: var(--mute);
-    font-size: 13px;
+    font-size: 12.5px;
+    line-height: 1.55;
 }
 
-#input-cuti-dan-sakit .opt {
+#input-cuti-dan-sakit .note.top {
+    margin: 0 0 4px;
+}
+
+#input-cuti-dan-sakit .bad {
+    color: var(--bad);
+}
+
+/* ---- toolbar ---- */
+#input-cuti-dan-sakit .tbar {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+}
+
+#input-cuti-dan-sakit .acts {
     display: flex;
     align-items: center;
     gap: 8px;
-    cursor: pointer;
-    width: max-content;
-    max-width: 100%;
-}
-
-#input-cuti-dan-sakit .opt input {
-    width: 16px;
-    height: 16px;
-    margin: 0;
-    accent-color: var(--blue);
-    flex: none;
+    flex-wrap: wrap;
 }
 
 #input-cuti-dan-sakit .btn {
@@ -436,36 +104,40 @@
     align-items: center;
     justify-content: center;
     gap: 6px;
-    height: 32px;
+    height: 34px;
+    min-width: 84px;
     padding: 0 14px;
     border: 1px solid var(--bd);
     border-radius: 6px;
     background: var(--bg2);
-    font-size: 13px;
     font-weight: 600;
-    cursor: pointer;
+    font-size: 13.5px;
     white-space: nowrap;
-    transition: background 0.15s, filter 0.15s;
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s, filter 0.15s, transform 0.1s;
 }
 
-#input-cuti-dan-sakit .btn:hover:not(:disabled) {
+#input-cuti-dan-sakit .btn:hover {
     background: var(--hov);
 }
 
-#input-cuti-dan-sakit .btn:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
+#input-cuti-dan-sakit .btn:active {
+    transform: scale(0.98);
 }
 
 #input-cuti-dan-sakit .btn:focus-visible {
     outline: 2px solid var(--blue);
-    outline-offset: 1px;
+    outline-offset: 2px;
 }
 
-#input-cuti-dan-sakit .btn.bl {
-    background: var(--blue);
-    border-color: var(--blue);
-    color: #fff;
+#input-cuti-dan-sakit .btn:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+    transform: none;
+}
+
+#input-cuti-dan-sakit .btn:disabled:hover {
+    background: var(--bg2);
 }
 
 #input-cuti-dan-sakit .btn.go {
@@ -474,213 +146,718 @@
     color: #fff;
 }
 
-#input-cuti-dan-sakit .btn.bl:hover:not(:disabled),
-#input-cuti-dan-sakit .btn.go:hover:not(:disabled) {
+#input-cuti-dan-sakit .btn.go:hover {
+    background: var(--green);
     filter: brightness(1.1);
 }
 
-#input-cuti-dan-sakit .btn.bl:hover:not(:disabled) {
-    background: var(--blue);
+#input-cuti-dan-sakit .btn.sm {
+    height: 30px;
+    min-width: 0;
+    padding: 0 10px;
+    font-size: 13px;
 }
 
-#input-cuti-dan-sakit .btn.go:hover:not(:disabled) {
-    background: var(--green);
+#input-cuti-dan-sakit .btn.del {
+    height: 26px;
+    min-width: 0;
+    padding: 0 8px;
+    border-color: var(--badline);
+    background: transparent;
+    color: var(--bad);
+    font-size: 12px;
+    font-weight: 500;
 }
 
-#input-cuti-dan-sakit .row {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
+#input-cuti-dan-sakit .btn.del:hover {
+    background: var(--badsoft);
 }
 
-#input-cuti-dan-sakit .fls {
+/* ---- pencarian ---- */
+#input-cuti-dan-sakit .srch {
+    position: relative;
+    display: block;
+    width: 340px;
+    max-width: 100%;
+    height: auto;
+    padding: 0;
+    margin: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    color: inherit;
+}
+
+#input-cuti-dan-sakit .srch svg {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--mute);
+    pointer-events: none;
+}
+
+#input-cuti-dan-sakit .fld {
+    width: 100%;
+    min-height: 32px;
+    padding: 6px 10px;
     border: 1px solid var(--bd);
     border-radius: 6px;
+    background: var(--bg);
+    outline: 0;
+    transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+#input-cuti-dan-sakit .fld:focus {
+    border-color: var(--blue);
+    box-shadow: 0 0 0 3px rgba(9, 105, 218, 0.12);
+}
+
+#input-cuti-dan-sakit .srch .fld {
+    min-height: 34px;
+    padding: 5px 12px 5px 32px;
+}
+
+#input-cuti-dan-sakit input[type="file"].fld {
+    padding: 6px 8px;
+}
+
+#input-cuti-dan-sakit input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    margin: 0;
+    padding: 0;
+    accent-color: var(--blue);
+    vertical-align: middle;
+    cursor: pointer;
+}
+
+/* ---- tabel ---- */
+#input-cuti-dan-sakit .box {
+    border: 1px solid var(--bd);
+    border-radius: 6px;
+    background: var(--bg);
     overflow: hidden;
 }
 
-#input-cuti-dan-sakit .fls:empty {
-    display: none;
+#input-cuti-dan-sakit .tw {
+    overflow-x: auto;
 }
 
-#input-cuti-dan-sakit .fi {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 6px 8px 6px 12px;
-    min-width: 0;
+#input-cuti-dan-sakit .rt {
+    width: 100%;
+    min-width: 980px;
+    border-collapse: collapse;
 }
 
-#input-cuti-dan-sakit .fi + .fi {
-    border-top: 1px solid var(--bd);
-}
-
-#input-cuti-dan-sakit .fi span {
-    flex: 1;
-    min-width: 0;
-    overflow: hidden;
-    text-overflow: ellipsis;
+#input-cuti-dan-sakit .rt th {
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--bd);
+    background: var(--bg2);
+    text-align: left;
+    font-size: 13px;
+    font-weight: 600;
     white-space: nowrap;
 }
 
-#input-cuti-dan-sakit .fi small {
-    color: var(--mute);
-    flex: none;
+#input-cuti-dan-sakit .rt td {
+    padding: 12px 14px;
+    border-top: 1px solid var(--bd);
+    vertical-align: top;
+    overflow-wrap: anywhere;
 }
 
-#input-cuti-dan-sakit .fi button {
-    border: 0;
-    background: transparent;
+#input-cuti-dan-sakit .rt tbody tr:first-child td {
+    border-top: 0;
+}
+
+#input-cuti-dan-sakit .rt tbody tr {
     cursor: pointer;
+}
+
+#input-cuti-dan-sakit .rt tbody tr:hover td {
+    background: var(--bg2);
+}
+
+#input-cuti-dan-sakit .rt tbody tr.sel td {
+    background: var(--sel);
+}
+
+#input-cuti-dan-sakit .rt .c,
+#input-cuti-dan-sakit .rt th.c {
+    width: 42px;
+    padding-left: 8px;
+    padding-right: 8px;
+    text-align: center;
+}
+
+#input-cuti-dan-sakit .rt tbody td.c {
+    vertical-align: middle;
+}
+
+#input-cuti-dan-sakit .rt .nm {
+    font-weight: 600;
+}
+
+#input-cuti-dan-sakit .rt .nik {
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+}
+
+#input-cuti-dan-sakit .it {
+    padding: 0;
+    line-height: 1.5;
+    white-space: nowrap;
+}
+
+#input-cuti-dan-sakit .it + .it {
+    margin-top: 4px;
+}
+
+#input-cuti-dan-sakit .it.over {
+    color: var(--bad);
+    font-size: 13px;
+}
+
+#input-cuti-dan-sakit .bal {
+    font-size: 14.5px;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+}
+
+#input-cuti-dan-sakit .bal.low {
+    color: var(--bad);
+}
+
+#input-cuti-dan-sakit .rt small,
+#input-cuti-dan-sakit .bx small {
     color: var(--mute);
-    width: 32px;
-    height: 32px;
-    border-radius: 6px;
-    display: grid;
-    place-items: center;
-    flex: none;
+    font-size: 11.5px;
 }
 
-#input-cuti-dan-sakit .fi button:hover {
-    background: var(--hov);
-    color: var(--err);
-}
-
-#input-cuti-dan-sakit .em {
-    margin: 0;
-    padding: 16px;
-    border: 1px dashed var(--bd);
-    border-radius: 6px;
+#input-cuti-dan-sakit .empty {
+    padding: 40px 16px;
     text-align: center;
     color: var(--mute);
-    font-style: italic;
 }
 
-#input-cuti-dan-sakit .err {
-    margin: 0;
-    color: var(--err);
-    font-size: 12.5px;
+#input-cuti-dan-sakit .ft {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+    padding: 12px 16px;
+    border-top: 1px solid var(--bd);
+    color: var(--mute);
+    font-size: 13px;
 }
 
-#input-cuti-dan-sakit .acts {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
+#input-cuti-dan-sakit .pgn {
+    display: flex;
+    align-items: center;
     gap: 8px;
 }
 
-#input-cuti-dan-sakit .acts .btn {
-    height: 36px;
+#input-cuti-dan-sakit #pesImp:empty {
+    display: none;
 }
 
-#input-cuti-dan-sakit .toast {
+#input-cuti-dan-sakit #pesImp .info {
+    margin: 0 0 12px;
+}
+
+/* ---- modal ---- */
+#input-cuti-dan-sakit .ov {
     position: fixed;
-    left: 50%;
-    bottom: calc(20px + env(safe-area-inset-bottom, 0px));
-    transform: translate(-50%, 20px);
-    max-width: calc(100% - 32px);
-    padding: 10px 16px;
+    inset: var(--hh, 0px) 0 0 0;
+    z-index: 60;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background: rgba(1, 4, 9, 0.6);
+    animation: ic-fade 0.18s ease-out both;
+}
+
+#input-cuti-dan-sakit .md {
+    width: 100%;
+    max-width: 560px;
+    max-height: calc(100dvh - var(--hh, 0px) - 40px);
+    display: flex;
+    flex-direction: column;
+    background: var(--bg);
+    border: 1px solid var(--bd);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.4);
+    animation: ic-pop 0.24s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+#input-cuti-dan-sakit .md.lg {
+    max-width: 680px;
+}
+
+#input-cuti-dan-sakit .mh {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--bd);
+    background: var(--bg2);
+}
+
+#input-cuti-dan-sakit .mh h2 {
+    margin: 0;
+    min-width: 0;
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 1.35;
+    overflow-wrap: anywhere;
+}
+
+#input-cuti-dan-sakit .mx {
+    display: grid;
+    place-items: center;
+    width: 28px;
+    height: 28px;
+    flex: none;
+    padding: 0;
+    border: 0;
     border-radius: 6px;
-    background: var(--fg);
-    color: var(--bg);
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.25s, transform 0.25s;
-    z-index: 80;
+    background: transparent;
+    color: var(--mute);
+    cursor: pointer;
 }
 
-#input-cuti-dan-sakit .toast.on {
-    opacity: 1;
-    transform: translate(-50%, 0);
+#input-cuti-dan-sakit .mx:hover {
+    background: var(--hov);
+    color: var(--fg);
 }
 
-@media (pointer: coarse) {
-    #input-cuti-dan-sakit .u {
-        font-size: 16px;
+#input-cuti-dan-sakit .mb {
+    flex: 1;
+    min-height: 0;
+    padding: 16px;
+    overflow: auto;
+}
+
+#input-cuti-dan-sakit .mf {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    padding: 12px 16px;
+    border-top: 1px solid var(--bd);
+    background: var(--bg2);
+    flex: none;
+}
+
+#input-cuti-dan-sakit .mb label {
+    display: block;
+    margin: 12px 0 4px;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--fg);
+}
+
+#input-cuti-dan-sakit .mb > label:first-child,
+#input-cuti-dan-sakit .mb > .g2:first-child label {
+    margin-top: 0;
+}
+
+#input-cuti-dan-sakit .g2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0 12px;
+}
+
+#input-cuti-dan-sakit .sh {
+    margin: 18px 0 0;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+#input-cuti-dan-sakit .sh:first-child {
+    margin-top: 0;
+}
+
+#input-cuti-dan-sakit .info {
+    margin-top: 12px;
+    padding: 8px 12px;
+    border: 1px solid var(--acline);
+    border-radius: 6px;
+    background: var(--acsoft);
+    font-size: 13px;
+    line-height: 1.55;
+}
+
+#input-cuti-dan-sakit .info.bad {
+    border-color: var(--badline);
+    background: var(--badsoft);
+    color: var(--bad);
+}
+
+#input-cuti-dan-sakit .info:empty {
+    display: none;
+}
+
+/* ---- kotak hak cuti & riwayat ---- */
+#input-cuti-dan-sakit .bx {
+    margin-top: 12px;
+    padding: 12px;
+    border: 1px solid var(--bd);
+    border-radius: 6px;
+    background: var(--bg2);
+    font-size: 13.5px;
+}
+
+#input-cuti-dan-sakit .bx > b {
+    display: block;
+    font-weight: 600;
+    line-height: 1.45;
+}
+
+#input-cuti-dan-sakit .bx .note {
+    margin: 6px 0 0;
+}
+
+#input-cuti-dan-sakit .bx table {
+    width: 100%;
+    margin-top: 8px;
+    border-collapse: collapse;
+    font-size: 12.5px;
+}
+
+#input-cuti-dan-sakit .bx th {
+    padding: 6px 8px;
+    border-bottom: 1px solid var(--bd);
+    background: transparent;
+    text-align: left;
+    font-size: 11.5px;
+    font-weight: 600;
+    color: var(--mute);
+    white-space: nowrap;
+}
+
+#input-cuti-dan-sakit .bx td {
+    padding: 6px 8px;
+    border-bottom: 1px solid var(--bd);
+    vertical-align: top;
+}
+
+#input-cuti-dan-sakit .bx tr:last-child td {
+    border-bottom: 0;
+}
+
+#input-cuti-dan-sakit .bx td.ac {
+    text-align: right;
+}
+
+#input-cuti-dan-sakit .tag {
+    display: inline-block;
+    padding: 0 7px;
+    border: 1px solid var(--bd);
+    border-radius: 2em;
+    font-size: 11px;
+    line-height: 18px;
+    white-space: nowrap;
+}
+
+#input-cuti-dan-sakit .tag.ok {
+    color: var(--ok);
+    border-color: var(--okline);
+    background: var(--oksoft);
+}
+
+#input-cuti-dan-sakit .tag.x {
+    color: var(--bad);
+    border-color: var(--badline);
+    background: var(--badsoft);
+}
+
+@keyframes ic-fade {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
     }
 }
 
-@media (max-width: 700px) {
-    #input-cuti-dan-sakit .pg {
-        padding: 0 0 8px;
+@keyframes ic-pop {
+    from {
+        opacity: 0;
+        transform: translate3d(0, 14px, 0) scale(0.96);
+    }
+    to {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    #input-cuti-dan-sakit * {
+        animation-duration: 0.01ms !important;
+        animation-delay: 0s !important;
+    }
+}
+
+/* ---- ponsel & tablet: tabel berubah menjadi kartu ---- */
+@media (max-width: 1360px) {
+    #input-cuti-dan-sakit .rt {
+        min-width: 0;
     }
 
-    #input-cuti-dan-sakit .btn,
-    #input-cuti-dan-sakit .acts .btn {
-        height: 40px;
+    #input-cuti-dan-sakit .rt thead {
+        display: none;
     }
 
-    #input-cuti-dan-sakit .ch,
-    #input-cuti-dan-sakit .cbd {
-        padding-left: 12px;
-        padding-right: 12px;
+    #input-cuti-dan-sakit .rt,
+    #input-cuti-dan-sakit .rt tbody {
+        display: block;
+    }
+
+    #input-cuti-dan-sakit .rt tr {
+        position: relative;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: baseline;
+        gap: 0 6px;
+        padding: 14px 16px;
+        border-top: 1px solid var(--bd);
+    }
+
+    #input-cuti-dan-sakit .rt tr:first-child {
+        border-top: 0;
+    }
+
+    #input-cuti-dan-sakit .rt tbody tr:hover {
+        background: var(--bg2);
+    }
+
+    #input-cuti-dan-sakit .rt tbody tr.sel {
+        background: var(--sel);
+    }
+
+    #input-cuti-dan-sakit .rt tbody tr:hover td,
+    #input-cuti-dan-sakit .rt tbody tr.sel td {
+        background: transparent;
+    }
+
+    #input-cuti-dan-sakit .rt tbody td {
+        display: block;
+        padding: 0;
+        border: 0;
+        min-width: 0;
+    }
+
+    #input-cuti-dan-sakit .rt td.c {
+        position: absolute;
+        top: 13px;
+        right: 14px;
+        width: auto;
+    }
+
+    #input-cuti-dan-sakit .rt td.c input {
+        width: 18px;
+        height: 18px;
+    }
+
+    #input-cuti-dan-sakit .rt td.nm {
+        flex: 0 0 100%;
+        padding-right: 36px;
+        font-size: 15px;
+        font-weight: 600;
+        line-height: 1.35;
+    }
+
+    #input-cuti-dan-sakit .rt td.nik {
+        flex: 0 0 100%;
+        margin-top: 2px;
+        color: var(--mute);
+        font-size: 12.5px;
+    }
+
+    #input-cuti-dan-sakit .rt td.dp,
+    #input-cuti-dan-sakit .rt td.jb,
+    #input-cuti-dan-sakit .rt td.ps {
+        flex: 0 0 auto;
+        max-width: 100%;
+        margin-top: 4px;
+        color: var(--mute);
+        font-size: 13px;
+    }
+
+    #input-cuti-dan-sakit .rt td.dp {
+        margin-top: 8px;
+    }
+
+    #input-cuti-dan-sakit .rt td.jb::before,
+    #input-cuti-dan-sakit .rt td.ps::before {
+        content: "\00b7";
+        margin-right: 6px;
+        color: var(--mute);
+    }
+
+    #input-cuti-dan-sakit .rt td.bal {
+        flex: 0 0 100%;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 2px 12px;
+        margin-top: 10px;
+        padding: 9px 12px;
+        border-radius: 6px;
+        background: var(--bg2);
+    }
+
+    #input-cuti-dan-sakit .rt td.bal::before {
+        content: "Cuti terpakai";
+        flex: 0 0 100%;
+        color: var(--mute);
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+    }
+
+    #input-cuti-dan-sakit .rt td.bal .it {
+        display: inline;
+        line-height: 1.4;
+        white-space: normal;
+    }
+
+    #input-cuti-dan-sakit .rt td.bal .it + .it {
+        margin-top: 0;
+    }
+
+    #input-cuti-dan-sakit .rt td.bal .it + .it::before {
+        content: "\00b7";
+        margin-right: 6px;
+        color: var(--mute);
+    }
+
+    #input-cuti-dan-sakit .rt td.bal .it.over {
+        flex: 0 0 100%;
+    }
+
+    #input-cuti-dan-sakit .rt td.bal .it.over::before {
+        content: none;
+    }
+
+    #input-cuti-dan-sakit .rt td.prd,
+    #input-cuti-dan-sakit .rt td.exp {
+        flex: 0 0 auto;
+        margin-top: 6px;
+        color: var(--mute);
+        font-size: 12.5px;
+    }
+
+    #input-cuti-dan-sakit .rt td.prd:not(:empty)::before {
+        content: "Periode: ";
+        font-weight: 600;
+    }
+
+    #input-cuti-dan-sakit .rt td.exp:not(:empty)::before {
+        content: "Berlaku sampai: ";
+        font-weight: 600;
+    }
+
+    #input-cuti-dan-sakit .rt td:empty {
+        display: none;
+    }
+}
+
+@media (max-width: 900px) {
+    #input-cuti-dan-sakit .srch {
+        width: 100%;
     }
 
     #input-cuti-dan-sakit .acts {
-        grid-template-columns: 1fr;
+        width: 100%;
     }
 
-    #input-cuti-dan-sakit .acts .go {
-        order: -1;
-    }
-
-    #input-cuti-dan-sakit .row .btn {
-        flex: 1 1 140px;
+    #input-cuti-dan-sakit .acts .btn {
+        flex: 1 1 auto;
     }
 }
 
-@media print {
-    @page {
-        size: A4;
-        margin: 0;
+@media (max-width: 640px) {
+    #input-cuti-dan-sakit h1 {
+        font-size: 22px;
     }
 
-    /* Lepaskan kerangka aplikasi agar formulir memakai seluruh halaman. */
-    body:has(#input-cuti-dan-sakit) > :not(.shell) {
-        display: none !important;
+    #input-cuti-dan-sakit .acts {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 6px;
     }
 
-    body:has(#input-cuti-dan-sakit) .shell {
-        position: static;
-        inset: auto;
-        display: block;
-        overflow: visible;
+    #input-cuti-dan-sakit .acts .btn {
+        height: auto;
+        min-height: 34px;
+        min-width: 0;
+        padding: 6px 8px;
+        font-size: 12.5px;
+        line-height: 1.2;
+        white-space: normal;
+        text-align: left;
     }
 
-    body:has(#input-cuti-dan-sakit) .shell > nav,
-    body:has(#input-cuti-dan-sakit) .shell > .bd {
-        display: none !important;
+    #input-cuti-dan-sakit .ov {
+        padding: 12px;
     }
 
-    body:has(#input-cuti-dan-sakit) main {
-        overflow: visible;
-        padding: 0;
+    #input-cuti-dan-sakit .md {
+        max-height: calc(100dvh - var(--hh, 0px) - 24px);
     }
 
-    #input-cuti-dan-sakit .card,
-    #input-cuti-dan-sakit .acts,
-    #input-cuti-dan-sakit .toast,
-    #input-cuti-dan-sakit .mn {
-        display: none !important;
+    #input-cuti-dan-sakit .mb {
+        padding: 14px;
     }
 
-    #input-cuti-dan-sakit .pg {
-        max-width: none;
-        padding: 0;
+    #input-cuti-dan-sakit .mf {
+        padding: 10px 14px;
     }
 
-    #input-cuti-dan-sakit .stage {
-        margin: 0;
+    #input-cuti-dan-sakit .mf .btn {
+        flex: 1;
     }
 
-    #input-cuti-dan-sakit .fit {
-        width: auto !important;
-        height: auto !important;
+    #input-cuti-dan-sakit .g2 {
+        grid-template-columns: 1fr;
     }
 
-    #input-cuti-dan-sakit .paper {
-        transform: none !important;
-        box-shadow: none !important;
-        width: 210mm;
-        min-height: 297mm;
+    #input-cuti-dan-sakit .ft {
+        align-items: stretch;
+    }
+
+    #input-cuti-dan-sakit .pgn {
+        width: 100%;
+    }
+
+    #input-cuti-dan-sakit .pgn .btn {
+        flex: 1;
+    }
+}
+
+@media (max-width: 400px) {
+    #input-cuti-dan-sakit .rt tr {
+        padding: 12px;
+    }
+
+    #input-cuti-dan-sakit .rt td.c {
+        top: 12px;
+        right: 12px;
+    }
+
+    #input-cuti-dan-sakit .bx th,
+    #input-cuti-dan-sakit .bx td {
+        padding: 6px 5px;
+    }
+
+    #input-cuti-dan-sakit .bx .tag {
+        padding: 0 5px;
     }
 }
