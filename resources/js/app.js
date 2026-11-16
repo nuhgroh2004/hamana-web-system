@@ -23,6 +23,7 @@ import './hris/permohonan-saya/script';
 import './hris/input-buku-hamana/script';
 import './hris/buku-hamana/script';
 import './hris/input-cuti-dan-sakit/script';
+import './hris/izin-cuti-atau-sakit/script';
 import './hris/izin-keluar-kantor/script';
 import './hris/izin-dinas-dalam-kota/script';
 import './hris/izin-dinas-luar-kota/script';

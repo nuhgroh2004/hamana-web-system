@@ -1,0 +1,686 @@
+/* Formulir Permintaan Cuti / Sakit — kertas A4 yang otomatis diskalakan. */
+
+#izin-cuti-atau-sakit .pg {
+    max-width: 794px;
+    margin: 0 auto;
+    padding: 0 0 8px;
+}
+
+#izin-cuti-atau-sakit .stage {
+    width: 100%;
+    margin-bottom: 12px;
+}
+
+#izin-cuti-atau-sakit .fit {
+    margin: 0 auto;
+}
+
+#izin-cuti-atau-sakit [hidden] {
+    display: none !important;
+}
+
+#izin-cuti-atau-sakit :is(button, input, select, textarea) {
+    font: inherit;
+    color: inherit;
+}
+
+#izin-cuti-atau-sakit svg.i {
+    width: 16px;
+    height: 16px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.6;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    flex: none;
+}
+
+/* ===== Kertas A4 (794 x 1123 px) ===== */
+#izin-cuti-atau-sakit .paper {
+    width: 794px;
+    min-height: 1123px;
+    padding: 44px 52px;
+    transform-origin: 0 0;
+    background: #fff;
+    color: #111;
+    font: 13px/1.45 Arial, Helvetica, sans-serif;
+    box-shadow: 0 1px 3px rgba(31, 35, 40, 0.18), 0 8px 24px rgba(31, 35, 40, 0.08);
+    --bg: #fff;
+    --bg2: #f6f8fa;
+    --fg: #111;
+    --mute: #59636e;
+    --bd: #d1d9e0;
+    --hov: #eff2f5;
+    --blue: #0969da;
+    --err: #e02424;
+    color-scheme: light;
+}
+
+#izin-cuti-atau-sakit .hd {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 52px;
+    margin-bottom: 24px;
+}
+
+#izin-cuti-atau-sakit .hd img {
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    height: 52px;
+    width: auto;
+}
+
+#izin-cuti-atau-sakit .hd h1 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 1.25;
+    text-align: center;
+}
+
+#izin-cuti-atau-sakit .cb {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    margin-bottom: 8px;
+}
+
+#izin-cuti-atau-sakit .cbx {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 700;
+    cursor: pointer;
+    width: max-content;
+}
+
+#izin-cuti-atau-sakit .cbx input,
+#izin-cuti-atau-sakit .rdo input {
+    width: 16px;
+    height: 16px;
+    margin: 0;
+    accent-color: #111;
+}
+
+#izin-cuti-atau-sakit .rw {
+    display: grid;
+    grid-template-columns: 150px 12px minmax(0, 1fr);
+    align-items: end;
+    gap: 0 6px;
+    margin: 12px 0;
+}
+
+#izin-cuti-atau-sakit .rw.p {
+    grid-template-columns: 150px 12px minmax(0, 1fr) auto minmax(0, 1fr);
+}
+
+#izin-cuti-atau-sakit .rw.p .sm {
+    padding: 0 2px 4px 14px;
+}
+
+#izin-cuti-atau-sakit .rw > label {
+    padding-bottom: 4px;
+    white-space: nowrap;
+}
+
+#izin-cuti-atau-sakit .rw > span {
+    padding-bottom: 4px;
+    text-align: center;
+}
+
+#izin-cuti-atau-sakit .u {
+    width: 100%;
+    min-width: 0;
+    height: 30px;
+    padding: 2px;
+    border: 0;
+    border-bottom: 1px solid #111;
+    border-radius: 0;
+    background: transparent;
+    outline: 0;
+    font: inherit;
+    color: #111;
+    transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+#izin-cuti-atau-sakit .u:focus-visible {
+    border-bottom-color: var(--blue);
+    box-shadow: 0 1px 0 var(--blue);
+}
+
+#izin-cuti-atau-sakit .u::placeholder {
+    color: #777;
+}
+
+#izin-cuti-atau-sakit .u[readonly] {
+    cursor: default;
+}
+
+#izin-cuti-atau-sakit .u.c {
+    text-align: center;
+}
+
+#izin-cuti-atau-sakit select.u {
+    appearance: none;
+    -webkit-appearance: none;
+    padding-right: 22px;
+    border-radius: 0;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%23777' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 6l4 4 4-4'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 2px center;
+    background-size: 14px;
+}
+
+#izin-cuti-atau-sakit select.u:invalid {
+    color: #777;
+}
+
+#izin-cuti-atau-sakit select.u option {
+    color: #111;
+}
+
+#izin-cuti-atau-sakit textarea.u {
+    height: auto;
+    min-height: 60px;
+    resize: vertical;
+    line-height: 1.5;
+    display: block;
+}
+
+#izin-cuti-atau-sakit .rd {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 24px;
+    margin: 14px 0 4px;
+}
+
+#izin-cuti-atau-sakit .rdo {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+}
+
+#izin-cuti-atau-sakit .kt {
+    margin: 22px 0 8px;
+}
+
+#izin-cuti-atau-sakit ol {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: grid;
+    gap: 12px;
+}
+
+#izin-cuti-atau-sakit ol li {
+    display: grid;
+    grid-template-columns: 18px minmax(0, 1fr);
+    gap: 2px;
+}
+
+#izin-cuti-atau-sakit ol li > div {
+    display: grid;
+    gap: 4px;
+}
+
+#izin-cuti-atau-sakit ol p {
+    margin: 0;
+}
+
+#izin-cuti-atau-sakit .sg {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 56px;
+    margin-top: 28px;
+}
+
+#izin-cuti-atau-sakit .col {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 0;
+}
+
+#izin-cuti-atau-sakit .col .rw {
+    grid-template-columns: 62px 12px minmax(0, 1fr);
+    margin: 4px 0;
+}
+
+#izin-cuti-atau-sakit .ttl {
+    flex: 1;
+    margin: 0;
+    line-height: 1.6;
+}
+
+#izin-cuti-atau-sakit .sigw {
+    position: relative;
+    margin-top: 6px;
+}
+
+#izin-cuti-atau-sakit .sigb,
+#izin-cuti-atau-sakit .sigx {
+    display: grid;
+    place-items: center;
+    width: 100%;
+    height: 100px;
+}
+
+#izin-cuti-atau-sakit .sigx {
+    margin-top: 6px;
+}
+
+#izin-cuti-atau-sakit .sigb {
+    border: 1.5px solid var(--err);
+    border-radius: 2px;
+    background: #fff;
+    cursor: pointer;
+    color: #8a8a8a;
+    font-size: 12px;
+    padding: 4px;
+    transition: background 0.15s;
+}
+
+#izin-cuti-atau-sakit .sigb:hover {
+    background: var(--hov);
+}
+
+#izin-cuti-atau-sakit .sigb:focus-visible {
+    outline: 2px solid var(--blue);
+    outline-offset: 1px;
+}
+
+#izin-cuti-atau-sakit .sigb.ok {
+    border-color: transparent;
+}
+
+#izin-cuti-atau-sakit .sigb svg {
+    max-width: 100%;
+    max-height: 92px;
+}
+
+#izin-cuti-atau-sakit .par {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: end;
+    gap: 6px;
+    margin-top: 4px;
+}
+
+#izin-cuti-atau-sakit .par > span {
+    padding-bottom: 4px;
+}
+
+#izin-cuti-atau-sakit .mn {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: calc(100% + 4px);
+    z-index: 20;
+    border: 1px solid var(--bd);
+    border-radius: 6px;
+    background: #fff;
+    box-shadow: 0 8px 24px rgba(31, 35, 40, 0.22);
+    overflow: hidden;
+}
+
+#izin-cuti-atau-sakit .mn b {
+    display: block;
+    padding: 8px 12px;
+    background: var(--bg2);
+    border-bottom: 1px solid var(--bd);
+    font-size: 13px;
+}
+
+#izin-cuti-atau-sakit .mn button {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    padding: 10px 12px;
+    border: 0;
+    background: transparent;
+    text-align: left;
+    cursor: pointer;
+}
+
+#izin-cuti-atau-sakit .mn button:hover {
+    background: var(--hov);
+}
+
+#izin-cuti-atau-sakit .mn .th {
+    width: 64px;
+    height: 30px;
+    border: 1px solid var(--bd);
+    border-radius: 4px;
+    background: #fff;
+    display: grid;
+    place-items: center;
+    flex: none;
+}
+
+/* ===== Kartu lampiran (di luar kertas) ===== */
+#izin-cuti-atau-sakit .card {
+    border: 1px solid var(--bd);
+    border-radius: 6px;
+    background: var(--bg);
+    margin-bottom: 12px;
+    overflow: hidden;
+}
+
+#izin-cuti-atau-sakit .ch {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 10px 16px;
+    background: var(--bg2);
+    border-bottom: 1px solid var(--bd);
+}
+
+#izin-cuti-atau-sakit .h {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+#izin-cuti-atau-sakit .bdg {
+    padding: 0 8px;
+    border: 1px solid var(--bd);
+    border-radius: 2em;
+    background: var(--bg);
+    color: var(--mute);
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 20px;
+    white-space: nowrap;
+}
+
+#izin-cuti-atau-sakit .cbd {
+    padding: 16px;
+    display: grid;
+    gap: 12px;
+}
+
+#izin-cuti-atau-sakit .note {
+    margin: 0;
+    color: var(--mute);
+    font-size: 13px;
+}
+
+#izin-cuti-atau-sakit .opt {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    width: max-content;
+    max-width: 100%;
+}
+
+#izin-cuti-atau-sakit .opt input {
+    width: 16px;
+    height: 16px;
+    margin: 0;
+    accent-color: var(--blue);
+    flex: none;
+}
+
+#izin-cuti-atau-sakit .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    height: 32px;
+    padding: 0 14px;
+    border: 1px solid var(--bd);
+    border-radius: 6px;
+    background: var(--bg2);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 0.15s, filter 0.15s;
+}
+
+#izin-cuti-atau-sakit .btn:hover:not(:disabled) {
+    background: var(--hov);
+}
+
+#izin-cuti-atau-sakit .btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+#izin-cuti-atau-sakit .btn:focus-visible {
+    outline: 2px solid var(--blue);
+    outline-offset: 1px;
+}
+
+#izin-cuti-atau-sakit .btn.bl {
+    background: var(--blue);
+    border-color: var(--blue);
+    color: #fff;
+}
+
+#izin-cuti-atau-sakit .btn.go {
+    background: var(--green);
+    border-color: var(--green);
+    color: #fff;
+}
+
+#izin-cuti-atau-sakit .btn.bl:hover:not(:disabled),
+#izin-cuti-atau-sakit .btn.go:hover:not(:disabled) {
+    filter: brightness(1.1);
+}
+
+#izin-cuti-atau-sakit .btn.bl:hover:not(:disabled) {
+    background: var(--blue);
+}
+
+#izin-cuti-atau-sakit .btn.go:hover:not(:disabled) {
+    background: var(--green);
+}
+
+#izin-cuti-atau-sakit .row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+#izin-cuti-atau-sakit .fls {
+    border: 1px solid var(--bd);
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+#izin-cuti-atau-sakit .fls:empty {
+    display: none;
+}
+
+#izin-cuti-atau-sakit .fi {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 8px 6px 12px;
+    min-width: 0;
+}
+
+#izin-cuti-atau-sakit .fi + .fi {
+    border-top: 1px solid var(--bd);
+}
+
+#izin-cuti-atau-sakit .fi span {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+#izin-cuti-atau-sakit .fi small {
+    color: var(--mute);
+    flex: none;
+}
+
+#izin-cuti-atau-sakit .fi button {
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+    color: var(--mute);
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    display: grid;
+    place-items: center;
+    flex: none;
+}
+
+#izin-cuti-atau-sakit .fi button:hover {
+    background: var(--hov);
+    color: var(--err);
+}
+
+#izin-cuti-atau-sakit .em {
+    margin: 0;
+    padding: 16px;
+    border: 1px dashed var(--bd);
+    border-radius: 6px;
+    text-align: center;
+    color: var(--mute);
+    font-style: italic;
+}
+
+#izin-cuti-atau-sakit .err {
+    margin: 0;
+    color: var(--err);
+    font-size: 12.5px;
+}
+
+#izin-cuti-atau-sakit .acts {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+}
+
+#izin-cuti-atau-sakit .acts .btn {
+    height: 36px;
+}
+
+#izin-cuti-atau-sakit .toast {
+    position: fixed;
+    left: 50%;
+    bottom: calc(20px + env(safe-area-inset-bottom, 0px));
+    transform: translate(-50%, 20px);
+    max-width: calc(100% - 32px);
+    padding: 10px 16px;
+    border-radius: 6px;
+    background: var(--fg);
+    color: var(--bg);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s, transform 0.25s;
+    z-index: 80;
+}
+
+#izin-cuti-atau-sakit .toast.on {
+    opacity: 1;
+    transform: translate(-50%, 0);
+}
+
+@media (pointer: coarse) {
+    #izin-cuti-atau-sakit .u {
+        font-size: 16px;
+    }
+}
+
+@media (max-width: 700px) {
+    #izin-cuti-atau-sakit .pg {
+        padding: 0 0 8px;
+    }
+
+    #izin-cuti-atau-sakit .btn,
+    #izin-cuti-atau-sakit .acts .btn {
+        height: 40px;
+    }
+
+    #izin-cuti-atau-sakit .ch,
+    #izin-cuti-atau-sakit .cbd {
+        padding-left: 12px;
+        padding-right: 12px;
+    }
+
+    #izin-cuti-atau-sakit .acts {
+        grid-template-columns: 1fr;
+    }
+
+    #izin-cuti-atau-sakit .acts .go {
+        order: -1;
+    }
+
+    #izin-cuti-atau-sakit .row .btn {
+        flex: 1 1 140px;
+    }
+}
+
+@media print {
+    @page {
+        size: A4;
+        margin: 0;
+    }
+
+    /* Lepaskan kerangka aplikasi agar formulir memakai seluruh halaman. */
+    body:has(#izin-cuti-atau-sakit) > :not(.shell) {
+        display: none !important;
+    }
+
+    body:has(#izin-cuti-atau-sakit) .shell {
+        position: static;
+        inset: auto;
+        display: block;
+        overflow: visible;
+    }
+
+    body:has(#izin-cuti-atau-sakit) .shell > nav,
+    body:has(#izin-cuti-atau-sakit) .shell > .bd {
+        display: none !important;
+    }
+
+    body:has(#izin-cuti-atau-sakit) main {
+        overflow: visible;
+        padding: 0;
+    }
+
+    #izin-cuti-atau-sakit .card,
+    #izin-cuti-atau-sakit .acts,
+    #izin-cuti-atau-sakit .toast,
+    #izin-cuti-atau-sakit .mn {
+        display: none !important;
+    }
+
+    #izin-cuti-atau-sakit .pg {
+        max-width: none;
+        padding: 0;
+    }
+
+    #izin-cuti-atau-sakit .stage {
+        margin: 0;
+    }
+
+    #izin-cuti-atau-sakit .fit {
+        width: auto !important;
+        height: auto !important;
+    }
+
+    #izin-cuti-atau-sakit .paper {
+        transform: none !important;
+        box-shadow: none !important;
+        width: 210mm;
+        min-height: 297mm;
+    }
+}

@@ -16,7 +16,7 @@ return [
                 ['label' => 'Permohonan', 'icon' => 'req', 'children' => [
                     ['label' => 'Permohonan Masuk', 'slug' => 'permohonan-masuk'],
                     ['label' => 'Permohonan Saya', 'slug' => 'permohonan-saya'],
-                    ['label' => 'Izin Cuti atau Sakit', 'slug' => 'izin-cuti-atau-sakit', 'view' => 'input-cuti-dan-sakit'],
+                    ['label' => 'Izin Cuti atau Sakit', 'slug' => 'izin-cuti-atau-sakit'],
                     ['label' => 'Izin Keluar Kantor', 'slug' => 'izin-keluar-kantor'],
                     ['label' => 'Izin Dinas Dalam Kota', 'slug' => 'izin-dinas-dalam-kota'],
                     ['label' => 'Izin Dinas Luar Kota', 'slug' => 'izin-dinas-luar-kota'],
