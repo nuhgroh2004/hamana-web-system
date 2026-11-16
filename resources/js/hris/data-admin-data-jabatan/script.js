@@ -10,7 +10,7 @@ function initDataAdminJabatan() {
     initializedRoots.add(root);
 
     // Data awal (ganti dengan data dari server)
-    var SEED = ['Intern', 'Driver', 'Assistant General Manager', 'General Manager', 'Operator', 'Officer', 'Leader', 'Head', 'Foreman', 'Supervisor'].map(
+    var SEED = ['Intern', 'Driver', 'Assistant General Manager', 'General Manager', 'Manager', 'Operator', 'Officer', 'Leader', 'Head', 'Foreman', 'Supervisor'].map(
         function (n, i) {
             return { id: 'j' + (i + 1), nama: n };
         },

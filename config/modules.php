@@ -42,7 +42,6 @@ return [
                 ['label' => 'Data Admin', 'icon' => 'shield', 'children' => [
                     ['label' => 'List Admin', 'slug' => 'data-admin-list-admin'],
                     ['label' => 'Data Tingkat', 'slug' => 'data-admin-tingkat', 'view' => 'data-admin-data-tingkat'],
-                    ['label' => 'Data Golongan', 'slug' => 'data-admin-golongan', 'view' => 'data-admin-data-golongan'],
                     ['label' => 'Data Jabatan', 'slug' => 'data-admin-jabatan', 'view' => 'data-admin-data-jabatan'],
                     ['label' => 'Data Faskes BPJS', 'slug' => 'data-admin-faskes-bpjs', 'view' => 'data-admin-data-faskes-bpjs'],
                     ['label' => 'List Satpam', 'slug' => 'list-satpam'],
