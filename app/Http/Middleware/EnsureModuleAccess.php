@@ -19,7 +19,7 @@ class EnsureModuleAccess
             return redirect()->guest(route('login'));
         }
 
-        $slug ??= (string) $request->route('module');
+        $slug ??= (string) ($request->route('module') ?? $request->route('panel'));
 
         abort_unless($user->canAccess($slug), 403);
 

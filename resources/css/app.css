@@ -2,7 +2,7 @@
 @import './master-komponen/layout.css';
 @import './pengaturan/pengaturan.css';
 @import './pengaturan/bahasa/style.css';
-@import './pengaturan/hak-akses-admin/style.css';
+@import './pengaturan/hak-akses/style.css';
 @import './pengaturan/absensi-by-foto/style.css';
 @import './pengaturan/daftar-hitam-presensi/style.css';
 @import './pengaturan/ubah-password/style.css';

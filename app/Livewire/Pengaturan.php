@@ -29,6 +29,19 @@ class Pengaturan extends Component
 
     public string $userStatus = '';
 
+    public ?int $selectedUserId = null;
+
+    public string $userQuery = '';
+
+    public string $roleFilter = 'all';
+
+    public string $moduleQuery = '';
+
+    /** @var list<int|string> */
+    public array $bulkUserIds = [];
+
+    public bool $selectAllResults = false;
+
     public string $newPassword = '';
 
     public string $newPasswordConfirmation = '';
@@ -40,11 +53,23 @@ class Pengaturan extends Component
      */
     public function mount(?string $panel = null): void
     {
-        $panel = $panel ?: 'bahasa';
+        $panels = $this->panels();
 
-        abort_unless(in_array($panel, array_column($this->panels(), 'slug'), true), 404);
+        if ($panel === null) {
+            $panel = $panels[0]['slug'] ?? null;
+        }
+
+        abort_unless($panel !== null && in_array($panel, array_column($panels, 'slug'), true), 403);
 
         $this->panel = $panel;
+
+        if ($this->panel === 'hak-akses' && $this->selectedUserId === null) {
+            $this->selectedUserId = User::query()
+                ->where('role', 'karyawan')
+                ->orderBy('name')
+                ->value('id')
+                ?? User::query()->orderBy('name')->value('id');
+        }
     }
 
     /**
@@ -54,23 +79,25 @@ class Pengaturan extends Component
      */
     public function panels(): array
     {
-        $isAdmin = auth()->user()?->isAdmin() ?? false;
+        $user = auth()->user();
 
-        $panels = [
-            ['slug' => 'bahasa', 'name' => 'Bahasa', 'icon' => 'globe', 'admin' => false],
-            ['slug' => 'hak-akses-admin', 'name' => 'Hak Akses Admin', 'icon' => 'shield', 'admin' => true],
-            ['slug' => 'absensi-by-foto', 'name' => 'Absensi by Foto', 'icon' => 'camera', 'admin' => true],
-            ['slug' => 'daftar-hitam-presensi', 'name' => 'Daftar Hitam Presensi', 'icon' => 'ban', 'admin' => true],
-            ['slug' => 'ubah-password', 'name' => 'Ubah Password', 'icon' => 'lock', 'admin' => false],
-        ];
+        $panels = [];
 
-        $panels = array_values(array_filter($panels, fn (array $item) => $isAdmin || ! $item['admin']));
+        foreach (Modules::settings() as $item) {
+            $slug = $item['slug'] ?? null;
 
-        return array_map(fn (array $item) => [
-            'slug' => $item['slug'],
-            'name' => $item['name'],
-            'icon' => $item['icon'],
-        ], $panels);
+            if (! $slug || ! $user?->canAccess($slug)) {
+                continue;
+            }
+
+            $panels[] = [
+                'slug' => $slug,
+                'name' => $item['label'],
+                'icon' => $item['icon'] ?? 'gear',
+            ];
+        }
+
+        return $panels;
     }
 
     /**
@@ -198,7 +225,106 @@ class Pengaturan extends Component
             $this->cancelUserForm();
         }
 
+        if ($this->selectedUserId === $userId) {
+            $this->selectedUserId = null;
+        }
+
+        $this->bulkUserIds = array_values(array_diff($this->bulkUserIds, [$userId]));
+
         $this->userStatus = 'Pengguna dihapus.';
+    }
+
+    /**
+     * Select a user whose access is shown on the right panel.
+     */
+    public function selectUser(int $userId): void
+    {
+        $this->selectedUserId = $userId;
+    }
+
+    /**
+     * Change the role filter of the user list.
+     */
+    public function setRoleFilter(string $role): void
+    {
+        if (! in_array($role, ['all', 'admin', 'karyawan'], true)) {
+            return;
+        }
+
+        $this->roleFilter = $role;
+        $this->resetBulkSelection();
+    }
+
+    /**
+     * Clear the bulk selection when the search query changes.
+     */
+    public function updatedUserQuery(): void
+    {
+        $this->resetBulkSelection();
+    }
+
+    /**
+     * Select or clear every user currently visible in the list.
+     */
+    public function updatedSelectAllResults(bool $value): void
+    {
+        $this->bulkUserIds = $value
+            ? $this->filteredUsers()->pluck('id')->map(fn ($id) => (string) $id)->all()
+            : [];
+    }
+
+    /**
+     * Keep "Pilih semua hasil" in sync with manual checkbox changes.
+     */
+    public function updatedBulkUserIds(): void
+    {
+        $this->bulkUserIds = array_values(array_unique(array_map('strval', $this->bulkUserIds)));
+        $this->selectAllResults = $this->bulkUserIds !== []
+            && count($this->bulkUserIds) === $this->filteredUsers()->count();
+    }
+
+    /**
+     * Turn every module on for the selected or bulk-selected users.
+     */
+    public function activateAll(): void
+    {
+        $this->applyAllModules(true);
+    }
+
+    /**
+     * Turn every module off for the selected or bulk-selected users.
+     */
+    public function deactivateAll(): void
+    {
+        $this->applyAllModules(false);
+    }
+
+    /**
+     * Turn every module in one group on or off for a user.
+     */
+    public function toggleGroup(int $userId, int $groupKey, bool $on): void
+    {
+        $this->authorizeAdmin();
+
+        $group = collect($this->buildGroups())->firstWhere('key', $groupKey);
+
+        if (! $group) {
+            return;
+        }
+
+        $user = User::findOrFail($userId);
+
+        if ($user->isAdmin()) {
+            return;
+        }
+
+        $allowed = $user->permissionList();
+        $allowed = $on
+            ? array_values(array_unique(array_merge($allowed, $group['slugs'])))
+            : array_values(array_diff($allowed, $group['slugs']));
+
+        $user->permissions = $allowed;
+        $user->save();
     }
 
     /**
@@ -244,6 +370,178 @@ class Pengaturan extends Component
     }
 
     /**
+     * Users shown in the left-hand list.
+     */
+    protected function filteredUsers()
+    {
+        return User::query()
+            ->when(trim($this->userQuery) !== '', function ($query) {
+                $term = '%'.trim($this->userQuery).'%';
+
+                $query->where(function ($query) use ($term) {
+                    $query->where('name', 'like', $term)
+                        ->orWhere('nik', 'like', $term)
+                        ->orWhere('email', 'like', $term)
+                        ->orWhere('position', 'like', $term);
+                });
+            })
+            ->when($this->roleFilter !== 'all', fn ($query) => $query->where('role', $this->roleFilter))
+            ->orderByRaw("case when role = 'admin' then 0 else 1 end")
+            ->orderBy('name')
+            ->get();
+    }
+
+    /**
+     * Page groups shown in the selected user's access panel.
+     *
+     * @return list<array{key: int, label: string, pages: list<array{slug: string, label: string, section: ?string}>, slugs: list<string>, total: int}>
+     */
+    protected function buildGroups(): array
+    {
+        $needle = mb_strtolower(trim($this->moduleQuery));
+        $groups = [];
+
+        foreach (Modules::menu() as $groupKey => $group) {
+            // Grup navigasi (mis. pintu masuk Pengaturan) bukan halaman.
+            if (! empty($group['nav_only'])) {
+                continue;
+            }
+
+            $pages = [];
+
+            foreach ($group['items'] ?? [] as $item) {
+                if (! empty($item['children'])) {
+                    foreach ($item['children'] as $child) {
+                        if (empty($child['slug'])) {
+                            continue;
+                        }
+
+                        $page = [
+                            'slug' => $child['slug'],
+                            'label' => $child['label'],
+                            'section' => $item['label'] ?? null,
+                        ];
+
+                        if ($this->matchesModule($page, $needle)) {
+                            $pages[] = $page;
+                        }
+                    }
+
+                    continue;
+                }
+
+                if (empty($item['slug'])) {
+                    continue;
+                }
+
+                $page = [
+                    'slug' => $item['slug'],
+                    'label' => $item['label'],
+                    'section' => null,
+                ];
+
+                if ($this->matchesModule($page, $needle)) {
+                    $pages[] = $page;
+                }
+            }
+
+            if ($pages === []) {
+                continue;
+            }
+
+            $groups[] = [
+                'key' => $groupKey,
+                'label' => $group['label'] ?? 'Lainnya',
+                'pages' => $pages,
+                'slugs' => array_column($pages, 'slug'),
+                'total' => count($pages),
+            ];
+        }
+
+        return $groups;
+    }
+
+    /**
+     * Check whether a page matches the module search query.
+     */
+    protected function matchesModule(array $page, string $needle): bool
+    {
+        if ($needle === '') {
+            return true;
+        }
+
+        $haystack = mb_strtolower($page['label'].' '.($page['section'] ?? ''));
+
+        return str_contains($haystack, $needle);
+    }
+
+    /**
+     * Users affected by the bulk actions: the checked rows, or the selected user.
+     */
+    protected function actionUsers()
+    {
+        $ids = array_values(array_filter(array_map('intval', $this->bulkUserIds)));
+
+        if ($ids !== []) {
+            return User::query()->whereKey($ids)->orderBy('name')->get();
+        }
+
+        return $this->selectedUserId
+            ? User::query()->whereKey($this->selectedUserId)->get()
+            : User::query()->whereRaw('1 = 0')->get();
+    }
+
+    /**
+     * Turn every module on or off for the affected users.
+     */
+    protected function applyAllModules(bool $on): void
+    {
+        $this->authorizeAdmin();
+
+        $users = $this->actionUsers();
+
+        if ($users->isEmpty()) {
+            $this->userStatus = 'Pilih pengguna terlebih dahulu.';
+
+            return;
+        }
+
+        $slugs = array_keys(Modules::all());
+        $count = 0;
+
+        foreach ($users as $user) {
+            if ($user->isAdmin()) {
+                continue;
+            }
+
+            $user->permissions = $on ? $slugs : [];
+            $user->save();
+            $count++;
+        }
+
+        $this->userStatus = $on
+            ? "Akses semua halaman diaktifkan untuk {$count} pengguna."
+            : "Akses semua halaman dinonaktifkan untuk {$count} pengguna.";
+    }
+
+    /**
+     * Clear the bulk selection from the interface.
+     */
+    public function clearSelection(): void
+    {
+        $this->resetBulkSelection();
+    }
+
+    /**
+     * Drop the bulk selection.
+     */
+    protected function resetBulkSelection(): void
+    {
+        $this->bulkUserIds = [];
+        $this->selectAllResults = false;
+    }
+
+    /**
      * Change the authenticated user's password.
      */
     public function updatePassword(): void
@@ -262,14 +560,25 @@ class Pengaturan extends Component
 
     public function render()
     {
+        $users = $this->filteredUsers();
+
+        $selectedUser = $this->selectedUserId
+            ? User::query()->find($this->selectedUserId)
+            : null;
+
+        $bulkUsers = $this->bulkUserIds === []
+            ? User::query()->whereRaw('1 = 0')->get()
+            : User::query()->whereKey(array_map('intval', $this->bulkUserIds))->orderBy('name')->get();
+
         return view('pengaturan.index', [
             'panels' => $this->panels(),
             'panel' => $this->panel,
-            'users' => User::query()
-                ->orderByRaw("case when role = 'admin' then 0 else 1 end")
-                ->orderBy('name')
-                ->get(),
-            'moduleGroups' => Modules::menu(),
+            'users' => $users,
+            'selectedUser' => $selectedUser,
+            'bulkUsers' => $bulkUsers,
+            'moduleGroups' => $this->buildGroups(),
+            'totalModules' => count(Modules::all()),
+            'canManage' => auth()->user()?->isAdmin() ?? false,
         ])->layout('components.layouts.app', [
             'title' => 'Pengaturan',
             'active' => 'pengaturan',

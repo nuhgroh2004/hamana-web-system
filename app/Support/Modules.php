@@ -26,9 +26,23 @@ class Modules
         $groups = [];
 
         foreach (static::menu() as $group) {
+            // Grup khusus permission tidak ditampilkan di sidebar utama.
+            if (! empty($group['permissions_only'])) {
+                continue;
+            }
+
             $items = [];
 
             foreach ($group['items'] ?? [] as $item) {
+                // Item navigasi yang bukan halaman (mis. pintu masuk Pengaturan).
+                if (($item['permission'] ?? true) === false) {
+                    if (! empty($item['settings']) && static::hasSettingsAccess($user)) {
+                        $items[] = $item;
+                    }
+
+                    continue;
+                }
+
                 if (! empty($item['children'])) {
                     $children = array_values(array_filter(
                         $item['children'],
@@ -62,6 +76,36 @@ class Modules
     }
 
     /**
+     * Settings pages that can be granted to a user.
+     *
+     * @return list<array{label: string, icon?: string, slug: string}>
+     */
+    public static function settings(): array
+    {
+        foreach (static::menu() as $group) {
+            if (! empty($group['permissions_only'])) {
+                return $group['items'] ?? [];
+            }
+        }
+
+        return [];
+    }
+
+    /**
+     * Whether the user can open at least one settings page.
+     */
+    protected static function hasSettingsAccess(User $user): bool
+    {
+        foreach (static::settings() as $page) {
+            if ($user->canAccess($page['slug'] ?? null)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
      * Flatten every module that has a slug into a keyed array.
      */
     public static function all(): array
@@ -90,6 +134,10 @@ class Modules
      */
     protected static function collect(array $item, array &$modules): void
     {
+        if (($item['permission'] ?? true) === false) {
+            return;
+        }
+
         if (! empty($item['slug'])) {
             $modules[$item['slug']] = $item;
         }

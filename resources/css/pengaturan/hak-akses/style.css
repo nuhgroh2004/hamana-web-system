@@ -1,0 +1,728 @@
+/*
+ * Panel Hak Akses.
+ * Semua aturan dibatasi pada #set-page agar kelas .ha-*, .icb, dan .ufm
+ * tidak bocor ke modul lain.
+ */
+
+/* Judul, deskripsi, dan tombol tambah tetap terlihat saat halaman digulir. */
+#set-page .ha-head {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 4px;
+    padding-bottom: 12px;
+    background: var(--bg);
+}
+
+#set-page .ha-head h2 {
+    margin: 0 0 4px;
+    padding: 0;
+    border: 0;
+    font-size: 28px;
+    font-weight: 400;
+}
+
+#set-page .ha-head .ds {
+    margin: 0;
+    font-size: 13.5px;
+}
+
+#set-page .ha-head .ubtn {
+    flex: none;
+}
+
+/* Menutup celah padding atas main agar konten tidak terlihat di atas judul. */
+#set-page .ha-head::before {
+    content: '';
+    position: absolute;
+    right: 0;
+    bottom: 100%;
+    left: 0;
+    height: 40px;
+    background: var(--bg);
+}
+
+#set-page .ha-form {
+    margin-bottom: 16px;
+}
+
+#set-page .ha-form .ufm {
+    border-bottom: 0;
+}
+
+/* Tombol ikon kecil (edit / hapus / tutup formulir). */
+#set-page .icb {
+    display: grid;
+    place-items: center;
+    width: 30px;
+    height: 30px;
+    border: 1px solid transparent;
+    border-radius: 6px;
+    background: transparent;
+    color: var(--mute);
+}
+
+#set-page .icb:hover {
+    background: var(--hov);
+    color: var(--fg);
+}
+
+/* ===== Dua kolom: daftar pengguna + panel akses ===== */
+#set-page .ha-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 300px) minmax(0, 1fr);
+    gap: 16px;
+    align-items: start;
+}
+
+#set-page .ha-left,
+#set-page .ha-right {
+    min-width: 0;
+    border: 1px solid var(--bd);
+    border-radius: 6px;
+    background: var(--bg);
+    overflow: hidden;
+}
+
+/* Kolom kanan: kartu akses beserta catatan di bawahnya. */
+#set-page .ha-right-col {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+/* Kartu daftar pengguna tetap diam di bawah judul; panel akses yang bergulir. */
+#set-page .ha-left {
+    position: sticky;
+    top: 82px;
+}
+
+/* ===== Kolom kiri ===== */
+#set-page .ha-left-head {
+    padding: 12px;
+    background: var(--bg2);
+    border-bottom: 1px solid var(--bd);
+}
+
+#set-page .ha-search {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    height: 34px;
+    padding: 0 10px;
+    border: 1px solid var(--bd);
+    border-radius: 6px;
+    background: var(--bg);
+    color: var(--mute);
+}
+
+#set-page .ha-search:focus-within {
+    border-color: var(--blue);
+    box-shadow: 0 0 0 1px var(--blue);
+}
+
+#set-page .ha-search input {
+    flex: 1;
+    min-width: 0;
+    border: 0;
+    outline: 0;
+    background: transparent;
+    color: var(--fg);
+    font: inherit;
+    font-size: 13px;
+}
+
+#set-page .ha-tabs {
+    display: flex;
+    gap: 2px;
+    margin-top: 10px;
+    padding: 2px;
+    border: 1px solid var(--bd);
+    border-radius: 6px;
+    background: var(--bg2);
+}
+
+#set-page .ha-tab {
+    flex: 1;
+    height: 26px;
+    padding: 0 4px;
+    border: 0;
+    border-radius: 4px;
+    background: transparent;
+    color: var(--mute);
+    font-size: 12.5px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+#set-page .ha-tab:hover {
+    background: var(--hov);
+    color: var(--fg);
+}
+
+#set-page .ha-tab.on {
+    background: var(--bg);
+    color: var(--fg);
+    box-shadow: 0 0 0 1px var(--bd), 0 1px 2px rgba(31, 35, 40, 0.08);
+}
+
+#set-page .ha-tab:focus-visible {
+    outline: 2px solid var(--blue);
+    outline-offset: 1px;
+}
+
+#set-page .ha-pickall {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 10px;
+    color: var(--mute);
+    font-size: 12.5px;
+    cursor: pointer;
+}
+
+#set-page .ha-pickall input,
+#set-page .ha-check input {
+    width: 15px;
+    height: 15px;
+    margin: 0;
+    accent-color: var(--blue);
+    cursor: pointer;
+    flex: none;
+}
+
+#set-page .ha-pickall b {
+    margin-left: auto;
+    color: var(--fg);
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+}
+
+#set-page .ha-users {
+    max-height: max(160px, min(520px, calc(100vh - 364px)));
+    overflow-y: auto;
+    overscroll-behavior: contain;
+}
+
+#set-page .ha-item {
+    position: relative;
+    display: flex;
+    align-items: stretch;
+    border-top: 1px solid var(--bd);
+}
+
+#set-page .ha-item:first-child {
+    border-top: 0;
+}
+
+#set-page .ha-item:hover {
+    background: var(--bg2);
+}
+
+#set-page .ha-item.on {
+    background: rgba(9, 105, 218, 0.08);
+}
+
+#set-page .ha-item.on::before {
+    content: '';
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: 3px;
+    background: var(--blue);
+}
+
+#set-page .ha-check {
+    display: flex;
+    align-items: center;
+    padding-left: 12px;
+}
+
+#set-page .ha-open {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px 10px 8px;
+    border: 0;
+    background: transparent;
+    color: inherit;
+    text-align: left;
+}
+
+#set-page .ha-open:focus-visible {
+    outline: 2px solid var(--blue);
+    outline-offset: -2px;
+}
+
+#set-page .ha-avatar {
+    display: grid;
+    place-items: center;
+    flex: none;
+    width: 32px;
+    height: 32px;
+    border: 1px solid var(--bd);
+    border-radius: 50%;
+    background: var(--bg2);
+    color: var(--mute);
+    font-size: 13px;
+    font-weight: 600;
+}
+
+#set-page .ha-avatar.lg {
+    width: 44px;
+    height: 44px;
+    font-size: 17px;
+}
+
+#set-page .ha-avatar.admin {
+    border-color: #e2c8ff;
+    background: #fbefff;
+    color: #8250df;
+}
+
+#set-page .ha-who {
+    display: grid;
+    gap: 1px;
+    flex: 1;
+    min-width: 0;
+}
+
+#set-page .ha-who b {
+    overflow: hidden;
+    font-size: 13.5px;
+    font-weight: 600;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+#set-page .ha-who small {
+    overflow: hidden;
+    color: var(--mute);
+    font-size: 12px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+#set-page .ha-tally {
+    flex: none;
+    padding: 0 6px;
+    border: 1px solid var(--bd);
+    border-radius: 999px;
+    background: var(--bg);
+    color: var(--mute);
+    font-size: 11.5px;
+    line-height: 19px;
+    font-variant-numeric: tabular-nums;
+}
+
+#set-page .ha-left-foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 8px 12px;
+    border-top: 1px solid var(--bd);
+    background: var(--bg2);
+    color: var(--mute);
+    font-size: 12px;
+}
+
+#set-page .ha-picked {
+    color: var(--blue);
+    font-weight: 600;
+}
+
+/* Catatan "Perubahan langsung tersimpan." di sisi kanan panel. */
+#set-page .ha-note {
+    justify-content: flex-end;
+    text-align: right;
+}
+
+#set-page .ha-empty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin: 0;
+    padding: 28px 16px;
+    color: var(--mute);
+    font-size: 13px;
+    text-align: center;
+    line-height: 1.45;
+}
+
+/* ===== Kolom kanan: profil pengguna ===== */
+#set-page .ha-profile {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 16px;
+    background: var(--bg2);
+    border-bottom: 1px solid var(--bd);
+}
+
+#set-page .ha-profile-info {
+    flex: 1;
+    min-width: 0;
+}
+
+#set-page .ha-profile-info h3 {
+    margin: 0 0 2px;
+    font-size: 16px;
+    font-weight: 600;
+    overflow-wrap: anywhere;
+}
+
+#set-page .ha-profile-info p {
+    margin: 0 0 6px;
+    color: var(--mute);
+    font-size: 12.5px;
+    overflow-wrap: anywhere;
+}
+
+#set-page .ha-profile-info p.ha-email {
+    margin-bottom: 6px;
+    font-size: 12px;
+}
+
+#set-page .ha-profile-badges {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+#set-page .ha-badge {
+    display: inline-flex;
+    align-items: center;
+    height: 20px;
+    padding: 0 8px;
+    border: 1px solid var(--bd);
+    border-radius: 999px;
+    font-size: 11.5px;
+    font-weight: 600;
+}
+
+#set-page .ha-badge.admin {
+    border-color: #e2c8ff;
+    background: #fbefff;
+    color: #8250df;
+}
+
+#set-page .ha-badge.karyawan {
+    border-color: var(--okbd);
+    background: var(--okbg);
+    color: var(--green);
+}
+
+#set-page .ha-meta {
+    color: var(--mute);
+    font-size: 11.5px;
+    font-variant-numeric: tabular-nums;
+}
+
+/* ===== Daftar akses halaman ===== */
+#set-page .ha-access {
+    padding: 16px;
+}
+
+#set-page .ha-access-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px 12px;
+    margin-bottom: 12px;
+}
+
+#set-page .ha-access-head h4 {
+    margin: 0 0 2px;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+#set-page .ha-access-head p {
+    margin: 0;
+    color: var(--mute);
+    font-size: 12.5px;
+}
+
+#set-page .ha-access-actions {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+#set-page .ha-access-actions .ubtn {
+    height: 28px;
+    padding: 0 10px;
+    font-size: 12.5px;
+}
+
+#set-page .ha-access-actions .ubtn .i {
+    width: 14px;
+    height: 14px;
+}
+
+#set-page .ha-access-actions .ubtn.subtle {
+    color: var(--mute);
+}
+
+#set-page .ha-bulk {
+    display: inline-flex;
+    align-items: center;
+    height: 24px;
+    padding: 0 8px;
+    border: 1px solid var(--bd);
+    border-radius: 999px;
+    background: var(--bg2);
+    color: var(--mute);
+    font-size: 11.5px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+#set-page .ha-module-search {
+    height: 32px;
+    margin-bottom: 12px;
+}
+
+#set-page .ha-locked {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0 0 12px;
+    padding: 10px 12px;
+    border: 1px solid var(--okbd);
+    border-radius: 6px;
+    background: var(--okbg);
+    color: var(--green);
+    font-size: 12.5px;
+}
+
+#set-page .ha-group {
+    margin-bottom: 12px;
+    border: 1px solid var(--bd);
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+#set-page .ha-group:last-child {
+    margin-bottom: 0;
+}
+
+#set-page .ha-group-head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 12px;
+    background: var(--bg2);
+    border-bottom: 1px solid var(--bd);
+}
+
+#set-page .ha-group-name {
+    font-size: 13px;
+    font-weight: 600;
+    overflow-wrap: anywhere;
+}
+
+#set-page .ha-group-count {
+    margin-left: auto;
+    color: var(--mute);
+    font-size: 11.5px;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+}
+
+#set-page .ha-page {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 12px;
+    cursor: pointer;
+}
+
+#set-page .ha-page + .ha-page {
+    border-top: 1px solid var(--bd);
+}
+
+#set-page .ha-page:hover {
+    background: var(--bg2);
+}
+
+#set-page .ha-page-label {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    font-size: 13px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+#set-page .ha-page-label small {
+    color: var(--mute);
+    font-size: 11.5px;
+}
+
+#set-page .ha-page-label small::after {
+    content: '·';
+    margin: 0 5px;
+}
+
+/* ===== Sakelar akses ===== */
+#set-page .ha-switch {
+    position: relative;
+    display: inline-flex;
+    flex: none;
+    width: 34px;
+    height: 20px;
+}
+
+#set-page .ha-switch input {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    opacity: 0;
+    cursor: pointer;
+}
+
+#set-page .ha-track {
+    position: relative;
+    width: 34px;
+    height: 20px;
+    border-radius: 999px;
+    background: var(--bd);
+    transition: background 0.15s;
+}
+
+#set-page .ha-track::after {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #fff;
+    box-shadow: 0 1px 2px rgba(31, 35, 40, 0.25);
+    transition: transform 0.15s;
+}
+
+#set-page .ha-switch input:checked + .ha-track {
+    background: var(--green);
+}
+
+#set-page .ha-switch input:checked + .ha-track::after {
+    transform: translateX(14px);
+}
+
+#set-page .ha-switch input:focus-visible + .ha-track {
+    outline: 2px solid var(--blue);
+    outline-offset: 2px;
+}
+
+#set-page .ha-switch input:disabled {
+    cursor: not-allowed;
+}
+
+#set-page .ha-switch input:disabled + .ha-track {
+    opacity: 0.55;
+}
+
+/* ===== Keadaan kosong ===== */
+#set-page .ha-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    padding: 64px 24px;
+    color: var(--mute);
+    text-align: center;
+}
+
+#set-page .ha-placeholder svg {
+    width: 28px;
+    height: 28px;
+    margin-bottom: 4px;
+}
+
+#set-page .ha-placeholder b {
+    color: var(--fg);
+    font-size: 14px;
+}
+
+#set-page .ha-placeholder p {
+    margin: 0;
+    max-width: 280px;
+    font-size: 12.5px;
+    line-height: 1.45;
+}
+
+/* ===== Mode gelap ===== */
+@media (prefers-color-scheme: dark) {
+    #set-page .ha-item.on {
+        background: rgba(68, 147, 248, 0.12);
+    }
+
+    #set-page .ha-avatar.admin,
+    #set-page .ha-badge.admin {
+        border-color: #4a2d5e;
+        background: #2d1b3d;
+        color: #c297ff;
+    }
+
+    #set-page .ha-tab.on {
+        box-shadow: 0 0 0 1px var(--bd), 0 1px 2px rgba(0, 0, 0, 0.4);
+    }
+}
+
+/* ===== Responsif ===== */
+@media (max-width: 1240px) {
+    #set-page .ha-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+
+    /* Satu kolom: kartu pengguna ikut bergulir agar tidak menutupi panel akses. */
+    #set-page .ha-left {
+        position: static;
+        top: auto;
+    }
+
+    #set-page .ha-users {
+        max-height: 320px;
+    }
+}
+
+@media (max-width: 760px) {
+    #set-page .ha-head {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    #set-page .ha-head .ubtn {
+        align-self: flex-start;
+    }
+
+    #set-page .ha-profile {
+        padding: 12px;
+    }
+
+    #set-page .ha-access {
+        padding: 12px;
+    }
+
+    #set-page .ha-access-actions {
+        width: 100%;
+    }
+}

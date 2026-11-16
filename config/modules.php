@@ -83,8 +83,27 @@ return [
         ],
         [
             'separator' => true,
+            'nav_only' => true,
             'items' => [
-                ['label' => 'Pengaturan', 'icon' => 'gear', 'slug' => 'pengaturan', 'route' => 'pengaturan'],
+                [
+                    'label' => 'Pengaturan',
+                    'icon' => 'gear',
+                    'slug' => 'pengaturan',
+                    'route' => 'pengaturan',
+                    'permission' => false,
+                    'settings' => true,
+                ],
+            ],
+        ],
+        [
+            'label' => 'Setting',
+            'permissions_only' => true,
+            'items' => [
+                ['label' => 'Bahasa', 'icon' => 'globe', 'slug' => 'bahasa'],
+                ['label' => 'Hak Akses', 'icon' => 'shield', 'slug' => 'hak-akses'],
+                ['label' => 'Absensi by Foto', 'icon' => 'camera', 'slug' => 'absensi-by-foto'],
+                ['label' => 'Daftar Hitam Presensi', 'icon' => 'ban', 'slug' => 'daftar-hitam-presensi'],
+                ['label' => 'Ubah Password', 'icon' => 'lock', 'slug' => 'ubah-password'],
             ],
         ],
     ],
