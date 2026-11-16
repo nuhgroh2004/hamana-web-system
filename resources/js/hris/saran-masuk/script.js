@@ -365,6 +365,19 @@ function initSaranMasuk() {
             return n < 1048576 ? Math.max(1, Math.round(n / 1024)) + ' KB' : (n / 1048576).toFixed(1) + ' MB';
         }
 
+        var BLN = { Jan: '01', Feb: '02', Mar: '03', Apr: '04', Mei: '05', Jun: '06', Jul: '07', Agu: '08', Sep: '09', Okt: '10', Nov: '11', Des: '12' };
+
+        function fmtWaktu(v) {
+            var p = String(v || '').replace(',', '').split(/\s+/);
+            var j = p.length > 3 ? p[3].split(':') : [];
+
+            if (p.length < 4 || j.length < 2) {
+                return String(v || '');
+            }
+
+            return ('0' + p[0]).slice(-2) + '-' + (BLN[p[1]] || p[1]) + '-' + p[2] + ' ' + ('0' + j[0]).slice(-2) + ':' + ('0' + j[1]).slice(-2);
+        }
+
         function render() {
             var pages = Math.max(1, Math.ceil(all.length / SIZE));
 
@@ -386,6 +399,8 @@ function initSaranMasuk() {
                         esc(r.nik) +
                         '</td><td class="nw">' +
                         esc(r.nama) +
+                        '</td><td class="nw wt">' +
+                        esc(fmtWaktu(r.tgl)) +
                         '</td><td><div class="sx">' +
                         esc(r.saran.replace(/\n/g, ' ')) +
                         '</div></td><td><div class="at">' +

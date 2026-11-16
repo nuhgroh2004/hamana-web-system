@@ -145,6 +145,10 @@
     white-space: nowrap;
 }
 
+#saran-masuk .wt {
+    font-variant-numeric: tabular-nums;
+}
+
 #saran-masuk .sx {
     max-width: 440px;
     overflow: hidden;

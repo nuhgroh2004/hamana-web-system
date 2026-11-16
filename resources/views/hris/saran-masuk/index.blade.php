@@ -6,7 +6,7 @@
             <div class="tw">
                 <table>
                     <thead>
-                        <tr><th>NIK</th><th>Nama</th><th>Saran</th><th>Lampiran</th></tr>
+                        <tr><th>NIK</th><th>Nama</th><th>Waktu</th><th>Saran</th><th>Lampiran</th></tr>
                     </thead>
                     <tbody id="tb"></tbody>
                 </table>
