@@ -1,27 +1,33 @@
+/*
+ * Gaya halaman Pengaturan.
+ * Semua aturan dibatasi pada #set-page agar tidak bocor ke modul lain
+ * (mis. .hd, .ds, .cd, .srch, .em yang juga dipakai di modul HRIS).
+ */
+
 main.set-page {
     padding-left: 20px;
     padding-right: 32px;
 }
 
-.set {
+#set-page .set {
     display: flex;
     gap: 32px;
     align-items: flex-start;
 }
 
-.spn {
+#set-page .spn {
     flex: none;
     width: 240px;
     position: sticky;
     top: 0;
 }
 
-.scn {
+#set-page .scn {
     flex: 1;
     min-width: 0;
 }
 
-.srch {
+#set-page .srch {
     display: flex;
     align-items: center;
     gap: 8px;
@@ -34,12 +40,12 @@ main.set-page {
     color: var(--mute);
 }
 
-.srch:focus-within {
+#set-page .srch:focus-within {
     border-color: var(--blue);
     box-shadow: 0 0 0 1px var(--blue);
 }
 
-.srch input {
+#set-page .srch input {
     flex: 1;
     min-width: 0;
     border: 0;
@@ -49,7 +55,7 @@ main.set-page {
     font: inherit;
 }
 
-.si {
+#set-page .si {
     position: relative;
     display: flex;
     align-items: center;
@@ -66,22 +72,22 @@ main.set-page {
     transition: background 0.15s;
 }
 
-.si:hover {
+#set-page .si:hover {
     background: var(--hov);
 }
 
-.si .ic {
+#set-page .si .ic {
     display: grid;
     place-items: center;
     color: var(--mute);
 }
 
-.si.on {
+#set-page .si.on {
     background: var(--hov);
     font-weight: 600;
 }
 
-.si.on::before {
+#set-page .si.on::before {
     content: "";
     position: absolute;
     left: -10px;
@@ -89,10 +95,10 @@ main.set-page {
     bottom: 8px;
     width: 4px;
     border-radius: 6px;
-    background: #fd8c73;
+    background: #004098;
 }
 
-.scn h2 {
+#set-page .scn h2 {
     font-size: 28px;
     font-weight: 400;
     margin: 0 0 16px;
@@ -100,25 +106,25 @@ main.set-page {
     border-bottom: 1px solid var(--bd);
 }
 
-.ds {
+#set-page .ds {
     color: var(--mute);
     margin: 0 0 16px;
 }
 
-.cd {
+#set-page .cd {
     background: var(--bg);
     border: 1px solid var(--bd);
     border-radius: 6px;
     overflow: hidden;
 }
 
-.hd {
+#set-page .hd {
     padding: 12px 16px;
     background: var(--bg2);
     font-weight: 600;
 }
 
-.nt {
+#set-page .nt {
     display: flex;
     align-items: center;
     gap: 8px;
@@ -127,12 +133,12 @@ main.set-page {
     margin: 12px 0 0;
 }
 
-.nt svg {
+#set-page .nt svg {
     color: var(--bar);
 }
 
 /* Form dan tombol yang dipakai beberapa panel pengaturan */
-.ubtn {
+#set-page .ubtn {
     display: inline-flex;
     align-items: center;
     gap: 6px;
@@ -144,32 +150,32 @@ main.set-page {
     font-weight: 600;
 }
 
-.ubtn:hover {
+#set-page .ubtn:hover {
     background: var(--hov);
 }
 
-.ubtn.primary {
+#set-page .ubtn.primary {
     border-color: var(--blue);
     background: var(--blue);
     color: #fff;
 }
 
-.ubtn.primary:hover {
+#set-page .ubtn.primary:hover {
     filter: brightness(1.08);
 }
 
-.ubtn:disabled {
+#set-page .ubtn:disabled {
     opacity: 0.6;
     cursor: default;
 }
 
-.ufm {
+#set-page .ufm {
     padding: 16px;
     background: var(--bg2);
     border-bottom: 1px solid var(--bd);
 }
 
-.ufm-h {
+#set-page .ufm-h {
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -177,21 +183,21 @@ main.set-page {
     margin-bottom: 12px;
 }
 
-.ufm-g {
+#set-page .ufm-g {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 12px;
 }
 
-.ufm label {
+#set-page .ufm label {
     display: block;
     color: var(--mute);
     font-size: 12.5px;
     font-weight: 600;
 }
 
-.ufm input,
-.ufm select {
+#set-page .ufm input,
+#set-page .ufm select {
     width: 100%;
     height: 36px;
     margin-top: 4px;
@@ -203,20 +209,20 @@ main.set-page {
     font: inherit;
 }
 
-.ufm input:focus,
-.ufm select:focus {
+#set-page .ufm input:focus,
+#set-page .ufm select:focus {
     outline: 0;
     border-color: var(--blue);
     box-shadow: 0 0 0 1px var(--blue);
 }
 
-.ufm-f {
+#set-page .ufm-f {
     display: flex;
     gap: 8px;
     margin-top: 14px;
 }
 
-.err-line {
+#set-page .err-line {
     display: block;
     margin-top: 4px;
     color: #cf222e;
@@ -224,7 +230,7 @@ main.set-page {
     font-weight: 400;
 }
 
-.ustat {
+#set-page .ustat {
     margin: 0;
     padding: 10px 16px;
     border-bottom: 1px solid var(--okbd);
@@ -233,20 +239,20 @@ main.set-page {
     font-size: 13px;
 }
 
-.ustat.error {
+#set-page .ustat.error {
     border-bottom-color: #ffcecb;
     background: #ffebe9;
     color: #cf222e;
 }
 
 @media (prefers-color-scheme: dark) {
-    .ustat.error {
+    #set-page .ustat.error {
         border-bottom-color: #6e2b2b;
         background: #3d1d1f;
         color: #ff7b72;
     }
 
-    .err-line {
+    #set-page .err-line {
         color: #ff7b72;
     }
 }
@@ -257,18 +263,18 @@ main.set-page {
         padding-right: 16px;
     }
 
-    .set {
+    #set-page .set {
         flex-direction: column;
         gap: 16px;
         align-items: stretch;
     }
 
-    .spn {
+    #set-page .spn {
         width: auto;
         position: static;
     }
 
-    .ufm-g {
+    #set-page .ufm-g {
         grid-template-columns: 1fr;
     }
 }

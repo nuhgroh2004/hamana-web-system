@@ -1,4 +1,10 @@
-.ua-bar {
+/*
+ * Panel Hak Akses Admin.
+ * Dibatasi pada #set-page agar kelas pendek (.us, .ua, .ui, .ub, .un, .cnt, dst.)
+ * tidak bocor ke modul lain.
+ */
+
+#set-page .ua-bar {
     display: flex;
     justify-content: flex-end;
     padding: 12px 16px;
@@ -6,13 +12,13 @@
     border-bottom: 1px solid var(--bd);
 }
 
-.ua-actions {
+#set-page .ua-actions {
     display: flex;
     gap: 2px;
     margin-left: 4px;
 }
 
-.icb {
+#set-page .icb {
     display: grid;
     place-items: center;
     width: 30px;
@@ -23,38 +29,38 @@
     color: var(--mute);
 }
 
-.icb:hover {
+#set-page .icb:hover {
     background: var(--hov);
     color: var(--fg);
 }
 
-.icb.danger:hover {
+#set-page .icb.danger:hover {
     color: #cf222e;
     background: #ffebe9;
 }
 
-.us {
+#set-page .us {
     display: grid;
     gap: 12px;
     padding: 12px;
     background: var(--bg2);
 }
 
-.uc {
+#set-page .uc {
     border: 1px solid var(--bd);
     border-radius: 8px;
     background: var(--bg);
     overflow: hidden;
 }
 
-.uh {
+#set-page .uh {
     display: flex;
     align-items: center;
     gap: 12px;
     padding: 14px 16px;
 }
 
-.ua {
+#set-page .ua {
     flex: none;
     display: grid;
     place-items: center;
@@ -66,23 +72,23 @@
     font-weight: 700;
 }
 
-.ui {
+#set-page .ui {
     flex: 1;
     min-width: 0;
 }
 
-.ui b {
+#set-page .ui b {
     display: block;
     font-size: 14px;
 }
 
-.ui small {
+#set-page .ui small {
     display: block;
     color: var(--mute);
     font-size: 12.5px;
 }
 
-.ub {
+#set-page .ub {
     flex: none;
     padding: 2px 10px;
     border: 1px solid var(--bd);
@@ -93,19 +99,19 @@
     text-transform: capitalize;
 }
 
-.ub.admin {
+#set-page .ub.admin {
     color: #8250df;
     border-color: #d8c4f5;
     background: #f6f0ff;
 }
 
-.ub.karyawan {
+#set-page .ub.karyawan {
     color: var(--blue);
     border-color: #b6d4f5;
     background: #eef6ff;
 }
 
-.un {
+#set-page .un {
     display: flex;
     align-items: center;
     gap: 8px;
@@ -116,15 +122,15 @@
     font-size: 13px;
 }
 
-.un svg {
+#set-page .un svg {
     color: var(--bar);
 }
 
-.ud {
+#set-page .ud {
     border-top: 1px solid var(--bd);
 }
 
-.ud summary {
+#set-page .ud summary {
     display: flex;
     align-items: center;
     gap: 12px;
@@ -134,15 +140,15 @@
     list-style: none;
 }
 
-.ud summary::-webkit-details-marker {
+#set-page .ud summary::-webkit-details-marker {
     display: none;
 }
 
-.ud summary:hover {
+#set-page .ud summary:hover {
     background: var(--bg2);
 }
 
-.ud summary::after {
+#set-page .ud summary::after {
     content: "";
     width: 8px;
     height: 8px;
@@ -153,21 +159,21 @@
     transition: transform 0.2s;
 }
 
-.ud[open] summary::after {
+#set-page .ud[open] summary::after {
     transform: rotate(-135deg);
 }
 
-.cnt {
+#set-page .cnt {
     color: var(--mute);
     font-size: 12.5px;
     font-weight: 500;
 }
 
-.ug {
+#set-page .ug {
     border-top: 1px solid var(--bd);
 }
 
-.ugh {
+#set-page .ugh {
     padding: 10px 16px 4px;
     color: var(--mute);
     font-size: 12px;
@@ -176,19 +182,19 @@
     text-transform: uppercase;
 }
 
-.ugs {
+#set-page .ugs {
     padding: 8px 16px 2px;
     font-size: 13px;
     font-weight: 600;
 }
 
-.uf {
+#set-page .uf {
     padding: 12px 16px;
     border-top: 1px solid var(--bd);
     background: var(--bg2);
 }
 
-.rst {
+#set-page .rst {
     padding: 7px 12px;
     border: 1px solid var(--bd);
     border-radius: 6px;
@@ -197,40 +203,40 @@
     font-weight: 600;
 }
 
-.rst:hover {
+#set-page .rst:hover {
     background: var(--hov);
 }
 
-.rst:disabled {
+#set-page .rst:disabled {
     opacity: 0.6;
     cursor: default;
 }
 
 @media (prefers-color-scheme: dark) {
-    .ub.admin {
+    #set-page .ub.admin {
         color: #d2a8ff;
         border-color: #553098;
         background: #271c3a;
     }
 
-    .ub.karyawan {
+    #set-page .ub.karyawan {
         color: #79c0ff;
         border-color: #1f4b7a;
         background: #0d2236;
     }
 
-    .icb.danger:hover {
+    #set-page .icb.danger:hover {
         color: #ff7b72;
         background: #3d1d1f;
     }
 }
 
 @media (max-width: 900px) {
-    .uh {
+    #set-page .uh {
         flex-wrap: wrap;
     }
 
-    .ua-actions {
+    #set-page .ua-actions {
         margin-left: auto;
     }
 }

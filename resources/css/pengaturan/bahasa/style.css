@@ -1,4 +1,6 @@
-.lr {
+/* Panel Bahasa. Dibatasi pada #set-page agar tidak bocor ke modul lain. */
+
+#set-page .lr {
     display: flex;
     align-items: center;
     gap: 16px;
@@ -11,11 +13,11 @@
     color: var(--fg);
 }
 
-.lr:hover {
+#set-page .lr:hover {
     background: var(--bg2);
 }
 
-.lr .cc {
+#set-page .lr .cc {
     display: inline-grid;
     place-items: center;
     min-width: 30px;
@@ -28,30 +30,30 @@
     font-weight: 600;
 }
 
-.lr span b,
-.lr span small {
+#set-page .lr span b,
+#set-page .lr span small {
     display: block;
 }
 
-.lr span b {
+#set-page .lr span b {
     font-weight: 600;
 }
 
-.lr span small {
+#set-page .lr span small {
     color: var(--mute);
     font-size: 12.5px;
 }
 
-.lr > svg {
+#set-page .lr > svg {
     margin-left: auto;
     color: var(--bar);
     stroke-width: 2.2;
 }
 
-.lr .check {
+#set-page .lr .check {
     visibility: hidden;
 }
 
-.lr.selected .check {
+#set-page .lr.selected .check {
     visibility: visible;
 }

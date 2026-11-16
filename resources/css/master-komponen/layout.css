@@ -80,7 +80,7 @@ header {
     inset: 0 0 auto;
     z-index: 40;
     height: var(--hh);
-    padding: env(safe-area-inset-top, 0px) 8px 0;
+    padding: env(safe-area-inset-top, 0px) 32px 0 24px;
     display: flex;
     align-items: center;
     gap: 16px;
@@ -88,7 +88,9 @@ header {
     border-bottom: 1px solid var(--bd);
 }
 
-.ib {
+/* Tombol ikon navbar. Dibatasi pada header agar kelas .ib milik modul
+   (mis. kotak keterangan formulir) tidak ikut menjadi tombol. */
+header .ib {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -99,18 +101,23 @@ header {
     border-radius: 6px;
 }
 
-.ib:hover {
+/* Lebar 40px membuat ikon hamburger tepat segaris dengan ikon menu sidebar. */
+#menu {
+    width: 40px;
+}
+
+header .ib:hover {
     background: var(--hov);
 }
 
-.logo {
+header .logo {
     width: auto;
     height: 40px;
     flex: none;
     display: block;
 }
 
-.sp {
+header .sp {
     flex: 1;
 }
 
@@ -195,17 +202,13 @@ nav li.open > a .ch {
     transform: rotate(180deg);
 }
 
-nav li.act > a,
-nav li.has-act > a {
-    font-weight: 600;
-}
-
 nav li.act > a {
+    font-weight: 600;
     background: var(--hov);
 }
 
-nav li.t.act > a::before,
-nav li.t.has-act > a::before {
+/* Penanda menu aktif: hanya pada halaman yang sedang dibuka. */
+nav li.t.act > a::before {
     content: "";
     position: absolute;
     left: -10px;
@@ -213,7 +216,21 @@ nav li.t.has-act > a::before {
     bottom: 8px;
     width: 4px;
     border-radius: 6px;
-    background: #fd8c73;
+    background: #004098;
+}
+
+/* Grup dropdown tidak pernah memakai penanda aktif (hanya anak menunya).
+   Aturan ini sekaligus menetralkan sisa CSS lama yang masih termuat
+   pada halaman yang belum dimuat ulang setelah aset dibangun ulang. */
+nav li.t.has > a::before,
+nav li.t.has-act > a::before {
+    content: none;
+    background: none;
+}
+
+nav li.t.has > a,
+nav li.t.has-act > a {
+    font-weight: 400;
 }
 
 nav .sw {
@@ -230,9 +247,9 @@ nav .sw > ul {
     overflow: hidden;
     min-height: 0;
     visibility: hidden;
-    margin-left: 19px;
+    margin-left: -10px;
     padding-left: 10px;
-    border-left: 1px solid var(--bd);
+    border-left: 0;
     transition: visibility 0.25s;
 }
 
@@ -241,8 +258,20 @@ nav li.open > .sw > ul {
 }
 
 nav .sw a {
-    padding: 6px 12px;
+    padding: 6px 12px 6px 38px;
     font-size: 13.5px;
+}
+
+/* Anak menu yang dibuka memakai penanda aktif, bukan judul grupnya. */
+nav .sw li.act > a::before {
+    content: "";
+    position: absolute;
+    left: -10px;
+    top: 4px;
+    bottom: 4px;
+    width: 4px;
+    border-radius: 6px;
+    background: #004098;
 }
 
 nav li.sep {
@@ -294,11 +323,11 @@ nav .lf .lo:hover > svg {
     color: inherit;
 }
 
-.dot {
+header .dot {
     position: relative;
 }
 
-.dot::after {
+header .dot::after {
     content: "";
     position: absolute;
     top: -3px;
@@ -310,7 +339,7 @@ nav .lf .lo:hover > svg {
     border: 2px solid var(--bg2);
 }
 
-.dot.read::after {
+header .dot.read::after {
     display: none;
 }
 
@@ -360,6 +389,10 @@ main {
 }
 
 @media (max-width: 900px) {
+    header {
+        padding: env(safe-area-inset-top, 0px) 16px 0;
+    }
+
     nav {
         position: fixed;
         top: var(--hh);
@@ -367,6 +400,8 @@ main {
         left: 0;
         z-index: 30;
         width: 280px;
+        padding-left: 16px;
+        padding-right: 16px;
         margin-left: 0 !important;
         transform: translateX(-100%);
         border-right: 1px solid var(--bd);

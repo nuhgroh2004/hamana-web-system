@@ -1,4 +1,6 @@
-.pwarn {
+/* Panel Ubah Password. Dibatasi pada #set-page agar tidak bocor ke modul lain. */
+
+#set-page .pwarn {
     display: flex;
     align-items: flex-start;
     gap: 8px;
@@ -12,7 +14,7 @@
     line-height: 1.5;
 }
 
-.pwarn .i {
+#set-page .pwarn .i {
     margin-top: 2px;
     flex: none;
 }

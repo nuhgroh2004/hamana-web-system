@@ -1,4 +1,5 @@
-.em {
+/* Keadaan kosong pada daftar hitam presensi. Dibatasi pada halaman Pengaturan. */
+#set-page .em {
     padding: 32px;
     text-align: center;
     color: var(--mute);

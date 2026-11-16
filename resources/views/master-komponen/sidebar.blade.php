@@ -32,7 +32,12 @@
                     $href = $hasChildren
                         ? '#'
                         : (isset($item['route']) ? route($item['route']) : (isset($item['slug']) ? route('module', $item['slug']) : '#'));
-                    $isActive = $current === ($item['slug'] ?? null);
+                    $isActive = $hasChildren
+                        ? $current === ($item['slug'] ?? null)
+                        : (
+                            $current === ($item['slug'] ?? null)
+                            || (isset($item['route']) && request()->routeIs($item['route']))
+                        );
                     $childActive = $hasChildren && collect($item['children'])->contains(
                         fn ($child) => $current === ($child['slug'] ?? null)
                     );
