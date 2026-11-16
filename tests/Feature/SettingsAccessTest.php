@@ -170,8 +170,44 @@ class SettingsAccessTest extends TestCase
             ->test(Pengaturan::class, ['panel' => 'hak-akses'])
             ->assertSee('Setting')
             ->assertDontSee('Lainnya')
-            ->assertSee('Tambah Pengguna')
-            ->assertSee('Nonaktifkan semua')
+            ->assertDontSee('Tambah Pengguna')
+            ->assertDontSeeHtml('wire:click="activateAll"')
+            ->assertDontSeeHtml('wire:click="deactivateAll"')
+            ->assertSee('Default')
+            ->assertSee('Custom')
             ->assertSee('Daftar Hitam Presensi');
+    }
+
+    public function test_access_mode_cards_switch_between_default_and_custom(): void
+    {
+        $admin = $this->makeUser([
+            'email' => 'settings-mode@hamana.co.id',
+            'nik' => '9111.00.00.09',
+            'role' => 'admin',
+        ]);
+
+        $user = $this->makeUser([
+            'email' => 'settings-mode-user@hamana.co.id',
+            'nik' => '9111.00.00.10',
+            'permissions' => null,
+        ]);
+
+        $component = Livewire::actingAs($admin)
+            ->test(Pengaturan::class, ['panel' => 'hak-akses'])
+            ->call('selectUser', $user->id)
+            ->assertSeeHtml('class="ha-mode on"')
+            ->assertSeeHtml('type="radio"')
+            ->assertDontSeeHtml('<button type="button" class="ha-mode');
+
+        $component->call('useCustomAccess', $user->id);
+
+        $this->assertNotNull($user->fresh()->permissions);
+        $this->assertSame($user->permissionList(), $user->fresh()->permissionList());
+        $component->assertSeeHtml('class="ha-mode on"');
+
+        $component->call('useDefaultAccess', $user->id);
+
+        $this->assertNull($user->fresh()->permissions);
+        $component->assertSeeHtml('class="ha-mode on"');
     }
 }

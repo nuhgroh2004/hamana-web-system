@@ -4,7 +4,7 @@
  * tidak bocor ke modul lain.
  */
 
-/* Judul, deskripsi, dan tombol tambah tetap terlihat saat halaman digulir. */
+/* Judul dan deskripsi tetap terlihat saat halaman digulir. */
 #set-page .ha-head {
     position: sticky;
     top: 0;
@@ -29,10 +29,6 @@
 #set-page .ha-head .ds {
     margin: 0;
     font-size: 13.5px;
-}
-
-#set-page .ha-head .ubtn {
-    flex: none;
 }
 
 /* Menutup celah padding atas main agar konten tidak terlihat di atas judul. */
@@ -175,33 +171,6 @@
     outline-offset: 1px;
 }
 
-#set-page .ha-pickall {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-top: 10px;
-    color: var(--mute);
-    font-size: 12.5px;
-    cursor: pointer;
-}
-
-#set-page .ha-pickall input,
-#set-page .ha-check input {
-    width: 15px;
-    height: 15px;
-    margin: 0;
-    accent-color: var(--blue);
-    cursor: pointer;
-    flex: none;
-}
-
-#set-page .ha-pickall b {
-    margin-left: auto;
-    color: var(--fg);
-    font-weight: 600;
-    font-variant-numeric: tabular-nums;
-}
-
 #set-page .ha-users {
     max-height: max(160px, min(520px, calc(100vh - 364px)));
     overflow-y: auto;
@@ -235,19 +204,13 @@
     background: var(--blue);
 }
 
-#set-page .ha-check {
-    display: flex;
-    align-items: center;
-    padding-left: 12px;
-}
-
 #set-page .ha-open {
     flex: 1;
     min-width: 0;
     display: flex;
     align-items: center;
     gap: 10px;
-    padding: 10px 12px 10px 8px;
+    padding: 10px 12px;
     border: 0;
     background: transparent;
     color: inherit;
@@ -332,12 +295,6 @@
     font-size: 12px;
 }
 
-#set-page .ha-picked {
-    color: var(--blue);
-    font-weight: 600;
-}
-
-/* Catatan "Perubahan langsung tersimpan." di sisi kanan panel. */
 #set-page .ha-note {
     justify-content: flex-end;
     text-align: right;
@@ -454,24 +411,94 @@
 
 #set-page .ha-access-actions {
     display: flex;
-    align-items: center;
-    flex-wrap: wrap;
+    flex-direction: column;
+    align-items: flex-end;
     gap: 6px;
 }
 
-#set-page .ha-access-actions .ubtn {
-    height: 28px;
-    padding: 0 10px;
+/* Dua kartu mode akses: Default dan Custom. */
+#set-page .ha-modes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+#set-page .ha-mode {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    min-width: 148px;
+    padding: 7px 10px;
+    border: 1px solid var(--bd);
+    border-radius: 6px;
+    background: var(--bg2);
+    cursor: pointer;
+    transition: border-color .12s, box-shadow .12s, background .12s;
+}
+
+#set-page .ha-mode:hover {
+    border-color: var(--mute);
+}
+
+#set-page .ha-mode.on {
+    border-color: var(--blue);
+    background: var(--bg);
+    box-shadow: inset 0 0 0 1px var(--blue);
+}
+
+#set-page .ha-mode input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+    pointer-events: none;
+}
+
+#set-page .ha-mode:has(input:disabled) {
+    cursor: default;
+}
+
+#set-page .ha-mode-text {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    line-height: 1.2;
+}
+
+#set-page .ha-mode-text b {
     font-size: 12.5px;
+    font-weight: 600;
 }
 
-#set-page .ha-access-actions .ubtn .i {
-    width: 14px;
-    height: 14px;
-}
-
-#set-page .ha-access-actions .ubtn.subtle {
+#set-page .ha-mode-text small {
     color: var(--mute);
+    font-size: 11px;
+}
+
+#set-page .ha-mode-mark {
+    display: grid;
+    place-items: center;
+    width: 18px;
+    height: 18px;
+    flex: none;
+    border: 1px solid var(--bd);
+    border-radius: 999px;
+    background: var(--bg);
+    visibility: hidden;
+}
+
+#set-page .ha-mode.on .ha-mode-mark {
+    border-color: var(--green);
+    background: var(--green);
+    color: #fff;
+    visibility: visible;
+}
+
+#set-page .ha-mode-mark .i {
+    width: 12px;
+    height: 12px;
 }
 
 #set-page .ha-bulk {
@@ -710,10 +737,6 @@
         align-items: stretch;
     }
 
-    #set-page .ha-head .ubtn {
-        align-self: flex-start;
-    }
-
     #set-page .ha-profile {
         padding: 12px;
     }
@@ -724,5 +747,6 @@
 
     #set-page .ha-access-actions {
         width: 100%;
+        align-items: flex-start;
     }
 }

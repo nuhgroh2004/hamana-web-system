@@ -37,11 +37,6 @@ class Pengaturan extends Component
 
     public string $moduleQuery = '';
 
-    /** @var list<int|string> */
-    public array $bulkUserIds = [];
-
-    public bool $selectAllResults = false;
-
     public string $newPassword = '';
 
     public string $newPasswordConfirmation = '';
@@ -229,8 +224,6 @@ class Pengaturan extends Component
             $this->selectedUserId = null;
         }
 
-        $this->bulkUserIds = array_values(array_diff($this->bulkUserIds, [$userId]));
-
         $this->userStatus = 'Pengguna dihapus.';
     }
 
@@ -252,51 +245,6 @@ class Pengaturan extends Component
         }
 
         $this->roleFilter = $role;
-        $this->resetBulkSelection();
-    }
-
-    /**
-     * Clear the bulk selection when the search query changes.
-     */
-    public function updatedUserQuery(): void
-    {
-        $this->resetBulkSelection();
-    }
-
-    /**
-     * Select or clear every user currently visible in the list.
-     */
-    public function updatedSelectAllResults(bool $value): void
-    {
-        $this->bulkUserIds = $value
-            ? $this->filteredUsers()->pluck('id')->map(fn ($id) => (string) $id)->all()
-            : [];
-    }
-
-    /**
-     * Keep "Pilih semua hasil" in sync with manual checkbox changes.
-     */
-    public function updatedBulkUserIds(): void
-    {
-        $this->bulkUserIds = array_values(array_unique(array_map('strval', $this->bulkUserIds)));
-        $this->selectAllResults = $this->bulkUserIds !== []
-            && count($this->bulkUserIds) === $this->filteredUsers()->count();
-    }
-
-    /**
-     * Turn every module on for the selected or bulk-selected users.
-     */
-    public function activateAll(): void
-    {
-        $this->applyAllModules(true);
-    }
-
-    /**
-     * Turn every module off for the selected or bulk-selected users.
-     */
-    public function deactivateAll(): void
-    {
-        $this->applyAllModules(false);
     }
 
     /**
@@ -353,19 +301,38 @@ class Pengaturan extends Component
     }
 
     /**
-     * Restore the default karyawan permissions.
+     * Restore the default permissions (karyawan baseline).
      */
-    public function resetAccess(int $userId): void
+    public function useDefaultAccess(int $userId): void
     {
         $this->authorizeAdmin();
 
         $user = User::findOrFail($userId);
 
-        if ($user->isAdmin()) {
+        if ($user->isAdmin() || $user->permissions === null) {
             return;
         }
 
         $user->permissions = null;
+        $user->save();
+    }
+
+    /**
+     * Switch the user to a custom permission set.
+     *
+     * Starts from the current permissions so the switches do not change.
+     */
+    public function useCustomAccess(int $userId): void
+    {
+        $this->authorizeAdmin();
+
+        $user = User::findOrFail($userId);
+
+        if ($user->isAdmin() || $user->permissions !== null) {
+            return;
+        }
+
+        $user->permissions = $user->permissionList();
         $user->save();
     }
 
@@ -476,72 +443,6 @@ class Pengaturan extends Component
     }
 
     /**
-     * Users affected by the bulk actions: the checked rows, or the selected user.
-     */
-    protected function actionUsers()
-    {
-        $ids = array_values(array_filter(array_map('intval', $this->bulkUserIds)));
-
-        if ($ids !== []) {
-            return User::query()->whereKey($ids)->orderBy('name')->get();
-        }
-
-        return $this->selectedUserId
-            ? User::query()->whereKey($this->selectedUserId)->get()
-            : User::query()->whereRaw('1 = 0')->get();
-    }
-
-    /**
-     * Turn every module on or off for the affected users.
-     */
-    protected function applyAllModules(bool $on): void
-    {
-        $this->authorizeAdmin();
-
-        $users = $this->actionUsers();
-
-        if ($users->isEmpty()) {
-            $this->userStatus = 'Pilih pengguna terlebih dahulu.';
-
-            return;
-        }
-
-        $slugs = array_keys(Modules::all());
-        $count = 0;
-
-        foreach ($users as $user) {
-            if ($user->isAdmin()) {
-                continue;
-            }
-
-            $user->permissions = $on ? $slugs : [];
-            $user->save();
-            $count++;
-        }
-
-        $this->userStatus = $on
-            ? "Akses semua halaman diaktifkan untuk {$count} pengguna."
-            : "Akses semua halaman dinonaktifkan untuk {$count} pengguna.";
-    }
-
-    /**
-     * Clear the bulk selection from the interface.
-     */
-    public function clearSelection(): void
-    {
-        $this->resetBulkSelection();
-    }
-
-    /**
-     * Drop the bulk selection.
-     */
-    protected function resetBulkSelection(): void
-    {
-        $this->bulkUserIds = [];
-        $this->selectAllResults = false;
-    }
-
-    /**
      * Change the authenticated user's password.
      */
     public function updatePassword(): void
@@ -566,16 +467,11 @@ class Pengaturan extends Component
             ? User::query()->find($this->selectedUserId)
             : null;
 
-        $bulkUsers = $this->bulkUserIds === []
-            ? User::query()->whereRaw('1 = 0')->get()
-            : User::query()->whereKey(array_map('intval', $this->bulkUserIds))->orderBy('name')->get();
-
         return view('pengaturan.index', [
             'panels' => $this->panels(),
             'panel' => $this->panel,
             'users' => $users,
             'selectedUser' => $selectedUser,
-            'bulkUsers' => $bulkUsers,
             'moduleGroups' => $this->buildGroups(),
             'totalModules' => count(Modules::all()),
             'canManage' => auth()->user()?->isAdmin() ?? false,

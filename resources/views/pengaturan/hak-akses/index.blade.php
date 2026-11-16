@@ -3,7 +3,6 @@
     $initial = fn ($name) => mb_strtoupper(mb_substr(trim((string) $name), 0, 1));
     $allowed = $selectedUser ? $selectedUser->permissionList() : [];
     $selectedCount = count($allowed);
-    $bulkCount = $bulkUsers->count();
 @endphp
 
 <div class="set-panel ha" data-panel="hak-akses">
@@ -12,13 +11,6 @@
             <h2>Hak Akses</h2>
             <p class="ds">Atur halaman yang dapat diakses oleh setiap pengguna. Admin selalu memiliki akses penuh.</p>
         </div>
-
-        @if ($canManage)
-            <button type="button" class="ubtn primary" wire:click="openCreateForm">
-                <x-master-komponen::icon name="plus" />
-                Tambah Pengguna
-            </button>
-        @endif
     </div>
 
     @if ($userStatus)
@@ -120,29 +112,12 @@
                         Karyawan
                     </button>
                 </div>
-
-                @if ($canManage)
-                    <label class="ha-pickall">
-                        <input type="checkbox" wire:model.live="selectAllResults">
-                        <span>Pilih semua hasil</span>
-                        <b>{{ $users->count() }}</b>
-                    </label>
-                @endif
             </div>
 
             <div class="ha-users">
                 @forelse ($users as $user)
                     <div class="ha-item{{ $selectedUser && $selectedUser->id === $user->id ? ' on' : '' }}"
                          wire:key="user-{{ $user->id }}">
-                        @if ($canManage)
-                            <label class="ha-check" title="Pilih {{ $user->name }}">
-                                <input type="checkbox"
-                                       value="{{ $user->id }}"
-                                       wire:model.live="bulkUserIds"
-                                       aria-label="Pilih {{ $user->name }}">
-                            </label>
-                        @endif
-
                         <button type="button" class="ha-open" wire:click="selectUser({{ $user->id }})">
                             <span class="ha-avatar {{ $user->role }}">{{ $initial($user->name) }}</span>
                             <span class="ha-who">
@@ -162,9 +137,6 @@
 
             <div class="ha-left-foot">
                 <span>{{ $users->count() }} pengguna</span>
-                @if ($bulkCount > 0)
-                    <span class="ha-picked">{{ $bulkCount }} dipilih</span>
-                @endif
             </div>
         </aside>
 
@@ -208,24 +180,41 @@
                                         <x-master-komponen::icon name="shield" />
                                         Hanya admin yang dapat mengubah
                                     </span>
-                                @elseif ($bulkCount > 0)
-                                    <span class="ha-bulk">{{ $bulkCount }} pengguna dipilih</span>
-                                    <button type="button" class="ubtn" wire:click="activateAll">
-                                        <x-master-komponen::icon name="check" />
-                                        Aktifkan semua
-                                    </button>
-                                    <button type="button" class="ubtn" wire:click="deactivateAll">Nonaktifkan semua</button>
-                                    <button type="button" class="ubtn subtle" wire:click="clearSelection">Batal</button>
-                                @elseif (! $locked)
-                                    <button type="button" class="ubtn" wire:click="activateAll">
-                                        <x-master-komponen::icon name="check" />
-                                        Aktifkan semua
-                                    </button>
-                                    <button type="button" class="ubtn" wire:click="deactivateAll">Nonaktifkan semua</button>
-                                    <button type="button" class="ubtn subtle" wire:click="resetAccess({{ $selectedUser->id }})">
-                                        Default
-                                    </button>
                                 @endif
+
+                                @unless ($locked)
+                                    <div class="ha-modes" role="radiogroup" aria-label="Mode hak akses">
+                                        <label class="ha-mode{{ $selectedUser->permissions === null ? ' on' : '' }}">
+                                            <input type="radio"
+                                                   name="access-mode-{{ $selectedUser->id }}"
+                                                   @checked($selectedUser->permissions === null)
+                                                   @disabled(! $canManage)
+                                                   wire:click="useDefaultAccess({{ $selectedUser->id }})">
+                                            <span class="ha-mode-text">
+                                                <b>Default</b>
+                                                <small>Akses bawaan</small>
+                                            </span>
+                                            <span class="ha-mode-mark" aria-hidden="true">
+                                                <x-master-komponen::icon name="check" />
+                                            </span>
+                                        </label>
+
+                                        <label class="ha-mode{{ $selectedUser->permissions !== null ? ' on' : '' }}">
+                                            <input type="radio"
+                                                   name="access-mode-{{ $selectedUser->id }}"
+                                                   @checked($selectedUser->permissions !== null)
+                                                   @disabled(! $canManage)
+                                                   wire:click="useCustomAccess({{ $selectedUser->id }})">
+                                            <span class="ha-mode-text">
+                                                <b>Custom</b>
+                                                <small>Atur sendiri</small>
+                                            </span>
+                                            <span class="ha-mode-mark" aria-hidden="true">
+                                                <x-master-komponen::icon name="check" />
+                                            </span>
+                                        </label>
+                                    </div>
+                                @endunless
                             </div>
                         </div>
 
