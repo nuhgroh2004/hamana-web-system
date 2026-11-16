@@ -1,0 +1,609 @@
+/* Form Absensi — kertas A4 yang otomatis diskalakan. */
+
+#form-absensi .pg {
+    max-width: 794px;
+    margin: 0 auto;
+    padding: 0 0 8px;
+}
+
+#form-absensi .stage {
+    width: 100%;
+    margin-bottom: 12px;
+}
+
+#form-absensi .fit {
+    margin: 0 auto;
+}
+
+#form-absensi [hidden] {
+    display: none !important;
+}
+
+#form-absensi :is(button, input, select, textarea) {
+    font: inherit;
+    color: inherit;
+}
+
+#form-absensi svg.i {
+    width: 16px;
+    height: 16px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.6;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    flex: none;
+}
+
+/* ===== Kertas A4 (794 x 1123 px) ===== */
+#form-absensi .paper {
+    width: 794px;
+    min-height: 1123px;
+    padding: 44px 52px;
+    transform-origin: 0 0;
+    background: #fff;
+    color: #111;
+    font: 13px/1.45 Arial, Helvetica, sans-serif;
+    box-shadow: 0 1px 3px rgba(31, 35, 40, 0.18), 0 8px 24px rgba(31, 35, 40, 0.08);
+    --bg: #fff;
+    --bg2: #f6f8fa;
+    --fg: #111;
+    --mute: #59636e;
+    --bd: #d1d9e0;
+    --hov: #eff2f5;
+    --blue: #0969da;
+    --err: #e02424;
+    color-scheme: light;
+}
+
+#form-absensi .hd {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 52px;
+    margin-bottom: 24px;
+}
+
+#form-absensi .hd img {
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    height: 52px;
+    width: auto;
+}
+
+#form-absensi .hd h1 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 1.25;
+    text-align: center;
+}
+
+#form-absensi .rw {
+    display: grid;
+    grid-template-columns: 150px 12px minmax(0, 1fr);
+    align-items: end;
+    gap: 0 6px;
+    margin: 12px 0;
+}
+
+#form-absensi .rw > label {
+    padding-bottom: 4px;
+    white-space: nowrap;
+}
+
+#form-absensi .rw > span {
+    padding-bottom: 4px;
+    text-align: center;
+}
+
+#form-absensi .u {
+    width: 100%;
+    min-width: 0;
+    height: 30px;
+    padding: 2px;
+    border: 0;
+    border-bottom: 1px solid #111;
+    border-radius: 0;
+    background: transparent;
+    outline: 0;
+    font: inherit;
+    color: #111;
+    transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+#form-absensi .u:focus-visible {
+    border-bottom-color: var(--blue);
+    box-shadow: 0 1px 0 var(--blue);
+}
+
+#form-absensi .u::placeholder {
+    color: #777;
+}
+
+#form-absensi .u[readonly] {
+    cursor: default;
+}
+
+#form-absensi textarea.u {
+    height: auto;
+    min-height: 60px;
+    resize: vertical;
+    line-height: 1.5;
+    display: block;
+}
+
+#form-absensi .paper.dk {
+    padding: 28px;
+    display: flex;
+    flex-direction: column;
+}
+
+#form-absensi .frm {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid #111;
+    padding: 30px 34px;
+}
+
+#form-absensi .u.dt {
+    border-bottom: 1px dotted #111;
+}
+
+#form-absensi .ib {
+    border: 1px solid #111;
+    padding: 6px 14px;
+    margin-bottom: 14px;
+}
+
+#form-absensi .ib .rw {
+    grid-template-columns: 66px 12px minmax(0, 1fr);
+    margin: 6px 0;
+}
+
+#form-absensi .cbx {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 700;
+    cursor: pointer;
+    width: max-content;
+}
+
+#form-absensi .cbx input {
+    width: 16px;
+    height: 16px;
+    margin: 0;
+    accent-color: #111;
+}
+
+#form-absensi .cap {
+    margin: 0;
+    text-align: center;
+}
+
+#form-absensi .sigw {
+    position: relative;
+    margin-top: 6px;
+}
+
+#form-absensi .sigb {
+    display: grid;
+    place-items: center;
+    width: 100%;
+    height: 100px;
+    border: 1.5px solid var(--err);
+    border-radius: 2px;
+    background: #fff;
+    cursor: pointer;
+    color: #8a8a8a;
+    font-size: 12px;
+    padding: 4px;
+    transition: background 0.15s;
+}
+
+#form-absensi .sigb:hover {
+    background: var(--hov);
+}
+
+#form-absensi .sigb:focus-visible {
+    outline: 2px solid var(--blue);
+    outline-offset: 1px;
+}
+
+#form-absensi .sigb.ok {
+    border-color: transparent;
+}
+
+#form-absensi .sigb svg {
+    max-width: 100%;
+    max-height: 92px;
+}
+
+#form-absensi .mn {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: calc(100% + 4px);
+    z-index: 20;
+    border: 1px solid var(--bd);
+    border-radius: 6px;
+    background: #fff;
+    box-shadow: 0 8px 24px rgba(31, 35, 40, 0.22);
+    overflow: hidden;
+}
+
+#form-absensi .mn b {
+    display: block;
+    padding: 8px 12px;
+    background: var(--bg2);
+    border-bottom: 1px solid var(--bd);
+    font-size: 13px;
+}
+
+#form-absensi .mn button {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    padding: 10px 12px;
+    border: 0;
+    background: transparent;
+    text-align: left;
+    cursor: pointer;
+}
+
+#form-absensi .mn button:hover {
+    background: var(--hov);
+}
+
+#form-absensi .mn .th {
+    width: 64px;
+    height: 30px;
+    border: 1px solid var(--bd);
+    border-radius: 4px;
+    background: #fff;
+    display: grid;
+    place-items: center;
+    flex: none;
+}
+
+#form-absensi .sgz {
+    position: relative;
+    height: 112px;
+    margin: 8px 0 6px;
+}
+
+#form-absensi .sgz .sigb {
+    height: 100%;
+    padding-bottom: 32px;
+}
+
+#form-absensi .sgz .sigb svg {
+    max-height: 68px;
+}
+
+#form-absensi .sg2 {
+    margin-top: auto;
+    padding-top: 32px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 56px;
+}
+
+#form-absensi .col {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 0;
+}
+
+/* ===== Form Absensi ===== */
+#form-absensi .fa .frm {
+    padding: 34px 40px;
+    font-size: 13px;
+}
+
+#form-absensi .fa .hd {
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 6px;
+    min-height: 0;
+    margin-bottom: 22px;
+}
+
+#form-absensi .fa .hd img {
+    position: static;
+    transform: none;
+    align-self: flex-start;
+    height: 30px;
+}
+
+#form-absensi .fa .hd h1 {
+    font-size: 26px;
+    font-weight: 400;
+    margin-top: -4px;
+}
+
+#form-absensi .fa .ib {
+    padding: 6px 14px 10px;
+    margin-bottom: 26px;
+}
+
+#form-absensi .fa .ib p {
+    margin: 0 0 4px;
+}
+
+#form-absensi .fa .ib .cbx {
+    display: flex;
+    margin: 10px 0 10px 24px;
+    font-size: 13px;
+}
+
+#form-absensi .fa .ib .cbx input {
+    width: 14px;
+    height: 14px;
+}
+
+#form-absensi .fa .rw {
+    grid-template-columns: 70px 12px minmax(0, 1fr);
+    margin: 6px 0;
+}
+
+#form-absensi .fa .rw > label {
+    font-size: 12px;
+}
+
+#form-absensi .fa .u {
+    font-size: 12px;
+}
+
+#form-absensi .fa .rw > span {
+    padding-left: 0;
+    text-align: left;
+}
+
+#form-absensi .fa .rw.top {
+    align-items: start;
+}
+
+#form-absensi .fa .rw.top > label,
+#form-absensi .fa .rw.top > span {
+    padding-top: 2px;
+}
+
+#form-absensi .fa .sg2 {
+    margin-top: auto;
+    padding-top: 60px;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+}
+
+#form-absensi .fa .col .cap {
+    text-align: left;
+    margin-left: 18px;
+    font-size: 12px;
+    line-height: 1.35;
+}
+
+#form-absensi .fa .sgz {
+    width: 200px;
+    height: 132px;
+    margin: 8px 0 0 18px;
+}
+
+#form-absensi .fa .sgz .sigb {
+    height: 116px;
+    padding-bottom: 0;
+}
+
+#form-absensi .fa .sgz .sigb svg {
+    max-height: 100px;
+}
+
+#form-absensi .fa .col .u.dt {
+    width: 200px;
+    margin-left: 18px;
+    text-align: left;
+    padding-left: 2px;
+}
+
+#form-absensi .fa .col.r {
+    align-items: flex-end;
+}
+
+#form-absensi .fa .col.r .cap {
+    width: 200px;
+    margin-left: 0;
+}
+
+#form-absensi .fa .col.r .ln {
+    width: 200px;
+    height: 30px;
+    border-bottom: 1px dotted #111;
+    margin-top: 130px;
+}
+
+#form-absensi .fa .u.dt[type='date'],
+#form-absensi .fa .u.dt[type='time'] {
+    cursor: pointer;
+}
+
+#form-absensi textarea.u.dt {
+    min-height: 30px;
+    height: 30px;
+    resize: none;
+    overflow: hidden;
+    line-height: 24px;
+    padding: 3px 2px;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    border-bottom: 1px dotted #111;
+}
+
+/* ===== Aksi & notifikasi ===== */
+#form-absensi .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    height: 32px;
+    padding: 0 14px;
+    border: 1px solid var(--bd);
+    border-radius: 6px;
+    background: var(--bg2);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 0.15s, filter 0.15s;
+}
+
+#form-absensi .btn:hover:not(:disabled) {
+    background: var(--hov);
+}
+
+#form-absensi .btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+#form-absensi .btn:focus-visible {
+    outline: 2px solid var(--blue);
+    outline-offset: 1px;
+}
+
+#form-absensi .btn.go {
+    background: var(--green);
+    border-color: var(--green);
+    color: #fff;
+}
+
+#form-absensi .btn.go:hover:not(:disabled) {
+    filter: brightness(1.1);
+    background: var(--green);
+}
+
+#form-absensi .acts {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+}
+
+#form-absensi .acts .btn {
+    height: 36px;
+}
+
+#form-absensi .toast {
+    position: fixed;
+    left: 50%;
+    bottom: calc(20px + env(safe-area-inset-bottom, 0px));
+    transform: translate(-50%, 20px);
+    max-width: calc(100% - 32px);
+    padding: 10px 16px;
+    border-radius: 6px;
+    background: var(--fg);
+    color: var(--bg);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s, transform 0.25s;
+    z-index: 80;
+}
+
+#form-absensi .toast.on {
+    opacity: 1;
+    transform: translate(-50%, 0);
+}
+
+@media (pointer: coarse) {
+    #form-absensi .u {
+        font-size: 16px;
+    }
+}
+
+@media (max-width: 700px) {
+    #form-absensi .pg {
+        padding: 0 0 8px;
+    }
+
+    #form-absensi .btn,
+    #form-absensi .acts .btn {
+        height: 40px;
+    }
+
+    #form-absensi .acts {
+        grid-template-columns: 1fr;
+    }
+
+    #form-absensi .acts .go {
+        order: -1;
+    }
+
+    #form-absensi .fa .col.r {
+        align-items: flex-start;
+    }
+}
+
+@media print {
+    @page {
+        size: A4;
+        margin: 0;
+    }
+
+    body:has(#form-absensi) > :not(.shell) {
+        display: none !important;
+    }
+
+    body:has(#form-absensi) .shell {
+        position: static;
+        inset: auto;
+        display: block;
+        overflow: visible;
+    }
+
+    body:has(#form-absensi) .shell > nav,
+    body:has(#form-absensi) .shell > .bd {
+        display: none !important;
+    }
+
+    body:has(#form-absensi) main {
+        overflow: visible;
+        padding: 0;
+    }
+
+    #form-absensi .acts,
+    #form-absensi .toast,
+    #form-absensi .mn {
+        display: none !important;
+    }
+
+    #form-absensi .pg {
+        max-width: none;
+        padding: 0;
+    }
+
+    #form-absensi .stage {
+        margin: 0;
+    }
+
+    #form-absensi .fit {
+        width: auto !important;
+        height: auto !important;
+    }
+
+    #form-absensi .paper {
+        transform: none !important;
+        box-shadow: none !important;
+        width: 210mm;
+        min-height: 297mm;
+    }
+
+    #form-absensi .paper.dk {
+        display: flex;
+    }
+}

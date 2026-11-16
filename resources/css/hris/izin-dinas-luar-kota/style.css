@@ -1,0 +1,828 @@
+/* Surat Perintah Tugas — kertas A4 yang otomatis diskalakan. */
+
+#izin-dinas-luar-kota .pg {
+    max-width: 794px;
+    margin: 0 auto;
+    padding: 0 0 8px;
+}
+
+#izin-dinas-luar-kota .stage {
+    width: 100%;
+    margin-bottom: 12px;
+}
+
+#izin-dinas-luar-kota .fit {
+    margin: 0 auto;
+}
+
+#izin-dinas-luar-kota [hidden] {
+    display: none !important;
+}
+
+#izin-dinas-luar-kota :is(button, input, select, textarea) {
+    font: inherit;
+    color: inherit;
+}
+
+#izin-dinas-luar-kota svg.i {
+    width: 16px;
+    height: 16px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.6;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    flex: none;
+}
+
+/* ===== Kertas A4 (794 x 1123 px) ===== */
+#izin-dinas-luar-kota .paper {
+    width: 794px;
+    min-height: 1123px;
+    padding: 44px 52px;
+    transform-origin: 0 0;
+    background: #fff;
+    color: #111;
+    font: 13px/1.45 Arial, Helvetica, sans-serif;
+    box-shadow: 0 1px 3px rgba(31, 35, 40, 0.18), 0 8px 24px rgba(31, 35, 40, 0.08);
+    --bg: #fff;
+    --bg2: #f6f8fa;
+    --fg: #111;
+    --mute: #59636e;
+    --bd: #d1d9e0;
+    --hov: #eff2f5;
+    --blue: #0969da;
+    --err: #e02424;
+    color-scheme: light;
+}
+
+#izin-dinas-luar-kota .hd {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 52px;
+    margin-bottom: 24px;
+}
+
+#izin-dinas-luar-kota .hd img {
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    height: 52px;
+    width: auto;
+}
+
+#izin-dinas-luar-kota .hd h1 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 1.25;
+    text-align: center;
+}
+
+#izin-dinas-luar-kota .rw {
+    display: grid;
+    grid-template-columns: 150px 12px minmax(0, 1fr);
+    align-items: end;
+    gap: 0 6px;
+    margin: 12px 0;
+}
+
+#izin-dinas-luar-kota .rw > label {
+    padding-bottom: 4px;
+    white-space: nowrap;
+}
+
+#izin-dinas-luar-kota .rw > span {
+    padding-bottom: 4px;
+    text-align: center;
+}
+
+#izin-dinas-luar-kota .u {
+    width: 100%;
+    min-width: 0;
+    height: 30px;
+    padding: 2px;
+    border: 0;
+    border-bottom: 1px solid #111;
+    border-radius: 0;
+    background: transparent;
+    outline: 0;
+    font: inherit;
+    color: #111;
+    transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+#izin-dinas-luar-kota .u:focus-visible {
+    border-bottom-color: var(--blue);
+    box-shadow: 0 1px 0 var(--blue);
+}
+
+#izin-dinas-luar-kota .u::placeholder {
+    color: #777;
+}
+
+#izin-dinas-luar-kota .u[readonly] {
+    cursor: default;
+}
+
+#izin-dinas-luar-kota .u.c {
+    text-align: center;
+}
+
+#izin-dinas-luar-kota select.u {
+    appearance: none;
+    -webkit-appearance: none;
+    padding-right: 22px;
+    border-radius: 0;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%23777' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 6l4 4 4-4'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 2px center;
+    background-size: 14px;
+}
+
+#izin-dinas-luar-kota select.u option {
+    color: #111;
+}
+
+#izin-dinas-luar-kota textarea.u {
+    height: auto;
+    min-height: 60px;
+    resize: vertical;
+    line-height: 1.5;
+    display: block;
+}
+
+#izin-dinas-luar-kota .tt {
+    margin: 26px 0 20px;
+    text-align: center;
+    font-size: 16px;
+    font-weight: 700;
+    text-decoration: underline;
+}
+
+#izin-dinas-luar-kota .jus {
+    margin: 0 0 9px;
+    text-align: justify;
+}
+
+#izin-dinas-luar-kota .paper.dk {
+    padding: 28px;
+    display: flex;
+    flex-direction: column;
+}
+
+#izin-dinas-luar-kota .frm {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid #111;
+    padding: 30px 34px;
+}
+
+#izin-dinas-luar-kota .u.dt {
+    border-bottom: 1px dotted #111;
+}
+
+#izin-dinas-luar-kota .ib {
+    border: 1px solid #111;
+    padding: 6px 14px;
+    margin-bottom: 14px;
+}
+
+#izin-dinas-luar-kota .ib .rw {
+    grid-template-columns: 66px 12px minmax(0, 1fr);
+    margin: 6px 0;
+}
+
+#izin-dinas-luar-kota .tb {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+    font-size: 11px;
+}
+
+#izin-dinas-luar-kota .tb th,
+#izin-dinas-luar-kota .tb td {
+    border: 1px solid #111;
+    padding: 0;
+}
+
+#izin-dinas-luar-kota .tb th {
+    padding: 5px 4px;
+    font-size: 10.5px;
+    font-weight: 700;
+    line-height: 1.25;
+    text-align: center;
+}
+
+#izin-dinas-luar-kota .tb td input,
+#izin-dinas-luar-kota .tb td select {
+    display: block;
+    width: 100%;
+    height: 26px;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    padding: 0 5px;
+    font: inherit;
+    font-size: 11px;
+    color: #111;
+    outline: 0;
+}
+
+#izin-dinas-luar-kota .tb td input:focus-visible,
+#izin-dinas-luar-kota .tb td select:focus-visible {
+    outline: 2px solid var(--blue);
+    outline-offset: -2px;
+}
+
+#izin-dinas-luar-kota .tb td textarea {
+    display: block;
+    width: 100%;
+    height: 54px;
+    border: 0;
+    border-radius: 0;
+    resize: none;
+    background: transparent;
+    padding: 5px 6px;
+    font: inherit;
+    font-size: 11px;
+    color: #111;
+    outline: 0;
+    line-height: 1.35;
+}
+
+#izin-dinas-luar-kota .tb td textarea:focus-visible {
+    outline: 2px solid var(--blue);
+    outline-offset: -2px;
+}
+
+#izin-dinas-luar-kota .tb td input[type='date'],
+#izin-dinas-luar-kota .tb td input[type='time'] {
+    height: 27px;
+}
+
+#izin-dinas-luar-kota .tb td.n {
+    text-align: center;
+    padding: 0 2px;
+}
+
+#izin-dinas-luar-kota .sg {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 64px;
+    margin-top: 28px;
+}
+
+#izin-dinas-luar-kota .col {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 0;
+}
+
+#izin-dinas-luar-kota .cap {
+    margin: 0;
+    text-align: center;
+}
+
+#izin-dinas-luar-kota .sigw {
+    position: relative;
+    margin-top: 6px;
+}
+
+#izin-dinas-luar-kota .sigb,
+#izin-dinas-luar-kota .sigx {
+    display: grid;
+    place-items: center;
+    width: 100%;
+    height: 100px;
+}
+
+#izin-dinas-luar-kota .sigx {
+    margin-top: 6px;
+}
+
+#izin-dinas-luar-kota .sigb {
+    border: 1.5px solid var(--err);
+    border-radius: 2px;
+    background: #fff;
+    cursor: pointer;
+    color: #8a8a8a;
+    font-size: 12px;
+    padding: 4px;
+    transition: background 0.15s;
+}
+
+#izin-dinas-luar-kota .sigb:hover {
+    background: var(--hov);
+}
+
+#izin-dinas-luar-kota .sigb:focus-visible {
+    outline: 2px solid var(--blue);
+    outline-offset: 1px;
+}
+
+#izin-dinas-luar-kota .sigb.ok {
+    border-color: transparent;
+}
+
+#izin-dinas-luar-kota .sigb svg {
+    max-width: 100%;
+    max-height: 92px;
+}
+
+#izin-dinas-luar-kota .par {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: end;
+    gap: 6px;
+    margin-top: 4px;
+}
+
+#izin-dinas-luar-kota .par > span {
+    padding-bottom: 4px;
+}
+
+#izin-dinas-luar-kota .mn {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: calc(100% + 4px);
+    z-index: 20;
+    border: 1px solid var(--bd);
+    border-radius: 6px;
+    background: #fff;
+    box-shadow: 0 8px 24px rgba(31, 35, 40, 0.22);
+    overflow: hidden;
+}
+
+#izin-dinas-luar-kota .mn b {
+    display: block;
+    padding: 8px 12px;
+    background: var(--bg2);
+    border-bottom: 1px solid var(--bd);
+    font-size: 13px;
+}
+
+#izin-dinas-luar-kota .mn button {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    padding: 10px 12px;
+    border: 0;
+    background: transparent;
+    text-align: left;
+    cursor: pointer;
+}
+
+#izin-dinas-luar-kota .mn button:hover {
+    background: var(--hov);
+}
+
+#izin-dinas-luar-kota .mn .th {
+    width: 64px;
+    height: 30px;
+    border: 1px solid var(--bd);
+    border-radius: 4px;
+    background: #fff;
+    display: grid;
+    place-items: center;
+    flex: none;
+}
+
+/* ===== Surat Perintah Tugas ===== */
+#izin-dinas-luar-kota .dk .frm {
+    padding: 24px 28px;
+    font-size: 11.5px;
+}
+
+#izin-dinas-luar-kota .dk .tt {
+    margin: 10px 0 6px;
+    font-size: 14px;
+}
+
+#izin-dinas-luar-kota .no {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 6px;
+    margin: 0 0 12px;
+}
+
+#izin-dinas-luar-kota .no .u {
+    width: 190px;
+}
+
+#izin-dinas-luar-kota .nj {
+    width: 64%;
+    margin: 0 auto 9px;
+}
+
+#izin-dinas-luar-kota .nj .rw {
+    grid-template-columns: 60px 12px minmax(0, 1fr);
+    margin: 3px 0;
+}
+
+#izin-dinas-luar-kota .sh {
+    margin: 0 0 6px;
+    font-weight: 700;
+    text-decoration: underline;
+}
+
+/* Jarak antarbagian pada surat. */
+#izin-dinas-luar-kota #it + .jus {
+    margin-top: 14px;
+}
+
+#izin-dinas-luar-kota .sg + .sh {
+    margin-top: 16px;
+}
+
+#izin-dinas-luar-kota #lk {
+    margin-top: 12px;
+}
+
+#izin-dinas-luar-kota .tg {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin: 0 0 4px;
+}
+
+#izin-dinas-luar-kota .tg .u {
+    width: 132px;
+}
+
+#izin-dinas-luar-kota .dk .sg {
+    margin-top: 0;
+    gap: 48px;
+}
+
+#izin-dinas-luar-kota .sgz {
+    position: relative;
+    height: 112px;
+    margin: 8px 0 6px;
+}
+
+#izin-dinas-luar-kota .sgz .sigb {
+    height: 100%;
+    padding-bottom: 32px;
+}
+
+#izin-dinas-luar-kota .sgz .sigb svg {
+    max-height: 68px;
+}
+
+#izin-dinas-luar-kota .sgz .par {
+    position: absolute;
+    left: 8px;
+    right: 8px;
+    bottom: 4px;
+    margin: 0;
+}
+
+#izin-dinas-luar-kota .dk .sgz {
+    width: 84%;
+    margin: 6px auto 0;
+    height: 104px;
+}
+
+/* ===== Kartu lampiran (di luar kertas) ===== */
+#izin-dinas-luar-kota .card {
+    border: 1px solid var(--bd);
+    border-radius: 6px;
+    background: var(--bg);
+    margin-bottom: 12px;
+    overflow: hidden;
+}
+
+#izin-dinas-luar-kota .ch {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 10px 16px;
+    background: var(--bg2);
+    border-bottom: 1px solid var(--bd);
+}
+
+#izin-dinas-luar-kota .h {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+#izin-dinas-luar-kota .bdg {
+    padding: 0 8px;
+    border: 1px solid var(--bd);
+    border-radius: 2em;
+    background: var(--bg);
+    color: var(--mute);
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 20px;
+    white-space: nowrap;
+}
+
+#izin-dinas-luar-kota .cbd {
+    padding: 16px;
+    display: grid;
+    gap: 12px;
+}
+
+#izin-dinas-luar-kota .note {
+    margin: 0;
+    color: var(--mute);
+    font-size: 13px;
+}
+
+#izin-dinas-luar-kota .opt {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    width: max-content;
+    max-width: 100%;
+}
+
+#izin-dinas-luar-kota .opt input {
+    width: 16px;
+    height: 16px;
+    margin: 0;
+    accent-color: var(--blue);
+    flex: none;
+}
+
+#izin-dinas-luar-kota .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    height: 32px;
+    padding: 0 14px;
+    border: 1px solid var(--bd);
+    border-radius: 6px;
+    background: var(--bg2);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 0.15s, filter 0.15s;
+}
+
+#izin-dinas-luar-kota .btn:hover:not(:disabled) {
+    background: var(--hov);
+}
+
+#izin-dinas-luar-kota .btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+#izin-dinas-luar-kota .btn:focus-visible {
+    outline: 2px solid var(--blue);
+    outline-offset: 1px;
+}
+
+#izin-dinas-luar-kota .btn.bl {
+    background: var(--blue);
+    border-color: var(--blue);
+    color: #fff;
+}
+
+#izin-dinas-luar-kota .btn.go {
+    background: var(--green);
+    border-color: var(--green);
+    color: #fff;
+}
+
+#izin-dinas-luar-kota .btn.bl:hover:not(:disabled),
+#izin-dinas-luar-kota .btn.go:hover:not(:disabled) {
+    filter: brightness(1.1);
+}
+
+#izin-dinas-luar-kota .btn.bl:hover:not(:disabled) {
+    background: var(--blue);
+}
+
+#izin-dinas-luar-kota .btn.go:hover:not(:disabled) {
+    background: var(--green);
+}
+
+#izin-dinas-luar-kota .row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+#izin-dinas-luar-kota .fls {
+    border: 1px solid var(--bd);
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+#izin-dinas-luar-kota .fls:empty {
+    display: none;
+}
+
+#izin-dinas-luar-kota .fi {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 8px 6px 12px;
+    min-width: 0;
+}
+
+#izin-dinas-luar-kota .fi + .fi {
+    border-top: 1px solid var(--bd);
+}
+
+#izin-dinas-luar-kota .fi span {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+#izin-dinas-luar-kota .fi small {
+    color: var(--mute);
+    flex: none;
+}
+
+#izin-dinas-luar-kota .fi button {
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+    color: var(--mute);
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    display: grid;
+    place-items: center;
+    flex: none;
+}
+
+#izin-dinas-luar-kota .fi button:hover {
+    background: var(--hov);
+    color: var(--err);
+}
+
+#izin-dinas-luar-kota .em {
+    margin: 0;
+    padding: 16px;
+    border: 1px dashed var(--bd);
+    border-radius: 6px;
+    text-align: center;
+    color: var(--mute);
+    font-style: italic;
+}
+
+#izin-dinas-luar-kota .err {
+    margin: 0;
+    color: var(--err);
+    font-size: 12.5px;
+}
+
+#izin-dinas-luar-kota .acts {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+}
+
+#izin-dinas-luar-kota .acts .btn {
+    height: 36px;
+}
+
+#izin-dinas-luar-kota .toast {
+    position: fixed;
+    left: 50%;
+    bottom: calc(20px + env(safe-area-inset-bottom, 0px));
+    transform: translate(-50%, 20px);
+    max-width: calc(100% - 32px);
+    padding: 10px 16px;
+    border-radius: 6px;
+    background: var(--fg);
+    color: var(--bg);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s, transform 0.25s;
+    z-index: 80;
+}
+
+#izin-dinas-luar-kota .toast.on {
+    opacity: 1;
+    transform: translate(-50%, 0);
+}
+
+@media (pointer: coarse) {
+    #izin-dinas-luar-kota .tb td textarea {
+        font-size: 16px;
+    }
+
+    #izin-dinas-luar-kota .tb td input[type='text'],
+    #izin-dinas-luar-kota .tb td select {
+        font-size: 16px;
+    }
+
+    #izin-dinas-luar-kota .u {
+        font-size: 16px;
+    }
+}
+
+@media (max-width: 700px) {
+    #izin-dinas-luar-kota .pg {
+        padding: 0 0 8px;
+    }
+
+    #izin-dinas-luar-kota .btn,
+    #izin-dinas-luar-kota .acts .btn {
+        height: 40px;
+    }
+
+    #izin-dinas-luar-kota .ch,
+    #izin-dinas-luar-kota .cbd {
+        padding-left: 12px;
+        padding-right: 12px;
+    }
+
+    #izin-dinas-luar-kota .acts {
+        grid-template-columns: 1fr;
+    }
+
+    #izin-dinas-luar-kota .acts .go {
+        order: -1;
+    }
+
+    #izin-dinas-luar-kota .row .btn {
+        flex: 1 1 140px;
+    }
+}
+
+@media print {
+    @page {
+        size: A4;
+        margin: 0;
+    }
+
+    body:has(#izin-dinas-luar-kota) > :not(.shell) {
+        display: none !important;
+    }
+
+    body:has(#izin-dinas-luar-kota) .shell {
+        position: static;
+        inset: auto;
+        display: block;
+        overflow: visible;
+    }
+
+    body:has(#izin-dinas-luar-kota) .shell > nav,
+    body:has(#izin-dinas-luar-kota) .shell > .bd {
+        display: none !important;
+    }
+
+    body:has(#izin-dinas-luar-kota) main {
+        overflow: visible;
+        padding: 0;
+    }
+
+    #izin-dinas-luar-kota .card,
+    #izin-dinas-luar-kota .acts,
+    #izin-dinas-luar-kota .toast,
+    #izin-dinas-luar-kota .mn {
+        display: none !important;
+    }
+
+    #izin-dinas-luar-kota .pg {
+        max-width: none;
+        padding: 0;
+    }
+
+    #izin-dinas-luar-kota .stage {
+        margin: 0;
+    }
+
+    #izin-dinas-luar-kota .fit {
+        width: auto !important;
+        height: auto !important;
+    }
+
+    #izin-dinas-luar-kota .paper {
+        transform: none !important;
+        box-shadow: none !important;
+        width: 210mm;
+        min-height: 297mm;
+    }
+
+    #izin-dinas-luar-kota .paper.dk {
+        display: flex;
+    }
+}
