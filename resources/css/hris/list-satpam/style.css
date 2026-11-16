@@ -1,0 +1,587 @@
+/*
+ * Gaya halaman User Satpam (daftar akun satpam).
+ * Semua aturan dibatasi pada #list-satpam agar tidak bocor ke modul lain.
+ */
+
+#list-satpam :is(button, input, select, textarea) {
+    font: inherit;
+    color: inherit;
+}
+
+#list-satpam [hidden] {
+    display: none !important;
+}
+
+#list-satpam svg.i {
+    width: 16px;
+    height: 16px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.6;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    flex: none;
+}
+
+#list-satpam .pg {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 0 8px;
+}
+
+#list-satpam h1 {
+    margin: 0 0 4px;
+    padding: 0 0 12px;
+    font-size: 28px;
+    font-weight: 400;
+    line-height: 1.25;
+    border-bottom: 1px solid var(--bd);
+}
+
+#list-satpam .ds {
+    margin: 12px 0 16px;
+    color: var(--mute);
+}
+
+#list-satpam .tbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+}
+
+#list-satpam .srch {
+    position: relative;
+    display: block;
+    width: 340px;
+    max-width: 100%;
+    height: auto;
+    padding: 0;
+    margin: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    color: inherit;
+}
+
+#list-satpam .srch:focus-within {
+    border-color: transparent;
+    box-shadow: none;
+}
+
+#list-satpam .srch svg {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--mute);
+    pointer-events: none;
+}
+
+#list-satpam .srch .fld {
+    padding-left: 32px;
+}
+
+#list-satpam .fld {
+    width: 100%;
+    min-height: 32px;
+    padding: 5px 12px;
+    border: 1px solid var(--bd);
+    border-radius: 6px;
+    background: var(--bg);
+    outline: 0;
+    transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+#list-satpam .fld:focus {
+    border-color: var(--blue);
+    box-shadow: 0 0 0 1px var(--blue);
+}
+
+#list-satpam .fld.bad {
+    border-color: var(--err);
+    box-shadow: 0 0 0 1px var(--err);
+}
+
+#list-satpam .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    height: 32px;
+    padding: 0 14px;
+    border: 1px solid var(--bd);
+    border-radius: 6px;
+    background: var(--bg2);
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 0.15s, filter 0.15s;
+}
+
+#list-satpam .btn:hover {
+    background: var(--hov);
+}
+
+#list-satpam .btn.sm {
+    height: 28px;
+    padding: 0 10px;
+    font-size: 12.5px;
+}
+
+#list-satpam .btn.go {
+    background: var(--green);
+    border-color: var(--green);
+    color: #fff;
+}
+
+#list-satpam .btn.go:hover {
+    filter: brightness(1.1);
+    background: var(--green);
+}
+
+#list-satpam .btn.dgb {
+    background: var(--err);
+    border-color: var(--err);
+    color: #fff;
+}
+
+#list-satpam .btn.dgb:hover {
+    filter: brightness(1.1);
+    background: var(--err);
+}
+
+#list-satpam .box {
+    border: 1px solid var(--bd);
+    border-radius: 6px;
+    overflow: hidden;
+    background: var(--bg);
+}
+
+#list-satpam .tw {
+    overflow-x: auto;
+}
+
+#list-satpam table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+#list-satpam th {
+    padding: 10px 14px;
+    background: var(--bg2);
+    border-bottom: 1px solid var(--bd);
+    text-align: left;
+    font-size: 13px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+#list-satpam td {
+    padding: 10px 14px;
+    border-top: 1px solid var(--bd);
+    vertical-align: middle;
+}
+
+#list-satpam tbody tr:first-child td {
+    border-top: 0;
+}
+
+#list-satpam tbody tr:hover td {
+    background: var(--bg2);
+}
+
+#list-satpam .c1 {
+    width: 90px;
+}
+
+#list-satpam .un {
+    font-weight: 600;
+}
+
+#list-satpam .nw {
+    white-space: nowrap;
+}
+
+#list-satpam .bdg {
+    display: inline-block;
+    padding: 0 8px;
+    border-radius: 2em;
+    border: 1px solid var(--bd);
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 22px;
+    white-space: nowrap;
+    color: var(--mute);
+}
+
+#list-satpam .bdg.off {
+    color: var(--err);
+    border-color: rgba(207, 34, 46, 0.5);
+    background: rgba(207, 34, 46, 0.1);
+}
+
+#list-satpam .bdg.ok {
+    color: var(--ok, #1a7f37);
+    border-color: rgba(46, 160, 67, 0.5);
+    background: rgba(46, 160, 67, 0.12);
+}
+
+#list-satpam .empty {
+    padding: 40px 16px;
+    text-align: center;
+    color: var(--mute);
+}
+
+#list-satpam .ft {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+    padding: 12px 16px;
+    border-top: 1px solid var(--bd);
+    color: var(--mute);
+}
+
+#list-satpam .pn {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex-wrap: wrap;
+}
+
+#list-satpam .pn button {
+    min-width: 32px;
+    height: 30px;
+    padding: 0 10px;
+    border: 1px solid transparent;
+    border-radius: 6px;
+    background: transparent;
+    color: var(--fg);
+    cursor: pointer;
+}
+
+#list-satpam .pn button:hover:not(:disabled):not(.on) {
+    border-color: var(--bd);
+    background: var(--bg2);
+}
+
+#list-satpam .pn button:disabled {
+    color: var(--mute);
+    cursor: default;
+}
+
+#list-satpam .pn button.on {
+    border-color: var(--blue);
+    background: var(--blue);
+    color: #fff;
+    font-weight: 600;
+}
+
+#list-satpam .pn span {
+    padding: 0 4px;
+    color: var(--mute);
+}
+
+/* ---- dropdown aksi ---- */
+#list-satpam .mn {
+    position: fixed;
+    z-index: 70;
+    width: 140px;
+    padding: 4px;
+    background: var(--bg);
+    border: 1px solid var(--bd);
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(31, 35, 40, 0.2);
+    animation: list-satpam-pop 0.12s ease-out;
+}
+
+@keyframes list-satpam-pop {
+    from {
+        opacity: 0;
+        transform: translateY(-4px) scale(0.98);
+    }
+    to {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+#list-satpam .mn button {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding: 8px 12px;
+    border: 0;
+    border-radius: 8px;
+    background: transparent;
+    text-align: left;
+    cursor: pointer;
+}
+
+#list-satpam .mn button:hover {
+    background: var(--hov);
+}
+
+#list-satpam .mn .dg {
+    color: var(--err);
+}
+
+/* ---- modal ---- */
+#list-satpam .ov2 {
+    position: fixed;
+    inset: 0;
+    z-index: 50;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background: rgba(1, 4, 9, 0.6);
+}
+
+#list-satpam .dlg {
+    width: 100%;
+    max-width: 440px;
+    max-height: calc(100dvh - 40px);
+    display: flex;
+    flex-direction: column;
+    background: var(--bg);
+    border: 1px solid var(--bd);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.4);
+}
+
+#list-satpam .dlg.w {
+    max-width: 600px;
+}
+
+#list-satpam .dh {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--bd);
+    background: var(--bg2);
+    font-weight: 600;
+}
+
+#list-satpam .x {
+    display: grid;
+    place-items: center;
+    width: 28px;
+    height: 28px;
+    border: 0;
+    border-radius: 6px;
+    background: transparent;
+    cursor: pointer;
+    color: var(--mute);
+}
+
+#list-satpam .x:hover {
+    background: var(--hov);
+}
+
+#list-satpam .db {
+    padding: 16px;
+    overflow: auto;
+    display: grid;
+    gap: 14px;
+}
+
+#list-satpam .db.g2 {
+    grid-template-columns: 1fr 1fr;
+}
+
+#list-satpam .db .wide {
+    grid-column: 1 / -1;
+}
+
+#list-satpam .db p {
+    margin: 0;
+    color: var(--mute);
+}
+
+/* Pesan kesalahan di dalam modal tetap merah. */
+#list-satpam .db p.er {
+    color: var(--err);
+}
+
+#list-satpam .f label {
+    display: block;
+    margin: 0 0 6px;
+    font-weight: 600;
+    font-size: 13px;
+}
+
+#list-satpam .rq {
+    color: var(--err);
+}
+
+#list-satpam .hint {
+    margin: 4px 0 0;
+    color: var(--mute);
+    font-size: 12.5px;
+}
+
+#list-satpam .er {
+    margin: 4px 0 0;
+    color: var(--err);
+    font-size: 12.5px;
+}
+
+#list-satpam .er:empty {
+    display: none;
+}
+
+#list-satpam .df {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    padding: 12px 16px;
+    border-top: 1px solid var(--bd);
+}
+
+#list-satpam .toast {
+    position: fixed;
+    left: 50%;
+    bottom: calc(24px + env(safe-area-inset-bottom, 0px));
+    transform: translate(-50%, 20px);
+    padding: 10px 16px;
+    border-radius: 6px;
+    background: var(--fg);
+    color: var(--bg);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s, transform 0.25s;
+    z-index: 80;
+}
+
+#list-satpam .toast.on {
+    opacity: 1;
+    transform: translate(-50%, 0);
+}
+
+/* ---- password dengan tombol tampilkan ---- */
+#list-satpam .pw {
+    position: relative;
+}
+
+#list-satpam .pw .fld {
+    padding-right: 40px;
+}
+
+#list-satpam .pwt {
+    position: absolute;
+    right: 4px;
+    top: 50%;
+    transform: translateY(-50%);
+    display: grid;
+    place-items: center;
+    width: 28px;
+    height: 28px;
+    border: 0;
+    border-radius: 6px;
+    background: transparent;
+    color: var(--mute);
+    cursor: pointer;
+}
+
+#list-satpam .pwt:hover {
+    background: var(--hov);
+    color: var(--fg);
+}
+
+@media (max-width: 700px) {
+    #list-satpam .pg {
+        padding: 0 0 8px;
+    }
+
+    #list-satpam h1 {
+        font-size: 22px;
+    }
+
+    #list-satpam .srch {
+        width: 100%;
+    }
+
+    #list-satpam .tbar > .btn {
+        width: 100%;
+    }
+
+    #list-satpam .db.g2 {
+        grid-template-columns: 1fr;
+    }
+
+    /* Tabel berubah menjadi kartu agar tidak perlu digeser ke samping. */
+    #list-satpam .rt thead {
+        display: none;
+    }
+
+    #list-satpam .rt,
+    #list-satpam .rt tbody {
+        display: block;
+    }
+
+    #list-satpam .rt tr {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 4px 12px;
+        padding: 14px 16px;
+        border-top: 1px solid var(--bd);
+    }
+
+    #list-satpam .rt tr:first-child {
+        border-top: 0;
+    }
+
+    #list-satpam .rt tbody tr:hover td {
+        background: transparent;
+    }
+
+    #list-satpam .rt tbody tr td {
+        display: block;
+        padding: 0;
+        border: 0;
+        min-width: 0;
+    }
+
+    #list-satpam .rt tbody tr td.nm {
+        order: 1;
+        flex: 1 1 0;
+        font-size: 15px;
+        font-weight: 600;
+        overflow-wrap: anywhere;
+    }
+
+    #list-satpam .rt tbody tr td.st {
+        order: 2;
+        flex: none;
+    }
+
+    #list-satpam .rt tbody tr td.em {
+        order: 3;
+        flex: 0 0 100%;
+        color: var(--mute);
+        font-weight: 400;
+        overflow-wrap: anywhere;
+    }
+
+    #list-satpam .rt tbody tr td.ak {
+        order: 4;
+        flex: 0 0 100%;
+        width: auto;
+        margin-top: 8px;
+    }
+
+    #list-satpam .rt td.ak .btn {
+        width: 100%;
+        height: 36px;
+    }
+}

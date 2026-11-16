@@ -29,6 +29,8 @@
 @import './hris/izin-dinas-dalam-kota/style.css';
 @import './hris/izin-dinas-luar-kota/style.css';
 @import './hris/form-absensi/style.css';
+@import './hris/list-satpam/style.css';
+@import './hris/page-satpam/style.css';
 
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';

@@ -45,8 +45,10 @@ return [
                     ['label' => 'Data Golongan', 'slug' => 'data-admin-golongan'],
                     ['label' => 'Data Jabatan', 'slug' => 'data-admin-jabatan', 'view' => 'data-admin-data-jabatan'],
                     ['label' => 'Data Faskes BPJS', 'slug' => 'data-admin-faskes-bpjs', 'view' => 'data-admin-data-faskes-bpjs'],
+                    ['label' => 'List Satpam', 'slug' => 'list-satpam'],
                 ]],
                 ['label' => 'Tanda Tangan', 'icon' => 'pen', 'slug' => 'tanda-tangan'],
+                ['label' => 'Satpam', 'icon' => 'guard', 'slug' => 'page-satpam'],
             ],
         ],
         [

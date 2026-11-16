@@ -26,3 +26,5 @@ import './hris/izin-keluar-kantor/script';
 import './hris/izin-dinas-dalam-kota/script';
 import './hris/izin-dinas-luar-kota/script';
 import './hris/form-absensi/script';
+import './hris/list-satpam/script';
+import './hris/page-satpam/script';

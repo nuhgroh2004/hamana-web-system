@@ -1,0 +1,821 @@
+/*
+ * Gaya halaman Satpam (daftar izin keluar kantor).
+ * Semua aturan dibatasi pada #page-satpam agar tidak bocor ke modul lain.
+ */
+
+#page-satpam {
+    --ok: #1a7f37;
+    --warn: #9a6700;
+}
+
+@media (prefers-color-scheme: dark) {
+    #page-satpam {
+        --ok: #3fb950;
+        --warn: #d29922;
+    }
+}
+
+#page-satpam :is(button, input, textarea) {
+    font: inherit;
+    color: inherit;
+}
+
+#page-satpam [hidden] {
+    display: none !important;
+}
+
+#page-satpam svg.i {
+    width: 16px;
+    height: 16px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.6;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    flex: none;
+}
+
+#page-satpam .pg {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 0 8px;
+}
+
+#page-satpam h1 {
+    margin: 0 0 4px;
+    padding: 0 0 12px;
+    font-size: 28px;
+    font-weight: 400;
+    line-height: 1.25;
+    border-bottom: 1px solid var(--bd);
+}
+
+#page-satpam .ds {
+    margin: 12px 0 16px;
+    color: var(--mute);
+}
+
+#page-satpam .row {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+#page-satpam .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    height: 34px;
+    min-width: 84px;
+    padding: 0 16px;
+    border: 1px solid var(--bd);
+    border-radius: 6px;
+    background: var(--bg2);
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 0.15s, filter 0.15s, transform 0.1s;
+}
+
+#page-satpam .btn:hover {
+    background: var(--hov);
+}
+
+#page-satpam .btn:active {
+    transform: scale(0.97);
+}
+
+#page-satpam .btn:focus-visible {
+    outline: 2px solid var(--blue);
+    outline-offset: 2px;
+}
+
+#page-satpam .btn.go {
+    background: var(--green);
+    border-color: var(--green);
+    color: #fff;
+}
+
+#page-satpam .btn.go:hover {
+    filter: brightness(1.1);
+    background: var(--green);
+}
+
+#page-satpam .btn.dgb {
+    background: var(--err);
+    border-color: var(--err);
+    color: #fff;
+}
+
+#page-satpam .btn.dgb:hover {
+    filter: brightness(1.1);
+    background: var(--err);
+}
+
+#page-satpam .fld {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid var(--bd);
+    border-radius: 6px;
+    background: var(--bg);
+    outline: 0;
+    transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+#page-satpam .fld:focus {
+    border-color: var(--blue);
+    box-shadow: 0 0 0 1px var(--blue);
+}
+
+#page-satpam .fld.bad {
+    border-color: var(--err);
+    box-shadow: 0 0 0 1px var(--err);
+}
+
+#page-satpam .er {
+    margin: 6px 0 0;
+    color: var(--err);
+    font-size: 12.5px;
+}
+
+#page-satpam .er:empty {
+    display: none;
+}
+
+#page-satpam .hint {
+    margin: 0 0 8px;
+    color: var(--mute);
+    font-size: 12.5px;
+}
+
+/* ---- modal detail ---- */
+#page-satpam .md-ov {
+    position: fixed;
+    inset: 0;
+    z-index: 60;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background: rgba(1, 4, 9, 0.6);
+    animation: page-satpam-fade 0.2s ease-out both;
+}
+
+#page-satpam .md {
+    width: 100%;
+    max-width: 560px;
+    max-height: calc(100dvh - 40px);
+    display: flex;
+    flex-direction: column;
+    background: var(--bg);
+    border: 1px solid var(--bd);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.4);
+    animation: page-satpam-pop 0.3s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+#page-satpam .mh {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--bd);
+    background: var(--bg2);
+    font-weight: 600;
+}
+
+#page-satpam .mx {
+    display: grid;
+    place-items: center;
+    width: 28px;
+    height: 28px;
+    border: 0;
+    border-radius: 6px;
+    background: transparent;
+    cursor: pointer;
+    color: var(--mute);
+}
+
+#page-satpam .mx:hover {
+    background: var(--hov);
+}
+
+#page-satpam .mb {
+    padding: 16px;
+    overflow: auto;
+}
+
+#page-satpam .mf {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    padding: 12px 16px;
+    border-top: 1px solid var(--bd);
+}
+
+@keyframes page-satpam-fade {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes page-satpam-pop {
+    from {
+        opacity: 0;
+        transform: translate3d(0, 14px, 0) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    #page-satpam * {
+        animation-duration: 0.01ms !important;
+        animation-delay: 0s !important;
+    }
+}
+
+#page-satpam .mu {
+    color: var(--mute);
+}
+
+#page-satpam .tbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+}
+
+#page-satpam .tl {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+#page-satpam .dd {
+    justify-content: space-between;
+    gap: 8px;
+    min-width: 0;
+    font-weight: 400;
+}
+
+#page-satpam .dd .bt {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* ---- dropdown bulan / tahun ---- */
+#page-satpam .mn {
+    position: fixed;
+    z-index: 70;
+    padding: 4px;
+    background: var(--bg);
+    border: 1px solid var(--bd);
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(31, 35, 40, 0.2);
+    max-height: min(360px, calc(100dvh - 16px));
+    overflow-y: auto;
+    animation: page-satpam-pop 0.12s ease-out;
+}
+
+#page-satpam .mn button {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding: 8px 12px;
+    border: 0;
+    border-radius: 8px;
+    background: transparent;
+    text-align: left;
+    cursor: pointer;
+}
+
+#page-satpam .mn button:hover {
+    background: var(--hov);
+}
+
+#page-satpam .mn button .ck {
+    margin-left: auto;
+    color: var(--blue);
+    visibility: hidden;
+}
+
+#page-satpam .mn button.on .ck {
+    visibility: visible;
+}
+
+/* ---- kalender ---- */
+#page-satpam .cal {
+    position: fixed;
+    z-index: 70;
+    width: 288px;
+    max-width: calc(100vw - 16px);
+    padding: 12px;
+    background: var(--bg);
+    border: 1px solid var(--bd);
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(31, 35, 40, 0.2);
+    animation: page-satpam-pop 0.12s ease-out;
+}
+
+#page-satpam .ch2 {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+}
+
+#page-satpam .ct2 {
+    font-size: 14px;
+}
+
+#page-satpam .cn {
+    display: grid;
+    place-items: center;
+    width: 28px;
+    height: 28px;
+    border: 0;
+    border-radius: 6px;
+    background: transparent;
+    color: var(--mute);
+    cursor: pointer;
+}
+
+#page-satpam .cn:hover {
+    background: var(--hov);
+    color: var(--fg);
+}
+
+#page-satpam .dw,
+#page-satpam .dg {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 2px;
+    text-align: center;
+}
+
+#page-satpam .dw span {
+    padding: 4px 0;
+    color: var(--mute);
+    font-size: 12px;
+}
+
+#page-satpam .dy {
+    position: relative;
+    height: 34px;
+    border: 1px solid transparent;
+    border-radius: 8px;
+    background: transparent;
+    color: var(--fg);
+    font-size: 13px;
+    cursor: pointer;
+}
+
+#page-satpam .dy:hover {
+    background: var(--hov);
+}
+
+#page-satpam .dy.out {
+    color: var(--mute);
+    opacity: 0.55;
+}
+
+#page-satpam .dy.td {
+    border-color: var(--blue);
+}
+
+#page-satpam .dy.on {
+    background: var(--blue);
+    border-color: var(--blue);
+    color: #fff;
+    opacity: 1;
+}
+
+#page-satpam .dy.has::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    bottom: 3px;
+    width: 4px;
+    height: 4px;
+    margin-left: -2px;
+    border-radius: 50%;
+    background: var(--ok);
+}
+
+#page-satpam .dy.on.has::after {
+    background: #fff;
+}
+
+#page-satpam .cf2 {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid var(--bd);
+}
+
+/* ---- tombol "Lihat" khusus tampilan kartu di ponsel ---- */
+#page-satpam .lh {
+    display: none;
+}
+
+#page-satpam .btn.lh {
+    background: #004098;
+    border-color: #004098;
+    color: #fff;
+}
+
+#page-satpam .btn.lh:hover {
+    background: #004098;
+    filter: brightness(1.18);
+}
+
+/* ---- pencarian ---- */
+#page-satpam .srch {
+    position: relative;
+    display: block;
+    width: 340px;
+    max-width: 100%;
+    height: auto;
+    padding: 0;
+    margin: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    color: inherit;
+}
+
+#page-satpam .srch:focus-within {
+    border-color: transparent;
+    box-shadow: none;
+}
+
+#page-satpam .srch svg {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--mute);
+    pointer-events: none;
+}
+
+#page-satpam .srch .fld {
+    min-height: 32px;
+    padding: 5px 12px 5px 32px;
+}
+
+/* ---- tabel ---- */
+#page-satpam .box {
+    border: 1px solid var(--bd);
+    border-radius: 6px;
+    background: var(--bg);
+    overflow: hidden;
+}
+
+#page-satpam .rt {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+#page-satpam .rt th {
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--bd);
+    background: var(--bg2);
+    text-align: left;
+    font-size: 13px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+#page-satpam .rt td {
+    padding: 12px 14px;
+    border-top: 1px solid var(--bd);
+    vertical-align: middle;
+    overflow-wrap: anywhere;
+}
+
+#page-satpam .rt tbody tr:first-child td {
+    border-top: 0;
+}
+
+#page-satpam .rt tbody tr:hover td {
+    background: var(--bg2);
+}
+
+#page-satpam .c1 {
+    width: 64px;
+}
+
+#page-satpam .c3 {
+    width: 150px;
+}
+
+#page-satpam .c4 {
+    width: 170px;
+}
+
+#page-satpam .c6 {
+    width: 130px;
+}
+
+#page-satpam .nm {
+    font-weight: 600;
+}
+
+/* Tombol ikon "lihat detail". Dibatasi pada halaman ini agar tidak
+   bertabrakan dengan .ib milik navbar. */
+#page-satpam .ib {
+    display: inline-grid;
+    place-items: center;
+    width: 34px;
+    height: 30px;
+    border: 1px solid var(--bd);
+    border-radius: 6px;
+    background: var(--bg2);
+    color: var(--blue);
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s;
+}
+
+#page-satpam .ib:hover {
+    background: var(--hov);
+    border-color: var(--blue);
+}
+
+#page-satpam .ib:focus-visible {
+    outline: 2px solid var(--blue);
+    outline-offset: 2px;
+}
+
+#page-satpam .ib svg {
+    width: 17px;
+    height: 17px;
+}
+
+#page-satpam .bdg {
+    display: inline-block;
+    padding: 0 10px;
+    border: 1px solid var(--bd);
+    border-radius: 2em;
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 22px;
+    white-space: nowrap;
+    color: var(--mute);
+}
+
+#page-satpam .bdg.ok {
+    color: var(--ok);
+    border-color: rgba(46, 160, 67, 0.5);
+    background: rgba(46, 160, 67, 0.12);
+}
+
+#page-satpam .bdg.er {
+    color: var(--err);
+    border-color: rgba(248, 81, 73, 0.5);
+    background: rgba(248, 81, 73, 0.1);
+}
+
+#page-satpam .bdg.wr {
+    color: var(--warn);
+    border-color: rgba(210, 153, 34, 0.55);
+    background: rgba(210, 153, 34, 0.12);
+}
+
+#page-satpam .empty {
+    padding: 40px 16px;
+    text-align: center;
+    color: var(--mute);
+}
+
+#page-satpam .ft {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+    padding: 12px 16px;
+    border-top: 1px solid var(--bd);
+    color: var(--mute);
+}
+
+#page-satpam .pn {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex-wrap: wrap;
+}
+
+#page-satpam .pn button {
+    min-width: 32px;
+    height: 30px;
+    padding: 0 10px;
+    border: 1px solid transparent;
+    border-radius: 6px;
+    background: transparent;
+    color: var(--fg);
+    cursor: pointer;
+}
+
+#page-satpam .pn button:hover:not(:disabled):not(.on) {
+    border-color: var(--bd);
+    background: var(--bg2);
+}
+
+#page-satpam .pn button:disabled {
+    color: var(--mute);
+    cursor: default;
+}
+
+#page-satpam .pn button.on {
+    border-color: var(--blue);
+    background: var(--blue);
+    color: #fff;
+    font-weight: 600;
+}
+
+#page-satpam .pn span {
+    padding: 0 4px;
+    color: var(--mute);
+}
+
+/* ---- daftar detail pada modal ---- */
+#page-satpam .dl {
+    display: grid;
+    grid-template-columns: 110px 1fr;
+    gap: 10px 12px;
+    margin: 0;
+}
+
+#page-satpam .dl dt {
+    color: var(--mute);
+}
+
+#page-satpam .dl dd {
+    margin: 0;
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
+@media (max-width: 900px) {
+    /* Tabel berubah menjadi kartu agar tidak perlu digeser ke samping. */
+    #page-satpam .rt thead {
+        display: none;
+    }
+
+    #page-satpam .rt,
+    #page-satpam .rt tbody {
+        display: block;
+    }
+
+    #page-satpam .rt tr {
+        position: relative;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 4px 0;
+        padding: 14px 16px;
+        border-top: 1px solid var(--bd);
+    }
+
+    #page-satpam .rt tr:first-child {
+        border-top: 0;
+    }
+
+    #page-satpam .rt tbody tr:hover td {
+        background: transparent;
+    }
+
+    #page-satpam .rt tbody tr td {
+        display: block;
+        padding: 0;
+        border: 0;
+        min-width: 0;
+    }
+
+    #page-satpam .rt td::before {
+        display: none;
+    }
+
+    #page-satpam .rt tbody tr td.ak {
+        display: none;
+    }
+
+    #page-satpam .rt tbody tr td.nm {
+        flex: 0 0 100%;
+        font-size: 15px;
+        line-height: 1.35;
+    }
+
+    #page-satpam .rt tbody tr td.dv,
+    #page-satpam .rt tbody tr td.ps {
+        flex: 0 0 auto;
+        max-width: 100%;
+        color: var(--mute);
+        font-size: 13px;
+    }
+
+    #page-satpam .rt td.ps::before {
+        content: "\00b7";
+        display: inline;
+        margin: 0 8px;
+        color: var(--mute);
+    }
+
+    #page-satpam .rt tbody tr td.kp {
+        flex: 0 0 100%;
+        margin-top: 8px;
+        padding: 9px 12px;
+        border-radius: 6px;
+        background: var(--bg2);
+        font-size: 13.5px;
+        line-height: 1.45;
+    }
+
+    #page-satpam .rt td.kp::before {
+        content: attr(data-l);
+        display: block;
+        margin-bottom: 2px;
+        color: var(--mute);
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+    }
+
+    #page-satpam .rt tbody tr td.st {
+        flex: 0 0 100%;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-top: 8px;
+    }
+
+    #page-satpam .rt td.st .bdg {
+        flex: none;
+    }
+
+    #page-satpam .lh {
+        display: inline-flex;
+        flex: 1;
+        min-width: 0;
+        height: 36px;
+    }
+}
+
+@media (max-width: 640px) {
+    #page-satpam .pg {
+        padding: 0 0 8px;
+    }
+
+    #page-satpam h1 {
+        font-size: 22px;
+    }
+
+    #page-satpam .srch {
+        width: 100%;
+    }
+
+    #page-satpam .tl {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        width: 100%;
+    }
+
+    #page-satpam .tl .dd {
+        padding: 0 8px;
+        gap: 4px;
+        font-size: 13px;
+    }
+
+    #page-satpam .dl {
+        grid-template-columns: 1fr;
+        gap: 2px;
+    }
+
+    #page-satpam .dl dd {
+        margin-bottom: 10px;
+    }
+}
+
+/* Layar sangat sempit: rapatkan tombol filter agar "Tahun: 2026" tidak terpotong. */
+@media (max-width: 400px) {
+    #page-satpam .tl .dd {
+        padding: 0 6px;
+    }
+}
