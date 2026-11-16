@@ -4,11 +4,6 @@
  * (mis. .hd, .ds, .cd, .srch, .em yang juga dipakai di modul HRIS).
  */
 
-main.set-page {
-    padding-left: 20px;
-    padding-right: 32px;
-}
-
 #set-page.set {
     display: flex;
     gap: 32px;
@@ -258,11 +253,6 @@ main.set-page {
 }
 
 @media (max-width: 900px) {
-    main.set-page {
-        padding-left: 16px;
-        padding-right: 16px;
-    }
-
     #set-page.set {
         flex-direction: column;
         gap: 16px;
