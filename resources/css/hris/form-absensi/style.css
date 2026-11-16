@@ -321,7 +321,8 @@
     position: static;
     transform: none;
     align-self: flex-start;
-    height: 30px;
+    height: 52px;
+    width: auto;
 }
 
 #form-absensi .fa .hd h1 {
