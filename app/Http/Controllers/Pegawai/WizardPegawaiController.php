@@ -152,18 +152,18 @@ class WizardPegawaiController extends Controller
         GetWizardProgressService $getProgress,
     ) {
         $data = $request->validate([
-            'nomor' => ['required', 'array'],
+            'nomor' => ['nullable', 'array'],
             'nomor.KK' => ['nullable', 'string', 'max:50'],
             'nomor.KTP' => ['nullable', 'string', 'max:50'],
             'nomor.NPWP' => ['nullable', 'string', 'max:50'],
         ]);
 
-        foreach ($data['nomor'] as $kategori => $nomor) {
+        foreach ($data['nomor'] ?? [] as $kategori => $nomor) {
             $this->validateNomor($kategori, $nomor);
         }
 
         return response()->json([
-            'nomor' => $saveNomorDokumen->handle($employee, $data['nomor']),
+            'nomor' => $saveNomorDokumen->handle($employee, $data['nomor'] ?? []),
             'progress' => $getProgress->handle($employee->fresh()),
         ]);
     }
@@ -225,36 +225,36 @@ class WizardPegawaiController extends Controller
     {
         return [
             'nik' => [
-                'required',
+                'nullable',
                 'string',
                 'max:30',
                 Rule::unique('employees', 'nik')->ignore($employee?->id),
             ],
-            'nama' => ['required', 'string', 'max:255'],
+            'nama' => ['nullable', 'string', 'max:255'],
             'gender' => ['nullable', 'string', 'in:Laki-Laki,Perempuan'],
-            'tempat_lahir' => ['required', 'string', 'max:255'],
-            'tgl_lahir' => ['required', 'date'],
+            'tempat_lahir' => ['nullable', 'string', 'max:255'],
+            'tgl_lahir' => ['nullable', 'date'],
             'agama' => ['nullable', 'string', 'max:50'],
-            'status_nikah' => ['required', 'string', 'max:30'],
+            'status_nikah' => ['nullable', 'string', 'max:30'],
             'jml_anak' => ['nullable', 'integer', 'min:0', 'max:50'],
-            'jabatan' => ['required', 'string', 'max:255'],
-            'status_pegawai' => ['required', 'string', 'in:Aktif,Tidak Aktif'],
-            'departemen' => ['required', 'string', 'max:255'],
-            'posisi' => ['required', 'string', 'max:255'],
-            'tgl_gabung' => ['required', 'date'],
-            'email' => ['required', 'email', 'max:255'],
-            'hp1' => ['required', 'string', 'max:30'],
+            'jabatan' => ['nullable', 'string', 'max:255'],
+            'status_pegawai' => ['nullable', 'string', 'in:Aktif,Tidak Aktif'],
+            'departemen' => ['nullable', 'string', 'max:255'],
+            'posisi' => ['nullable', 'string', 'max:255'],
+            'tgl_gabung' => ['nullable', 'date'],
+            'email' => ['nullable', 'email', 'max:255'],
+            'hp1' => ['nullable', 'string', 'max:30'],
             'hp2' => ['nullable', 'string', 'max:30'],
-            'alamat_ktp' => ['required', 'string', 'max:2000'],
+            'alamat_ktp' => ['nullable', 'string', 'max:2000'],
             'alamat_dom' => ['nullable', 'string', 'max:2000'],
             'rumah' => ['nullable', 'string', 'max:50'],
-            'ktp' => ['required', 'string', 'max:30'],
+            'ktp' => ['nullable', 'string', 'max:30'],
             'passport' => ['nullable', 'string', 'max:30'],
             'npwp' => ['nullable', 'string', 'max:30'],
             'bpjs_tk' => ['nullable', 'string', 'max:30'],
             'bpjs_kes' => ['nullable', 'string', 'max:30'],
             'rek_mandiri' => ['nullable', 'string', 'max:50'],
-            'faskes_terpilih' => ['boolean'],
+            'faskes_terpilih' => ['nullable', 'boolean'],
             'faskes_provinsi' => ['nullable', 'string', 'max:255'],
             'faskes_kantor_regional' => ['nullable', 'string', 'max:255'],
             'faskes_kantor_cabang' => ['nullable', 'string', 'max:255'],

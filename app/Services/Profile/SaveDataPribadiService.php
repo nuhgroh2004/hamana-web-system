@@ -13,9 +13,12 @@ class SaveDataPribadiService
     public function handle(Employee $employee, array $data): Employee
     {
         return DB::transaction(function () use ($employee, $data) {
+            $nik = trim((string) ($data['nik'] ?? ''));
+            $nama = trim((string) ($data['nama'] ?? ''));
+
             $employee->update([
-                'nik' => $data['nik'],
-                'nama' => $data['nama'],
+                'nik' => $nik !== '' ? $nik : $employee->nik,
+                'nama' => $nama !== '' ? $nama : $employee->nama,
                 'jabatan' => $data['jabatan'] ?? null,
                 'posisi' => $data['posisi'] ?? null,
                 'status_pegawai' => $data['status_pegawai'] ?? Employee::STATUS_AKTIF,

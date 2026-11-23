@@ -218,7 +218,7 @@ function initDataPegawaiWizard() {
             rememberEmployee(employeeId);
             applyProgress(res.data.progress);
 
-            return uploadPhoto(data.nik);
+            return uploadPhoto(res.data.employee.nik || data.nik);
         });
     }
 

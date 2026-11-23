@@ -223,6 +223,38 @@ class WizardPegawaiApiTest extends TestCase
             ->assertJsonValidationErrors('nomor.KK');
     }
 
+    public function test_wizard_allows_empty_steps_during_development(): void
+    {
+        $admin = $this->makeAdmin();
+
+        $response = $this->actingAs($admin)
+            ->postJson('/api/data-pegawai/wizard', [])
+            ->assertCreated();
+
+        $employeeId = $response->json('employee.id');
+
+        $employee = Employee::query()->findOrFail($employeeId);
+
+        $this->assertStringStartsWith('DEV-', $employee->nik);
+        $this->assertSame('Karyawan Baru', $employee->nama);
+
+        $this->actingAs($admin)
+            ->putJson('/api/data-pegawai/wizard/'.$employeeId.'/pendidikan', ['items' => []])
+            ->assertOk();
+
+        $this->actingAs($admin)
+            ->putJson('/api/data-pegawai/wizard/'.$employeeId.'/keluarga', ['items' => []])
+            ->assertOk();
+
+        $this->actingAs($admin)
+            ->putJson('/api/data-pegawai/wizard/'.$employeeId.'/ciri-fisik', [])
+            ->assertOk();
+
+        $this->actingAs($admin)
+            ->putJson('/api/data-pegawai/wizard/'.$employeeId.'/nomor-dokumen', [])
+            ->assertOk();
+    }
+
     public function test_admin_can_open_wizard_page(): void
     {
         $admin = $this->makeAdmin();
