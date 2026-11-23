@@ -24,12 +24,19 @@ function initDataPegawaiWizard() {
     const labels = Array.from(root.querySelectorAll('.wz-labels span'));
     const pendidikanBox = document.getElementById('wz-pendidikan');
     const keluargaBox = document.getElementById('wz-keluarga');
+    const utamaBox = document.getElementById('wz-utama');
+    const lainBox = document.getElementById('wz-lain');
+    const ov = document.getElementById('wz-ov');
 
     let employeeId = Number(root.dataset.employee) || null;
     let step = 1;
     let busy = false;
     let progress = {};
     let docs = [];
+    let nomor = {};
+    let pendidikanGroups = [];
+    let keluargaGroups = [];
+    let pendingFiles = null;
 
     function esc(value) {
         return String(value == null ? '' : value)
@@ -222,182 +229,355 @@ function initDataPegawaiWizard() {
         });
     }
 
-    // ---- kartu dinamis: pendidikan & keluarga ----
-    function buildCard(config) {
-        const card = document.createElement('div');
-        card.className = 'wz-card';
+    // ---- tabel dinamis: pendidikan & keluarga ----
+    const TRASH_SVG =
+        '<svg class="i" viewBox="0 0 16 16"><path d="M3 4.5h10M6.5 4.5V3h3v1.5M4.5 4.5l.5 8.5h6l.5-8.5M7 7v4M9 7v4"/></svg>';
+    const PLUS_SVG = '<svg class="i" viewBox="0 0 16 16"><path d="M8 3v10M3 8h10"/></svg>';
 
-        const fields = config.fields
-            .map(function (field) {
-                const label =
-                    '<label class="lb">' +
-                    esc(field.label) +
-                    (field.required ? ' <span class="rq">*</span>' : '') +
-                    '</label>';
-                const cls = field.wide ? 'f wide' : 'f';
-                let control;
+    const KELUARGA_GROUPS = [
+        { k: 'AYAH', add: true, num: true },
+        { k: 'IBU', add: true, num: true },
+        { k: 'SAUDARA', add: true, num: true },
+        { k: 'SUAMI', add: false, num: false },
+        { k: 'ISTRI', add: true, num: true },
+        { k: 'ANAK', add: true, num: true },
+    ];
 
-                if (field.type === 'select') {
-                    control =
-                        '<select class="fld" data-f="' +
-                        field.key +
-                        '">' +
-                        field.options
-                            .map(function (option) {
-                                return '<option>' + esc(option) + '</option>';
-                            })
-                            .join('') +
-                        '</select>';
-                } else {
-                    control =
-                        '<input class="fld" data-f="' +
-                        field.key +
-                        '" autocomplete="off"' +
-                        (field.numeric ? ' inputmode="numeric"' : '') +
-                        (field.maxlength ? ' maxlength="' + field.maxlength + '"' : '') +
-                        '>';
-                }
+    function blankPendidikan() {
+        return { nama_sekolah: '', jurusan: '', tahun: '', on: true };
+    }
 
-                return '<div class="' + cls + '">' + label + control + '</div>';
+    function blankKeluarga() {
+        return { nama: '', usia: '', pekerjaan: '', on: true };
+    }
+
+    function pendidikanGroupsFrom(items) {
+        const byLevel = {};
+
+        (items || []).forEach(function (item) {
+            const level = item.jenjang || 'SMA/SMK';
+
+            if (!byLevel[level]) {
+                byLevel[level] = [];
+            }
+
+            byLevel[level].push({
+                nama_sekolah: item.nama_sekolah || '',
+                jurusan: item.jurusan || '',
+                tahun: item.tahun || '',
+                on: item.aktif !== false,
+            });
+        });
+
+        const levels = JENJANG.slice();
+
+        Object.keys(byLevel).forEach(function (level) {
+            if (levels.indexOf(level) === -1) {
+                levels.push(level);
+            }
+        });
+
+        return levels.map(function (level) {
+            return {
+                j: level,
+                items: byLevel[level] && byLevel[level].length ? byLevel[level] : [blankPendidikan()],
+            };
+        });
+    }
+
+    function keluargaGroupsFrom(items) {
+        const byKey = {};
+
+        (items || []).forEach(function (item) {
+            const key = item.hubungan || 'AYAH';
+
+            if (!byKey[key]) {
+                byKey[key] = [];
+            }
+
+            byKey[key].push(item);
+        });
+
+        return KELUARGA_GROUPS.map(function (group) {
+            const src = (byKey[group.k] || []).sort(function (a, b) {
+                return (a.urutan || 0) - (b.urutan || 0);
+            });
+
+            return {
+                k: group.k,
+                add: group.add,
+                num: group.num,
+                items: (src.length ? src : [{}]).map(function (item) {
+                    return {
+                        nama: item.nama || '',
+                        usia: item.usia == null ? '' : String(item.usia),
+                        pekerjaan: item.pekerjaan || '',
+                        on: item.aktif !== false,
+                    };
+                }),
+            };
+        });
+    }
+
+    function tableInput(groupIndex, rowIndex, key, value, disabled, cls, extra) {
+        return (
+            '<td' +
+            (cls ? ' class="' + cls + '"' : '') +
+            '><input class="fld" data-g="' +
+            groupIndex +
+            '" data-i="' +
+            rowIndex +
+            '" data-k="' +
+            key +
+            '" value="' +
+            esc(value) +
+            '"' +
+            (disabled ? ' disabled' : '') +
+            ' autocomplete="off"' +
+            (extra || '') +
+            '></td>'
+        );
+    }
+
+    function paintPendidikan() {
+        pendidikanBox.innerHTML = pendidikanGroups
+            .map(function (group, gi) {
+                return group.items
+                    .map(function (item, ii) {
+                        const last = ii === group.items.length - 1;
+                        const disabled = !item.on;
+
+                        return (
+                            '<tr class="' +
+                            (ii === 0 ? 'gs' : '') +
+                            '">' +
+                            '<td class="c1"><input type="checkbox" data-g="' +
+                            gi +
+                            '" data-i="' +
+                            ii +
+                            '" data-k="on"' +
+                            (item.on ? ' checked' : '') +
+                            ' aria-label="Aktifkan ' +
+                            group.j +
+                            '"></td>' +
+                            '<td class="c2">' +
+                            group.j +
+                            '</td>' +
+                            tableInput(gi, ii, 'nama_sekolah', item.nama_sekolah, disabled) +
+                            tableInput(gi, ii, 'jurusan', item.jurusan, disabled) +
+                            tableInput(gi, ii, 'tahun', item.tahun, disabled, 'c5', ' maxlength="10"') +
+                            '<td class="c6">' +
+                            (group.items.length > 1
+                                ? '<button type="button" class="del" data-del="' +
+                                  gi +
+                                  ':' +
+                                  ii +
+                                  '" title="Hapus ' +
+                                  group.j +
+                                  '" aria-label="Hapus ' +
+                                  group.j +
+                                  '">' +
+                                  TRASH_SVG +
+                                  '</button>'
+                                : '') +
+                            (last
+                                ? '<button type="button" class="btn sm" data-add="' +
+                                  gi +
+                                  '" title="Tambah sekolah di jenjang ' +
+                                  group.j +
+                                  '">' +
+                                  PLUS_SVG +
+                                  'Tambah</button>'
+                                : '') +
+                            '</td></tr>'
+                        );
+                    })
+                    .join('');
             })
             .join('');
+    }
 
-        card.innerHTML =
-            '<div class="wz-card-head">' +
-            '<b data-title>' +
-            esc(config.label) +
-            '</b>' +
-            '<label class="chk"><input type="checkbox" data-f="aktif"> Aktif</label>' +
-            '<button type="button" class="btn sm dgb" data-remove>Hapus</button>' +
-            '</div>' +
-            '<div class="wz-grid">' +
-            fields +
-            '</div>';
+    function paintKeluarga() {
+        keluargaBox.innerHTML = keluargaGroups
+            .map(function (group, gi) {
+                return group.items
+                    .map(function (item, ii) {
+                        const last = ii === group.items.length - 1;
+                        const disabled = !item.on;
+                        const label = group.num ? group.k + ' ' + (ii + 1) : group.k;
 
-        config.fields.forEach(function (field) {
-            const el = card.querySelector('[data-f="' + field.key + '"]');
-            const value = config.values ? config.values[field.key] : null;
+                        return (
+                            '<tr class="' +
+                            (ii === 0 ? 'gs' : '') +
+                            '">' +
+                            '<td class="c1"><input type="checkbox" data-g="' +
+                            gi +
+                            '" data-i="' +
+                            ii +
+                            '" data-k="on"' +
+                            (item.on ? ' checked' : '') +
+                            ' aria-label="Aktifkan ' +
+                            label +
+                            '"></td>' +
+                            '<td class="c2">' +
+                            label +
+                            '</td>' +
+                            tableInput(gi, ii, 'nama', item.nama, disabled) +
+                            tableInput(gi, ii, 'usia', item.usia, disabled, 'c3', ' inputmode="numeric" maxlength="3"') +
+                            tableInput(gi, ii, 'pekerjaan', item.pekerjaan, disabled) +
+                            '<td class="c6">' +
+                            (group.add && group.items.length > 1
+                                ? '<button type="button" class="del" data-del="' +
+                                  gi +
+                                  ':' +
+                                  ii +
+                                  '" title="Hapus ' +
+                                  label +
+                                  '" aria-label="Hapus ' +
+                                  label +
+                                  '">' +
+                                  TRASH_SVG +
+                                  '</button>'
+                                : '') +
+                            (group.add && last
+                                ? '<button type="button" class="btn sm" data-add="' +
+                                  gi +
+                                  '" title="Tambah ' +
+                                  group.k.toLowerCase() +
+                                  '">' +
+                                  PLUS_SVG +
+                                  'Tambah</button>'
+                                : '') +
+                            '</td></tr>'
+                        );
+                    })
+                    .join('');
+            })
+            .join('');
+    }
 
-            if (!el) {
+    function bindTable(box, groups, paint, blank) {
+        box.addEventListener('input', function (e) {
+            const el = e.target;
+
+            if (el.type === 'checkbox' || !el.dataset.k) {
                 return;
             }
 
-            if (field.type === 'select') {
-                el.value = value || (config.defaults && config.defaults[field.key]) || field.options[0];
-            } else {
-                el.value = value == null ? '' : value;
+            if (el.dataset.k === 'usia') {
+                const digits = el.value.replace(/\D/g, '');
+
+                if (digits !== el.value) {
+                    el.value = digits;
+                }
+            }
+
+            groups()[el.dataset.g].items[el.dataset.i][el.dataset.k] = el.value;
+        });
+
+        box.addEventListener('change', function (e) {
+            const el = e.target;
+
+            if (el.type !== 'checkbox') {
+                return;
+            }
+
+            groups()[el.dataset.g].items[el.dataset.i].on = el.checked;
+            el.closest('tr')
+                .querySelectorAll('.fld')
+                .forEach(function (field) {
+                    field.disabled = !el.checked;
+                });
+        });
+
+        box.addEventListener('click', function (e) {
+            const add = e.target.closest('[data-add]');
+            const del = e.target.closest('[data-del]');
+
+            if (add) {
+                const gi = Number(add.dataset.add);
+
+                groups()[gi].items.push(blank());
+                paint();
+
+                const next = groups()[gi].items.length - 1;
+                const first = box.querySelector('.fld[data-g="' + gi + '"][data-i="' + next + '"]');
+
+                if (first) {
+                    first.focus();
+                    first.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+                }
+            } else if (del) {
+                const parts = del.dataset.del.split(':');
+
+                groups()[Number(parts[0])].items.splice(Number(parts[1]), 1);
+                paint();
             }
         });
-
-        const aktif = card.querySelector('[data-f="aktif"]');
-        aktif.checked = config.values ? config.values.aktif !== false : true;
-
-        card.querySelector('[data-remove]').addEventListener('click', function () {
-            card.remove();
-            renumber(config.box, config.label);
-        });
-
-        return card;
-    }
-
-    function renumber(box, label) {
-        Array.from(box.querySelectorAll('.wz-card')).forEach(function (card, index) {
-            const title = card.querySelector('[data-title]');
-
-            if (title) {
-                title.textContent = label + ' ' + (index + 1);
-            }
-        });
-    }
-
-    const PENDIDIKAN_FIELDS = [
-        { key: 'jenjang', label: 'Jenjang', type: 'select', options: JENJANG, required: true },
-        { key: 'nama_sekolah', label: 'Nama Sekolah', wide: true },
-        { key: 'jurusan', label: 'Jurusan' },
-        { key: 'tahun', label: 'Tahun', numeric: true, maxlength: 10 },
-    ];
-
-    const KELUARGA_FIELDS = [
-        { key: 'hubungan', label: 'Hubungan', type: 'select', options: HUBUNGAN, required: true },
-        { key: 'urutan', label: 'Urutan', numeric: true, maxlength: 3 },
-        { key: 'nama', label: 'Nama Lengkap', wide: true },
-        { key: 'usia', label: 'Usia', numeric: true, maxlength: 3 },
-        { key: 'pekerjaan', label: 'Pekerjaan' },
-    ];
-
-    function addPendidikan(values) {
-        const card = buildCard({
-            box: pendidikanBox,
-            label: 'Pendidikan',
-            fields: PENDIDIKAN_FIELDS,
-            values: values,
-            defaults: { jenjang: 'SMA/SMK' },
-        });
-
-        pendidikanBox.appendChild(card);
-        renumber(pendidikanBox, 'Pendidikan');
-
-        return card;
-    }
-
-    function addKeluarga(values) {
-        const card = buildCard({
-            box: keluargaBox,
-            label: 'Anggota Keluarga',
-            fields: KELUARGA_FIELDS,
-            values: values,
-            defaults: { hubungan: 'AYAH' },
-        });
-
-        keluargaBox.appendChild(card);
-        renumber(keluargaBox, 'Anggota Keluarga');
-
-        return card;
     }
 
     function renderPendidikan(items) {
-        pendidikanBox.innerHTML = '';
-
-        (items && items.length ? items : [{}]).forEach(function (item) {
-            addPendidikan(item);
-        });
+        pendidikanGroups = pendidikanGroupsFrom(items);
+        paintPendidikan();
     }
 
     function renderKeluarga(items) {
-        keluargaBox.innerHTML = '';
-
-        (items && items.length ? items : [{}]).forEach(function (item) {
-            addKeluarga(item);
-        });
+        keluargaGroups = keluargaGroupsFrom(items);
+        paintKeluarga();
     }
 
-    function collectCards(box, fields) {
-        return Array.from(box.querySelectorAll('.wz-card'))
-            .map(function (card) {
-                const item = {};
+    function collectPendidikan() {
+        const items = [];
 
-                fields.forEach(function (field) {
-                    const el = card.querySelector('[data-f="' + field + '"]');
-                    item[field] = el ? el.value.trim() : '';
-                });
+        pendidikanGroups.forEach(function (group) {
+            group.items.forEach(function (item) {
+                const nama = (item.nama_sekolah || '').trim();
+                const jurusan = (item.jurusan || '').trim();
+                const tahun = (item.tahun || '').trim();
 
-                const aktif = card.querySelector('[data-f="aktif"]');
-                item.aktif = aktif ? aktif.checked : true;
-
-                return item;
-            })
-            .filter(function (item) {
-                return ['nama_sekolah', 'jurusan', 'tahun', 'nama', 'usia', 'pekerjaan'].some(function (field) {
-                    return item[field] !== undefined && item[field] !== '';
-                });
+                if (nama || jurusan || tahun) {
+                    items.push({
+                        jenjang: group.j,
+                        nama_sekolah: nama,
+                        jurusan: jurusan,
+                        tahun: tahun,
+                        aktif: item.on,
+                    });
+                }
             });
+        });
+
+        return items;
+    }
+
+    function collectKeluarga() {
+        const items = [];
+
+        keluargaGroups.forEach(function (group) {
+            group.items.forEach(function (item, index) {
+                const nama = (item.nama || '').trim();
+                const usia = String(item.usia || '').trim();
+                const pekerjaan = (item.pekerjaan || '').trim();
+
+                if (nama || usia || pekerjaan) {
+                    items.push({
+                        hubungan: group.k,
+                        urutan: index + 1,
+                        nama: nama,
+                        usia: usia,
+                        pekerjaan: pekerjaan,
+                        aktif: item.on,
+                    });
+                }
+            });
+        });
+
+        return items;
     }
 
     function savePendidikan() {
-        const items = collectCards(pendidikanBox, ['jenjang', 'nama_sekolah', 'jurusan', 'tahun']);
-
         return window.axios
-            .put('/api/data-pegawai/wizard/' + employeeId + '/pendidikan', { items: items })
+            .put('/api/data-pegawai/wizard/' + employeeId + '/pendidikan', { items: collectPendidikan() })
             .then(function (res) {
                 renderPendidikan(res.data.items);
                 applyProgress(res.data.progress);
@@ -405,15 +585,8 @@ function initDataPegawaiWizard() {
     }
 
     function saveKeluarga() {
-        const items = collectCards(keluargaBox, ['hubungan', 'urutan', 'nama', 'usia', 'pekerjaan']).map(function (item) {
-            item.urutan = item.urutan === '' ? null : Number(item.urutan);
-            item.usia = item.usia === '' ? null : Number(item.usia);
-
-            return item;
-        });
-
         return window.axios
-            .put('/api/data-pegawai/wizard/' + employeeId + '/keluarga', { items: items })
+            .put('/api/data-pegawai/wizard/' + employeeId + '/keluarga', { items: collectKeluarga() })
             .then(function (res) {
                 renderKeluarga(res.data.items);
                 applyProgress(res.data.progress);
@@ -459,67 +632,314 @@ function initDataPegawaiWizard() {
     }
 
     // ---- langkah 5: dokumen ----
-    function fillNomor(nomor) {
-        nomor = nomor || {};
+    const DOC_CATS = [
+        { id: 'KK', title: 'Kartu Keluarga', label: 'Nomor KK', hint: '16 digit angka' },
+        { id: 'KTP', title: 'KTP', label: 'Nomor NIK', hint: '16 digit angka' },
+        { id: 'NPWP', title: 'NPWP', label: 'Nomor NPWP', hint: '15 atau 16 digit angka' },
+    ];
+    const UPLOAD_SVG =
+        '<svg class="i" viewBox="0 0 16 16"><path d="M8 11V2.5M4.5 6L8 2.5 11.5 6M2.5 10.5v3h11v-3"/></svg>';
+    const MAX_FILE = 10 * 1024 * 1024;
+    const FILE_EXT = /\.(pdf|jpe?g|png)$/i;
+    const FILE_PDF = /\.pdf$/i;
 
-        ['KK', 'KTP', 'NPWP'].forEach(function (cat) {
-            setVal('nomor-' + cat, nomor[cat]);
-        });
+    function docCat(id) {
+        return DOC_CATS.filter(function (item) {
+            return item.id === id;
+        })[0];
+    }
+
+    function docById(id) {
+        return docs.filter(function (doc) {
+            return String(doc.id) === String(id);
+        })[0];
+    }
+
+    function docSize(bytes) {
+        return bytes < 1048576
+            ? Math.max(1, Math.round(bytes / 1024)) + ' KB'
+            : (bytes / 1048576).toFixed(1) + ' MB';
+    }
+
+    function docDate(stamp) {
+        return new Date(stamp).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
+    }
+
+    function docType(doc) {
+        return doc.type === 'application/pdf' || FILE_PDF.test(doc.name)
+            ? 'PDF'
+            : /png$/i.test(doc.name)
+              ? 'PNG'
+              : 'JPG';
+    }
+
+    function dropzone(cat, multiple) {
+        return (
+            '<div class="dz" data-dz="' +
+            cat +
+            '">' +
+            UPLOAD_SVG +
+            '<p><button type="button" class="btn sm" data-act="pick" data-cat="' +
+            cat +
+            '">Pilih file</button> atau seret ke sini</p><small>PDF, JPG, PNG · maks 10 MB</small>' +
+            '<input type="file" hidden data-upload="' +
+            cat +
+            '"' +
+            (multiple ? ' multiple' : '') +
+            ' accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png"></div>'
+        );
+    }
+
+    function docRow(doc) {
+        const title = doc.title ? String(doc.title).trim() : '';
+
+        return (
+            '<div class="wz-frow"><div class="th">' +
+            (docType(doc) === 'PDF' ? 'PDF' : '<img alt="" src="' + esc(doc.url) + '">') +
+            '</div><div class="fi"><b title="' +
+            esc(title || doc.name) +
+            '">' +
+            esc(title || doc.name) +
+            '</b><small>' +
+            (title ? esc(doc.name) + ' · ' : '') +
+            docType(doc) +
+            ' · ' +
+            docSize(doc.size) +
+            ' · ' +
+            docDate(doc.date) +
+            '</small></div><div class="ac">' +
+            '<button type="button" class="btn sm" data-act="view" data-id="' +
+            doc.id +
+            '">Lihat</button>' +
+            '<button type="button" class="btn sm dg" data-act="del-doc" data-id="' +
+            doc.id +
+            '">Hapus</button>' +
+            '</div></div>'
+        );
     }
 
     function renderDocs() {
-        ['KK', 'KTP', 'NPWP'].forEach(function (cat) {
-            const block = root.querySelector('.wz-doc[data-cat="' + cat + '"]');
+        utamaBox.innerHTML = DOC_CATS.map(function (cat) {
             const doc = docs.filter(function (item) {
-                return item.cat === cat;
+                return item.cat === cat.id;
             })[0];
-            const badge = block.querySelector('[data-file]');
-            const del = block.querySelector('[data-del]');
 
-            if (doc) {
-                badge.textContent = doc.name;
-                del.hidden = false;
-                del.dataset.id = doc.id;
-            } else {
-                badge.textContent = 'Belum ada';
-                del.hidden = true;
-                delete del.dataset.id;
-            }
+            return (
+                '<section class="wz-doc-box"><div class="wz-doc-hd"><h3>' +
+                cat.title +
+                '</h3><span class="bdg' +
+                (doc ? ' ok' : '') +
+                '">' +
+                (doc ? 'Terunggah' : 'Belum diunggah') +
+                '</span></div><div class="wz-doc-bd"><div>' +
+                '<label class="lb" for="w-nomor-' +
+                cat.id +
+                '">' +
+                cat.label +
+                ' <span class="rq">*</span></label>' +
+                '<input class="fld" id="w-nomor-' +
+                cat.id +
+                '" data-cat="' +
+                cat.id +
+                '" inputmode="numeric" autocomplete="off" value="' +
+                esc(nomor[cat.id] || '') +
+                '">' +
+                '<p class="hint">' +
+                cat.hint +
+                '</p></div><div>' +
+                (doc ? docRow(doc) : dropzone(cat.id, false)) +
+                '</div></div></section>'
+            );
+        }).join('');
+
+        const others = docs.filter(function (doc) {
+            return doc.cat === 'LAIN';
         });
 
-        const lain = root.querySelector('.wz-doc[data-cat="LAIN"]');
-        const list = lain.querySelector('[data-list]');
-        const others = docs.filter(function (item) {
-            return item.cat === 'LAIN';
-        });
-
-        list.innerHTML = others
-            .map(function (doc) {
-                return (
-                    '<div class="wz-file"><span>' +
-                    esc(doc.title || doc.name) +
-                    '</span><button type="button" class="btn sm dgb" data-del-id="' +
-                    esc(doc.id) +
-                    '">Hapus</button></div>'
-                );
-            })
-            .join('');
-
-        lain.querySelector('[data-file]').textContent = others.length ? others.length + ' file' : 'Belum ada';
+        lainBox.innerHTML =
+            '<section class="wz-doc-box"><div class="wz-doc-hd"><h3>Dokumen Lainnya</h3><span class="bdg' +
+            (others.length ? ' ok' : '') +
+            '">' +
+            others.length +
+            ' file</span></div><div class="wz-doc-bd one"><div>' +
+            dropzone('LAIN', true) +
+            '<p class="hint">Setiap file bisa diberi judul saat diunggah. Judul bersifat opsional.</p>' +
+            '<div class="wz-flist">' +
+            others.map(docRow).join('') +
+            '</div></div></div></section>';
     }
 
     function saveNomorDokumen() {
+        const payload = {
+            KK: val('nomor-KK'),
+            KTP: val('nomor-KTP'),
+            NPWP: val('nomor-NPWP'),
+        };
+
         return window.axios
-            .put('/api/data-pegawai/wizard/' + employeeId + '/nomor-dokumen', {
-                nomor: {
-                    KK: val('nomor-KK'),
-                    KTP: val('nomor-KTP'),
-                    NPWP: val('nomor-NPWP'),
-                },
-            })
+            .put('/api/data-pegawai/wizard/' + employeeId + '/nomor-dokumen', { nomor: payload })
             .then(function (res) {
+                nomor = res.data.nomor || payload;
                 applyProgress(res.data.progress);
             });
+    }
+
+    function checkFiles(files) {
+        const errors = [];
+        const ok = [];
+
+        Array.prototype.forEach.call(files, function (file) {
+            if (!FILE_EXT.test(file.name)) {
+                errors.push(file.name + ': format tidak didukung. Gunakan PDF, JPG, atau PNG.');
+            } else if (file.size > MAX_FILE) {
+                errors.push(file.name + ': ukuran ' + docSize(file.size) + ' melebihi batas 10 MB.');
+            } else {
+                ok.push(file);
+            }
+        });
+
+        return { errors: errors, ok: ok };
+    }
+
+    function uploadFiles(cat, files, titles) {
+        if (!employeeId) {
+            say('Simpan Data Pribadi terlebih dahulu.');
+            return;
+        }
+
+        const meta = docCat(cat);
+        let list = Array.prototype.slice.call(files);
+
+        if (meta) {
+            list = list.slice(0, 1);
+        }
+
+        if (!list.length) {
+            return;
+        }
+
+        const tasks = list.map(function (file, index) {
+            const body = new FormData();
+            const value = val('nomor-' + cat);
+
+            body.append('kategori', cat);
+            body.append('file', file);
+
+            if (titles && titles[index]) {
+                body.append('judul', titles[index]);
+            }
+
+            if (value) {
+                body.append('nomor', value);
+            }
+
+            return window.axios.post('/api/data-pegawai/wizard/' + employeeId + '/dokumen', body);
+        });
+
+        Promise.all(tasks)
+            .then(function (responses) {
+                responses.forEach(function (res) {
+                    const doc = res.data.dokumen;
+
+                    docs = docs.filter(function (item) {
+                        return String(item.id) !== String(doc.id) && (cat === 'LAIN' || item.cat !== cat);
+                    });
+                    docs.push(doc);
+
+                    if (res.data.progress) {
+                        applyProgress(res.data.progress);
+                    }
+                });
+
+                renderDocs();
+                say(
+                    meta
+                        ? 'Dokumen ' + meta.title + ' berhasil diunggah.'
+                        : list.length + ' dokumen berhasil diunggah.',
+                );
+            })
+            .catch(fail);
+    }
+
+    function handleFiles(cat, files) {
+        const checked = checkFiles(files);
+
+        if (checked.errors.length) {
+            say(checked.errors[0]);
+        }
+
+        if (!checked.ok.length) {
+            return;
+        }
+
+        if (cat === 'LAIN') {
+            openTitles(checked.ok);
+            return;
+        }
+
+        uploadFiles(cat, checked.ok);
+    }
+
+    function openTitles(files) {
+        pendingFiles = files;
+        ov.innerHTML =
+            '<div class="wz-dlg" role="dialog" aria-modal="true" aria-label="Judul Dokumen"><div class="wz-dh"><b>Judul Dokumen</b>' +
+            '<button type="button" class="x" data-act="close" aria-label="Tutup"><svg class="i" viewBox="0 0 16 16"><path d="M4 4l8 8M12 4l-8 8"/></svg></button></div>' +
+            '<div class="wz-db"><p class="wz-tlh">Beri judul untuk setiap dokumen. Judul bersifat opsional, boleh dikosongkan.</p><div class="wz-tlst">' +
+            files
+                .map(function (file, index) {
+                    return (
+                        '<div class="wz-trow"><div class="wz-tn"><b title="' +
+                        esc(file.name) +
+                        '">' +
+                        esc(file.name) +
+                        '</b><small>' +
+                        (/\.pdf$/i.test(file.name) ? 'PDF' : /\.png$/i.test(file.name) ? 'PNG' : 'JPG') +
+                        ' · ' +
+                        docSize(file.size) +
+                        '</small></div><input class="fld" data-title="' +
+                        index +
+                        '" maxlength="120" autocomplete="off" placeholder="Judul dokumen (opsional)"></div>'
+                    );
+                })
+                .join('') +
+            '</div></div><div class="wz-df"><button type="button" class="btn" data-act="close">Batal</button>' +
+            '<button type="button" class="btn go" data-act="upload-lain">Unggah</button></div></div>';
+
+        ov.hidden = false;
+        document.body.style.overflow = 'hidden';
+
+        const first = ov.querySelector('[data-title]');
+
+        if (first) {
+            first.focus();
+        }
+    }
+
+    function closeTitles() {
+        ov.hidden = true;
+        ov.innerHTML = '';
+        pendingFiles = null;
+        document.body.style.overflow = '';
+    }
+
+    function deleteDoc(id) {
+        if (!employeeId) {
+            return;
+        }
+
+        window.axios
+            .delete('/api/data-pegawai/wizard/' + employeeId + '/dokumen/' + id)
+            .then(function (res) {
+                docs = docs.filter(function (doc) {
+                    return String(doc.id) !== String(id);
+                });
+
+                applyProgress(res.data.progress);
+                renderDocs();
+                say('Dokumen dihapus.');
+            })
+            .catch(fail);
     }
 
     // ---- navigasi simpan ----
@@ -590,98 +1010,149 @@ function initDataPegawaiWizard() {
         goTo(step - 1);
     });
 
-    document.getElementById('wz-add-pendidikan').addEventListener('click', function () {
-        addPendidikan({});
-    });
+    bindTable(
+        pendidikanBox,
+        function () {
+            return pendidikanGroups;
+        },
+        paintPendidikan,
+        blankPendidikan,
+    );
 
-    document.getElementById('wz-add-keluarga').addEventListener('click', function () {
-        addKeluarga({});
-    });
+    bindTable(
+        keluargaBox,
+        function () {
+            return keluargaGroups;
+        },
+        paintKeluarga,
+        blankKeluarga,
+    );
 
     // ---- unggah & hapus dokumen ----
     root.addEventListener('change', function (e) {
-        const input = e.target.closest('[data-upload]');
+        const input = e.target.closest('input[data-upload]');
 
         if (!input) {
             return;
         }
 
-        const file = input.files && input.files[0];
-
-        if (!file) {
-            return;
-        }
-
-        if (!employeeId) {
-            input.value = '';
-            say('Simpan Data Pribadi terlebih dahulu.');
-            return;
-        }
-
         const cat = input.dataset.upload;
-        const body = new FormData();
-        body.append('kategori', cat);
-        body.append('file', file);
+        const files = Array.prototype.slice.call(input.files || []);
 
-        if (cat === 'LAIN') {
-            body.append('judul', val('lain-judul'));
+        input.value = '';
+        handleFiles(cat, files);
+    });
+
+    root.addEventListener('input', function (e) {
+        const el = e.target;
+
+        if (el.dataset && el.dataset.cat && el.id === 'w-nomor-' + el.dataset.cat) {
+            nomor[el.dataset.cat] = el.value;
         }
-
-        input.disabled = true;
-
-        window.axios
-            .post('/api/data-pegawai/wizard/' + employeeId + '/dokumen', body)
-            .then(function (res) {
-                docs = docs.filter(function (doc) {
-                    return doc.cat !== cat || cat === 'LAIN';
-                });
-                docs.push(res.data.dokumen);
-
-                if (cat === 'LAIN') {
-                    setVal('lain-judul', '');
-                }
-
-                applyProgress(res.data.progress);
-                renderDocs();
-                say('Dokumen berhasil diunggah.');
-            })
-            .catch(fail)
-            .finally(function () {
-                input.disabled = false;
-                input.value = '';
-            });
     });
 
     root.addEventListener('click', function (e) {
-        const del = e.target.closest('[data-del], [data-del-id]');
+        const button = e.target.closest('[data-act]');
 
-        if (!del || !employeeId) {
+        if (!button) {
             return;
         }
 
-        const id = del.dataset.id || del.dataset.delId;
+        const action = button.dataset.act;
 
-        if (!id) {
+        if (action === 'pick') {
+            const zone = button.closest('.dz');
+
+            if (zone) {
+                const input = zone.querySelector('input[type=file]');
+
+                if (input) {
+                    input.click();
+                }
+            }
+        } else if (action === 'view') {
+            const doc = docById(button.dataset.id);
+
+            if (doc) {
+                window.open(doc.url, '_blank', 'noopener');
+            }
+        } else if (action === 'del-doc') {
+            const doc = docById(button.dataset.id);
+
+            if (doc && window.confirm('Hapus dokumen "' + (doc.title || doc.name) + '"?')) {
+                deleteDoc(doc.id);
+            }
+        }
+    });
+
+    ov.addEventListener('click', function (e) {
+        if (e.target === ov) {
+            closeTitles();
             return;
         }
 
-        del.disabled = true;
+        const button = e.target.closest('[data-act]');
 
-        window.axios
-            .delete('/api/data-pegawai/wizard/' + employeeId + '/dokumen/' + id)
-            .then(function (res) {
-                docs = docs.filter(function (doc) {
-                    return String(doc.id) !== String(id);
-                });
+        if (!button) {
+            return;
+        }
 
-                applyProgress(res.data.progress);
-                renderDocs();
-                say('Dokumen dihapus.');
-            })
-            .catch(fail)
-            .finally(function () {
-                del.disabled = false;
+        if (button.dataset.act === 'close') {
+            closeTitles();
+        } else if (button.dataset.act === 'upload-lain') {
+            const files = pendingFiles;
+            const titles = {};
+
+            ov.querySelectorAll('[data-title]').forEach(function (input) {
+                titles[input.dataset.title] = input.value.trim();
             });
+
+            closeTitles();
+
+            if (files) {
+                uploadFiles('LAIN', files, titles);
+            }
+        }
+    });
+
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && ov && !ov.hidden) {
+            closeTitles();
+        }
+    });
+
+    ['dragover', 'dragleave', 'drop'].forEach(function (type) {
+        root.addEventListener(type, function (e) {
+            const zone = e.target.closest && e.target.closest('.dz');
+
+            if (!zone) {
+                return;
+            }
+
+            e.preventDefault();
+
+            if (type === 'dragover') {
+                zone.classList.add('ov');
+            } else {
+                zone.classList.remove('ov');
+            }
+
+            if (type === 'drop' && e.dataTransfer) {
+                handleFiles(zone.dataset.dz, e.dataTransfer.files);
+            }
+        });
+    });
+
+    window.addEventListener('dragover', function (e) {
+        if (root.isConnected) {
+            e.preventDefault();
+        }
+    });
+
+    window.addEventListener('drop', function (e) {
+        if (root.isConnected) {
+            e.preventDefault();
+        }
     });
 
     // ---- muat data yang sudah tersimpan ----
@@ -696,7 +1167,7 @@ function initDataPegawaiWizard() {
                 renderKeluarga(data.keluarga);
                 fillCiriFisik(data.ciri_fisik);
                 docs = (data.dokumen && data.dokumen.dokumen) || [];
-                fillNomor((data.dokumen && data.dokumen.nomor) || {});
+                nomor = (data.dokumen && data.dokumen.nomor) || {};
                 progress = data.progress || {};
 
                 renderDocs();

@@ -215,56 +215,375 @@
     accent-color: var(--prim, #004098);
 }
 
-/* kartu dinamis */
-#data-pegawai-wizard .wz-rows {
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
-    padding: 20px 20px 4px;
+/* tabel dinamis pendidikan & keluarga */
+#data-pegawai-wizard .wz-table {
+    overflow-x: auto;
 }
 
-#data-pegawai-wizard .wz-card {
+#data-pegawai-wizard .wz-tbl {
+    width: 100%;
+    min-width: 760px;
+    border-collapse: collapse;
+}
+
+#data-pegawai-wizard .wz-tbl th {
+    padding: 10px 14px;
+    background: var(--bg2);
+    border-bottom: 1px solid var(--bd);
+    text-align: left;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+#data-pegawai-wizard .wz-tbl td {
+    padding: 8px 14px;
+    border-top: 1px solid var(--bd);
+    vertical-align: middle;
+}
+
+#data-pegawai-wizard .wz-tbl tr:not(.gs) td {
+    border-top-style: dashed;
+}
+
+#data-pegawai-wizard .wz-tbl .c1 {
+    width: 56px;
+    text-align: center;
+}
+
+#data-pegawai-wizard .wz-tbl th.c1 {
+    text-align: center;
+}
+
+#data-pegawai-wizard .wz-tbl .c2 {
+    width: 140px;
+    border-right: 1px solid var(--bd);
+    font-weight: 600;
+}
+
+#data-pegawai-wizard .wz-tbl .c3 {
+    width: 90px;
+}
+
+#data-pegawai-wizard .wz-tbl .c5 {
+    width: 100px;
+}
+
+#data-pegawai-wizard .wz-tbl .c6 {
+    width: 180px;
+    white-space: nowrap;
+    text-align: right;
+}
+
+#data-pegawai-wizard .wz-tbl td input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    accent-color: var(--green);
+    cursor: pointer;
+}
+
+#data-pegawai-wizard .wz-tbl .fld {
+    min-height: 30px;
+    padding: 4px 10px;
+}
+
+#data-pegawai-wizard .wz-tbl .fld:disabled {
+    background: var(--bg2);
+    color: var(--fg);
+    -webkit-text-fill-color: var(--fg);
+    opacity: 1;
+}
+
+#data-pegawai-wizard .wz-tbl .fld:disabled::placeholder {
+    color: var(--mute);
+    -webkit-text-fill-color: var(--mute);
+}
+
+#data-pegawai-wizard .del {
+    display: inline-grid;
+    place-items: center;
+    width: 28px;
+    height: 28px;
+    margin-right: 4px;
+    vertical-align: middle;
+    border: 1px solid transparent;
+    border-radius: 6px;
+    background: transparent;
+    color: var(--mute);
+    cursor: pointer;
+}
+
+#data-pegawai-wizard .del:hover {
+    background: var(--hov);
+    color: var(--err);
+    border-color: var(--bd);
+}
+
+#data-pegawai-wizard .sr {
+    position: absolute;
+    left: -9999px;
+}
+
+/* dokumen */
+#data-pegawai-wizard .wz-sh {
+    margin: 24px 0 8px;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+#data-pegawai-wizard .wz-doc-box {
     border: 1px solid var(--bd);
     border-radius: 6px;
-    background: var(--bg);
     overflow: hidden;
+    background: var(--bg);
+    margin-bottom: 16px;
 }
 
-#data-pegawai-wizard .wz-card-head {
+#data-pegawai-wizard .wz-doc-hd {
     display: flex;
     align-items: center;
-    gap: 14px;
-    padding: 10px 14px;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px 20px;
     background: var(--bg2);
     border-bottom: 1px solid var(--bd);
 }
 
-#data-pegawai-wizard .wz-card-head b {
-    flex: 1;
-    font-size: 14px;
+#data-pegawai-wizard .wz-doc-hd h3 {
+    margin: 0;
+    font-size: 15px;
     font-weight: 600;
 }
 
-#data-pegawai-wizard .wz-card-head .chk {
+#data-pegawai-wizard .wz-doc-hd .bdg {
+    flex: none;
+    max-width: none;
+    padding: 0 8px;
+    border-radius: 2em;
+    border: 1px solid var(--bd);
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 22px;
+    color: var(--mute);
+    background: var(--bg);
+}
+
+#data-pegawai-wizard .wz-doc-hd .bdg.ok {
+    color: var(--green);
+    background: rgba(46, 160, 67, 0.12);
+    border-color: rgba(46, 160, 67, 0.4);
+}
+
+#data-pegawai-wizard .wz-doc-bd {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 20px;
+    padding: 20px;
+}
+
+#data-pegawai-wizard .wz-doc-bd.one {
+    grid-template-columns: 1fr;
+}
+
+#data-pegawai-wizard .dz {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 20px 16px;
+    text-align: center;
+    border: 1px dashed var(--bd);
+    border-radius: 6px;
+    color: var(--mute);
+    transition: background 0.15s, border-color 0.15s;
+}
+
+#data-pegawai-wizard .dz.ov {
+    background: var(--hov);
+    border-color: var(--blue);
+}
+
+#data-pegawai-wizard .dz svg {
+    width: 24px;
+    height: 24px;
+}
+
+#data-pegawai-wizard .dz p {
+    margin: 0;
+}
+
+#data-pegawai-wizard .dz small {
+    font-size: 12px;
+}
+
+#data-pegawai-wizard .wz-frow {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    border: 1px solid var(--bd);
+    border-radius: 6px;
+}
+
+#data-pegawai-wizard .wz-frow .th {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    flex: none;
+    border-radius: 6px;
+    overflow: hidden;
+    background: var(--hov);
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--err);
+}
+
+#data-pegawai-wizard .wz-frow .th img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+#data-pegawai-wizard .wz-frow .fi {
+    flex: 1;
+    min-width: 0;
+}
+
+#data-pegawai-wizard .wz-frow .fi b {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+#data-pegawai-wizard .wz-frow .fi small {
+    color: var(--mute);
+    font-size: 12px;
+}
+
+#data-pegawai-wizard .wz-frow .ac {
+    display: flex;
+    gap: 6px;
+    flex: none;
+}
+
+#data-pegawai-wizard .wz-flist {
+    display: grid;
+    gap: 8px;
+    margin-top: 12px;
+}
+
+#data-pegawai-wizard .wz-flist:empty {
+    display: none;
+}
+
+/* modal judul dokumen */
+#data-pegawai-wizard .wz-ov {
+    position: fixed;
+    inset: 0;
+    z-index: 50;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background: rgba(1, 4, 9, 0.6);
+}
+
+#data-pegawai-wizard .wz-dlg {
+    width: 100%;
+    max-width: 520px;
+    max-height: calc(100dvh - 40px);
+    display: flex;
+    flex-direction: column;
+    background: var(--bg);
+    border: 1px solid var(--bd);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.4);
+}
+
+#data-pegawai-wizard .wz-dh {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--bd);
+    background: var(--bg2);
+}
+
+#data-pegawai-wizard .wz-dh b {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+#data-pegawai-wizard .wz-dh .x {
+    display: grid;
+    place-items: center;
+    width: 28px;
+    height: 28px;
+    border: 0;
+    border-radius: 6px;
+    background: transparent;
+    color: var(--mute);
+    cursor: pointer;
+}
+
+#data-pegawai-wizard .wz-dh .x:hover {
+    background: var(--hov);
+}
+
+#data-pegawai-wizard .wz-db {
+    flex: 1;
     min-height: 0;
+    padding: 16px;
+    overflow: auto;
+}
+
+#data-pegawai-wizard .wz-df {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    padding: 12px 16px;
+    border-top: 1px solid var(--bd);
+}
+
+#data-pegawai-wizard .wz-tlh {
+    margin: 0 0 12px;
+    color: var(--mute);
     font-size: 13px;
 }
 
-#data-pegawai-wizard .wz-grid {
+#data-pegawai-wizard .wz-tlst {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 14px 16px;
-    padding: 14px;
+    gap: 12px;
 }
 
-#data-pegawai-wizard .wz-grid .f.wide {
-    grid-column: 1 / -1;
+#data-pegawai-wizard .wz-trow {
+    display: grid;
+    gap: 8px;
+    padding: 10px 12px;
+    border: 1px solid var(--bd);
+    border-radius: 6px;
+    background: var(--bg2);
 }
 
-#data-pegawai-wizard .wz-actions {
-    display: flex;
-    justify-content: flex-start;
-    padding: 12px 20px 20px;
+#data-pegawai-wizard .wz-tn b {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+#data-pegawai-wizard .wz-tn small {
+    color: var(--mute);
+    font-size: 12px;
+}
+
+#data-pegawai-wizard .wz-trow .fld {
+    background: var(--bg);
 }
 
 /* tombol */
@@ -322,31 +641,15 @@
     background: var(--err);
 }
 
-/* dokumen */
-#data-pegawai-wizard .wz-docs {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 16px;
-    padding: 20px;
+#data-pegawai-wizard .btn.dg {
+    color: var(--err);
 }
 
-#data-pegawai-wizard .wz-doc {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    padding: 14px;
-    border: 1px solid var(--bd);
-    border-radius: 6px;
-    background: var(--bg2);
+#data-pegawai-wizard .btn.dg:hover {
+    border-color: var(--err);
 }
 
-#data-pegawai-wizard .wz-doc-head {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-}
-
+/* badge status dokumen */
 #data-pegawai-wizard .bdg {
     display: inline-flex;
     align-items: center;
@@ -362,28 +665,8 @@
     white-space: nowrap;
 }
 
-#data-pegawai-wizard .wz-filelist {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-}
-
-#data-pegawai-wizard .wz-file {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 10px;
-    padding: 6px 8px;
-    border: 1px solid var(--bd);
-    border-radius: 6px;
-    background: var(--bg);
-    font-size: 13px;
-}
-
-#data-pegawai-wizard .wz-file span {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+#data-pegawai-wizard .wz-flist:empty {
+    display: none;
 }
 
 /* bar navigasi */
@@ -432,26 +715,21 @@
 
 @media (max-width: 760px) {
     #data-pegawai-wizard .gr,
-    #data-pegawai-wizard .wz-docs {
+    #data-pegawai-wizard .wz-doc-bd {
         grid-template-columns: 1fr;
         padding: 16px;
     }
 
-    #data-pegawai-wizard .wz-grid {
-        grid-template-columns: 1fr;
-        padding: 12px;
-    }
-
-    #data-pegawai-wizard .wz-grid .f.wide {
-        grid-column: auto;
-    }
-
-    #data-pegawai-wizard .wz-rows {
-        padding: 16px 16px 0;
-    }
-
-    #data-pegawai-wizard .wz-card-head {
+    #data-pegawai-wizard .wz-frow {
         flex-wrap: wrap;
+    }
+
+    #data-pegawai-wizard .wz-frow .ac {
+        width: 100%;
+    }
+
+    #data-pegawai-wizard .wz-frow .ac .btn {
+        flex: 1;
     }
 
     #data-pegawai-wizard .wz-labels span {

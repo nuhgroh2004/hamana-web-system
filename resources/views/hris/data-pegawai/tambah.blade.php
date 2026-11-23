@@ -186,12 +186,20 @@
             <section class="wz-step" data-step="2" hidden>
                 <div class="cd">
                     <div class="hd"><h2>Riwayat Pendidikan</h2><p>Tambahkan jenjang pendidikan yang pernah ditempuh.</p></div>
-                    <div class="wz-rows" id="wz-pendidikan"></div>
-                    <div class="wz-actions">
-                        <button type="button" class="btn" id="wz-add-pendidikan">
-                            <svg class="i" viewBox="0 0 16 16"><path d="M8 3v10M3 8h10"/></svg>
-                            Tambah Pendidikan
-                        </button>
+                    <div class="wz-table">
+                        <table class="wz-tbl">
+                            <thead>
+                                <tr>
+                                    <th class="c1">#</th>
+                                    <th class="c2">Jenjang</th>
+                                    <th>Nama Sekolah</th>
+                                    <th>Jurusan</th>
+                                    <th class="c5">Tahun</th>
+                                    <th class="c6"><span class="sr">Aksi</span></th>
+                                </tr>
+                            </thead>
+                            <tbody id="wz-pendidikan"></tbody>
+                        </table>
                     </div>
                 </div>
             </section>
@@ -199,12 +207,20 @@
             <section class="wz-step" data-step="3" hidden>
                 <div class="cd">
                     <div class="hd"><h2>Anggota Keluarga</h2><p>Tambahkan anggota keluarga yang perlu tercatat.</p></div>
-                    <div class="wz-rows" id="wz-keluarga"></div>
-                    <div class="wz-actions">
-                        <button type="button" class="btn" id="wz-add-keluarga">
-                            <svg class="i" viewBox="0 0 16 16"><path d="M8 3v10M3 8h10"/></svg>
-                            Tambah Anggota Keluarga
-                        </button>
+                    <div class="wz-table">
+                        <table class="wz-tbl">
+                            <thead>
+                                <tr>
+                                    <th class="c1">#</th>
+                                    <th class="c2">Hubungan</th>
+                                    <th>Nama Lengkap</th>
+                                    <th class="c3">Usia</th>
+                                    <th>Pekerjaan</th>
+                                    <th class="c6"><span class="sr">Aksi</span></th>
+                                </tr>
+                            </thead>
+                            <tbody id="wz-keluarga"></tbody>
+                        </table>
                     </div>
                 </div>
             </section>
@@ -227,41 +243,11 @@
             </section>
 
             <section class="wz-step" data-step="5" hidden>
-                <div class="cd">
-                    <div class="hd"><h2>Nomor Dokumen</h2><p>Nomor KK, KTP, dan NPWP karyawan.</p></div>
-                    <div class="gr">
-                        <div class="f"><label class="lb" for="w-nomor-KK">Nomor KK</label><input class="fld" id="w-nomor-KK" inputmode="numeric" autocomplete="off"></div>
-                        <div class="f"><label class="lb" for="w-nomor-KTP">Nomor NIK (KTP)</label><input class="fld" id="w-nomor-KTP" inputmode="numeric" autocomplete="off"></div>
-                        <div class="f"><label class="lb" for="w-nomor-NPWP">Nomor NPWP</label><input class="fld" id="w-nomor-NPWP" inputmode="numeric" autocomplete="off"></div>
-                    </div>
-                </div>
+                <h2 class="wz-sh">Dokumen Utama</h2>
+                <div id="wz-utama"></div>
 
-                <div class="cd">
-                    <div class="hd"><h2>Unggah Dokumen</h2><p>Format PDF, JPG, atau PNG maksimal 10 MB per file.</p></div>
-                    <div class="wz-docs">
-                        <div class="wz-doc" data-cat="KK">
-                            <div class="wz-doc-head"><b>Kartu Keluarga</b><span class="bdg" data-file>Belum ada</span></div>
-                            <input class="fld" type="file" data-upload="KK" accept=".pdf,.jpg,.jpeg,.png">
-                            <button type="button" class="btn sm dgb" data-del hidden>Hapus file</button>
-                        </div>
-                        <div class="wz-doc" data-cat="KTP">
-                            <div class="wz-doc-head"><b>KTP</b><span class="bdg" data-file>Belum ada</span></div>
-                            <input class="fld" type="file" data-upload="KTP" accept=".pdf,.jpg,.jpeg,.png">
-                            <button type="button" class="btn sm dgb" data-del hidden>Hapus file</button>
-                        </div>
-                        <div class="wz-doc" data-cat="NPWP">
-                            <div class="wz-doc-head"><b>NPWP</b><span class="bdg" data-file>Belum ada</span></div>
-                            <input class="fld" type="file" data-upload="NPWP" accept=".pdf,.jpg,.jpeg,.png">
-                            <button type="button" class="btn sm dgb" data-del hidden>Hapus file</button>
-                        </div>
-                        <div class="wz-doc" data-cat="LAIN">
-                            <div class="wz-doc-head"><b>Dokumen Lainnya</b><span class="bdg" data-file>Belum ada</span></div>
-                            <div class="wz-filelist" data-list></div>
-                            <input class="fld" id="w-lain-judul" placeholder="Judul dokumen" autocomplete="off">
-                            <input class="fld" type="file" data-upload="LAIN" accept=".pdf,.jpg,.jpeg,.png">
-                        </div>
-                    </div>
-                </div>
+                <h2 class="wz-sh">Dokumen Lainnya</h2>
+                <div id="wz-lain"></div>
             </section>
         </form>
 
@@ -275,4 +261,5 @@
     </div>
 
     <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    <div class="wz-ov" id="wz-ov" hidden></div>
 </div>
