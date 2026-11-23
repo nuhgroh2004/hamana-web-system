@@ -18,22 +18,6 @@ function initDataPegawai() {
         ROUTES = {};
     }
 
-    var JABATAN = [
-        'Direktur Utama',
-        'Direktur',
-        'Manager',
-        'Supervisor',
-        'Foreman',
-        'Head',
-        'Leader',
-        'Officer',
-        'Operator',
-        'General Manager',
-        'Asisstant General Manager',
-        'Driver',
-        'Intern',
-    ];
-
     var q = '',
         filt = '1',
         page = 1,
@@ -158,7 +142,6 @@ function initDataPegawai() {
             '<circle cx="6" cy="5" r="2.5"/><path d="M1.5 14c0-3 2-4.5 4.5-4.5s4.5 1.5 4.5 4.5zM10.5 3a2.5 2.5 0 010 4.5M12 9.8c1.6.4 2.5 1.7 2.5 4.2"/>',
         fisik: '<circle cx="8" cy="3" r="1.5"/><path d="M3 6h10M8 6v4M5 14l3-4 3 4"/>',
         file: '<path d="M1.5 3.5h4l1.5 1.5h7.5v8h-13z"/>',
-        edit: '<path d="M11 2.5l2.5 2.5L5.5 13H3v-2.5L11 2.5z"/>',
         hapus: '<path d="M2.5 4.5h11M6.5 4.5V2.5h3v2M4.5 4.5l.6 9h5.8l.6-9M6.5 7v4M9.5 7v4"/>',
     };
     var ITEMS = [
@@ -193,11 +176,6 @@ function initDataPegawai() {
                 );
             }).join('') +
             '<div class="sep" role="separator"></div>' +
-            '<button type="button" role="menuitem" data-aksi="edit" data-nik="' +
-            esc(nik) +
-            '"><svg class="i" viewBox="0 0 16 16">' +
-            IC.edit +
-            '</svg>Edit Pegawai</button>' +
             '<button type="button" role="menuitem" class="dg" data-aksi="hapus" data-nik="' +
             esc(nik) +
             '"><svg class="i" viewBox="0 0 16 16">' +
@@ -303,11 +281,6 @@ function initDataPegawai() {
 
             if (p && a.dataset.aksi === 'hapus') {
                 confirmDelete(p);
-                return;
-            }
-
-            if (p && a.dataset.aksi === 'edit') {
-                editEmployee(p);
                 return;
             }
 
@@ -510,118 +483,6 @@ function initDataPegawai() {
             close();
         }
     });
-
-    // ---- form tambah / edit ----
-    var CH = '<svg class="i" viewBox="0 0 16 16"><path d="M4 6l4 4 4-4"/></svg>';
-
-    function form(p) {
-        p = p || {};
-
-        return (
-            '<div class="f"><label for="a-nik">NIK <span class="rq">*</span></label><input class="fld" id="a-nik" autocomplete="off" value="' +
-            esc(p.nik) +
-            '"><p class="er" id="e-nik"></p></div>' +
-            '<div class="f"><label for="a-nama">Nama Lengkap <span class="rq">*</span></label><input class="fld" id="a-nama" autocomplete="off" value="' +
-            esc(p.nama) +
-            '"><p class="er" id="e-nama"></p></div>' +
-            '<div class="f"><label>Jabatan <span class="rq">*</span></label><button type="button" class="fld dd" data-dd="a-jab" id="a-jab" aria-haspopup="listbox"><span class="l"></span>' +
-            CH +
-            '</button><p class="er" id="e-jab"></p></div>' +
-            '<div class="f"><label for="a-pos">Posisi <span class="rq">*</span></label><input class="fld" id="a-pos" autocomplete="off" value="' +
-            esc(p.posisi) +
-            '"><p class="er" id="e-pos"></p></div>' +
-            '<div class="f"><label>Status</label><button type="button" class="fld dd" data-dd="a-st" aria-haspopup="listbox"><span class="l"></span>' +
-            CH +
-            '</button></div>'
-        );
-    }
-
-    function fillForm(p) {
-        p = p || {};
-
-        dd(
-            'a-jab',
-            [['', '--Pilih--']].concat(
-                JABATAN.map(function (j) {
-                    return [j, j];
-                }),
-            ),
-            p.jabatan || '',
-            function () {
-                document.getElementById('a-jab').classList.remove('bad');
-                document.getElementById('e-jab').textContent = '';
-            },
-        );
-
-        dd('a-st', [['Aktif', 'Aktif'], ['Tidak Aktif', 'Tidak Aktif']], p.status || 'Aktif');
-        document.getElementById('a-nik').focus();
-    }
-
-    function readForm() {
-        return {
-            nik: document.getElementById('a-nik').value.trim(),
-            nama: document.getElementById('a-nama').value.trim(),
-            jabatan: DD['a-jab'].val,
-            posisi: document.getElementById('a-pos').value.trim(),
-            status: DD['a-st'].val,
-        };
-    }
-
-    function validateForm(v) {
-        var err = {
-            nik: !v.nik ? 'NIK wajib diisi.' : '',
-            nama: v.nama ? '' : 'Nama wajib diisi.',
-            jab: v.jabatan ? '' : 'Jabatan wajib dipilih.',
-            pos: v.posisi ? '' : 'Posisi wajib diisi.',
-        };
-        var map = { nik: 'a-nik', nama: 'a-nama', jab: 'a-jab', pos: 'a-pos' },
-            first = null;
-
-        Object.keys(err).forEach(function (k) {
-            document.getElementById('e-' + k).textContent = err[k];
-            document.getElementById(map[k]).classList.toggle('bad', !!err[k]);
-
-            if (err[k] && !first) {
-                first = map[k];
-            }
-        });
-
-        if (first) {
-            document.getElementById(first).focus();
-            return false;
-        }
-
-        return true;
-    }
-
-    function editEmployee(p) {
-        open(
-            'Edit Karyawan',
-            form(p),
-            '<button type="button" class="btn" data-close>Batal</button><button type="button" class="btn go" id="a-save">Simpan</button>',
-        );
-
-        fillForm(p);
-
-        document.getElementById('a-save').onclick = function () {
-            var v = readForm();
-
-            if (!validateForm(v)) {
-                return;
-            }
-
-            window.axios
-                .put('/api/data-pegawai/' + p.id, v)
-                .then(function (res) {
-                    close();
-                    return load().then(function () {
-                        emit('pegawai-edit', res.data.pegawai);
-                        say('Data karyawan berhasil diperbarui.');
-                    });
-                })
-                .catch(fail);
-        };
-    }
 
     // ---- export (XLSX) ----
     document.getElementById('exp').onclick = function () {
