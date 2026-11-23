@@ -17,7 +17,7 @@ class SaveAnggotaKeluargaService
 
             foreach ($items as $index => $item) {
                 $employee->familyMembers()->create([
-                    'hubungan' => $item['hubungan'],
+                    'hubungan' => ($item['hubungan'] ?? null) ?: 'AYAH',
                     'urutan' => (int) ($item['urutan'] ?? $index + 1),
                     'nama' => $this->value($item['nama'] ?? null),
                     'usia' => $this->age($item['usia'] ?? null),

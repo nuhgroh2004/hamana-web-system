@@ -77,7 +77,7 @@ class WizardPegawaiController extends Controller
     ) {
         $data = $request->validate([
             'items' => ['present', 'array'],
-            'items.*.jenjang' => ['required', 'string', 'max:30'],
+            'items.*.jenjang' => ['nullable', 'string', 'max:30'],
             'items.*.nama_sekolah' => ['nullable', 'string', 'max:255'],
             'items.*.jurusan' => ['nullable', 'string', 'max:255'],
             'items.*.tahun' => ['nullable', 'string', 'max:10'],
@@ -101,7 +101,7 @@ class WizardPegawaiController extends Controller
     ) {
         $data = $request->validate([
             'items' => ['present', 'array'],
-            'items.*.hubungan' => ['required', 'string', 'in:AYAH,IBU,SAUDARA,SUAMI,ISTRI,ANAK'],
+            'items.*.hubungan' => ['nullable', 'string', 'in:AYAH,IBU,SAUDARA,SUAMI,ISTRI,ANAK'],
             'items.*.urutan' => ['nullable', 'integer', 'min:1', 'max:100'],
             'items.*.nama' => ['nullable', 'string', 'max:255'],
             'items.*.usia' => ['nullable', 'integer', 'min:0', 'max:150'],

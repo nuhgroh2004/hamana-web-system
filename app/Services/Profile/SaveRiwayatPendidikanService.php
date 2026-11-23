@@ -17,7 +17,7 @@ class SaveRiwayatPendidikanService
 
             foreach ($items as $item) {
                 $employee->educations()->create([
-                    'jenjang' => $item['jenjang'],
+                    'jenjang' => ($item['jenjang'] ?? null) ?: 'SMA/SMK',
                     'nama_sekolah' => $this->value($item['nama_sekolah'] ?? null),
                     'jurusan' => $this->value($item['jurusan'] ?? null),
                     'tahun' => $this->value($item['tahun'] ?? null),

@@ -243,8 +243,18 @@ class WizardPegawaiApiTest extends TestCase
             ->assertOk();
 
         $this->actingAs($admin)
+            ->putJson('/api/data-pegawai/wizard/'.$employeeId.'/pendidikan', ['items' => [['nama_sekolah' => 'Tanpa Jenjang']]])
+            ->assertOk()
+            ->assertJsonPath('items.0.jenjang', 'SMA/SMK');
+
+        $this->actingAs($admin)
             ->putJson('/api/data-pegawai/wizard/'.$employeeId.'/keluarga', ['items' => []])
             ->assertOk();
+
+        $this->actingAs($admin)
+            ->putJson('/api/data-pegawai/wizard/'.$employeeId.'/keluarga', ['items' => [['nama' => 'Tanpa Hubungan']]])
+            ->assertOk()
+            ->assertJsonPath('items.0.hubungan', 'AYAH');
 
         $this->actingAs($admin)
             ->putJson('/api/data-pegawai/wizard/'.$employeeId.'/ciri-fisik', [])
