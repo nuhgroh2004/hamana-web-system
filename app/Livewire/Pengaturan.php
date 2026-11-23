@@ -3,7 +3,9 @@
 namespace App\Livewire;
 
 use App\Models\User;
+use App\Services\Employee\SyncEmployeeFromUserService;
 use App\Support\Modules;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
 use Livewire\Component;
 
@@ -36,6 +38,8 @@ class Pengaturan extends Component
     public string $roleFilter = 'all';
 
     public string $moduleQuery = '';
+
+    public string $currentPassword = '';
 
     public string $newPassword = '';
 
@@ -179,11 +183,15 @@ class Pengaturan extends Component
                 $user->save();
             }
 
+            $this->syncEmployee($user);
+
             $this->userStatus = 'Data pengguna diperbarui.';
         } else {
             $data['email_verified_at'] = now();
 
-            User::create($data);
+            $user = User::create($data);
+            $this->syncEmployee($user);
+
             $this->userStatus = 'Pengguna baru ditambahkan.';
         }
 
@@ -450,12 +458,30 @@ class Pengaturan extends Component
         $this->resetErrorBag();
         $this->passwordStatus = '';
 
+        $this->validate([
+            'currentPassword' => ['required', 'string'],
+            'newPassword' => ['required', 'string', 'min:6', 'same:newPasswordConfirmation'],
+            'newPasswordConfirmation' => ['required', 'string'],
+        ], [
+            'currentPassword.required' => 'Password saat ini wajib diisi.',
+            'newPassword.required' => 'Password baru wajib diisi.',
+            'newPassword.min' => 'Password baru minimal 6 karakter.',
+            'newPassword.same' => 'Konfirmasi password baru tidak cocok.',
+            'newPasswordConfirmation.required' => 'Konfirmasi password baru wajib diisi.',
+        ]);
+
         $user = auth()->user();
+
+        if (! Hash::check($this->currentPassword, $user->password)) {
+            $this->addError('currentPassword', 'Password saat ini tidak sesuai.');
+
+            return;
+        }
 
         $user->password = $this->newPassword;
         $user->save();
 
-        $this->reset(['newPassword', 'newPasswordConfirmation']);
+        $this->reset(['currentPassword', 'newPassword', 'newPasswordConfirmation']);
         $this->passwordStatus = 'Password berhasil diubah.';
     }
 
@@ -550,6 +576,14 @@ class Pengaturan extends Component
     protected function authorizeAdmin(): void
     {
         abort_unless(auth()->user()?->isAdmin(), 403);
+    }
+
+    /**
+     * Keep the employee record aligned with the saved user account.
+     */
+    protected function syncEmployee(User $user): void
+    {
+        app(SyncEmployeeFromUserService::class)->handle($user);
     }
 
     protected function isLastAdmin(User $user): bool

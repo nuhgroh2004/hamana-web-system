@@ -15,6 +15,9 @@
                 <svg class="i" viewBox="0 0 16 16"><path d="M2 14l1-3.5 8-8 2.5 2.5-8 8zM9.5 4l2.5 2.5"/></svg>
                 Edit Profil
             </button>
+            @if (auth()->user()?->canAccess('ubah-password'))
+                <a class="btn" href="{{ route('pengaturan.panel', 'ubah-password') }}" wire:navigate>Ubah Password</a>
+            @endif
         </div>
 
         <form id="f" class="view" novalidate>
@@ -128,16 +131,16 @@
                         <span class="lb">Faskes Tingkat I</span>
                         <div class="fk">
                             <div class="fkh"><b>Faskes terpilih</b><button type="button" class="btn sm" id="fkdel">Hapus pilihan</button></div>
-                            <dl class="fkd" id="fkd">
-                                <div><dt>Nama Provinsi</dt><dd>JAWA TENGAH</dd></div>
-                                <div><dt>Kantor Regional</dt><dd>REGIONAL VI - SEMARANG</dd></div>
-                                <div><dt>Kantor Cabang</dt><dd>PEKALONGAN</dd></div>
-                                <div><dt>Kabupaten/Kota</dt><dd>KAB. TEGAL</dd></div>
-                                <div><dt>Kode PPK</dt><dd>0168U010</dd></div>
-                                <div><dt>Nama PPK</dt><dd>DR. ACHMAD SHOCHIBUL BIRRI</dd></div>
-                                <div><dt>Alamat PPK</dt><dd>Jl. Garuda 115</dd></div>
-                                <div><dt>Telp PPK</dt><dd>02836144867</dd></div>
-                            </dl>
+                            <div class="fkd" id="fkd">
+                                <div><label class="lb" for="faskes_provinsi">Nama Provinsi</label><input class="fld" id="faskes_provinsi" name="faskes_provinsi" type="text"></div>
+                                <div><label class="lb" for="faskes_kantor_regional">Kantor Regional</label><input class="fld" id="faskes_kantor_regional" name="faskes_kantor_regional" type="text"></div>
+                                <div><label class="lb" for="faskes_kantor_cabang">Kantor Cabang</label><input class="fld" id="faskes_kantor_cabang" name="faskes_kantor_cabang" type="text"></div>
+                                <div><label class="lb" for="faskes_kabupaten_kota">Kabupaten/Kota</label><input class="fld" id="faskes_kabupaten_kota" name="faskes_kabupaten_kota" type="text"></div>
+                                <div><label class="lb" for="faskes_kode_ppk">Kode PPK</label><input class="fld" id="faskes_kode_ppk" name="faskes_kode_ppk" type="text"></div>
+                                <div><label class="lb" for="faskes_nama_ppk">Nama PPK</label><input class="fld" id="faskes_nama_ppk" name="faskes_nama_ppk" type="text"></div>
+                                <div><label class="lb" for="faskes_alamat_ppk">Alamat PPK</label><input class="fld" id="faskes_alamat_ppk" name="faskes_alamat_ppk" type="text"></div>
+                                <div><label class="lb" for="faskes_telp_ppk">Telp PPK</label><input class="fld" id="faskes_telp_ppk" name="faskes_telp_ppk" type="text"></div>
+                            </div>
                             <p class="fkn" id="fkn" hidden>Belum ada faskes dipilih.</p>
                         </div>
                     </div>

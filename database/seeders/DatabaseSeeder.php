@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Employee;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 
@@ -14,7 +15,7 @@ class DatabaseSeeder extends Seeder
     {
         User::where('email', 'test@example.com')->delete();
 
-        User::updateOrCreate(
+        $admin = User::updateOrCreate(
             ['email' => 'admin@hamana.co.id'],
             [
                 'nik' => '1232.31.23.12',
@@ -26,7 +27,7 @@ class DatabaseSeeder extends Seeder
             ],
         );
 
-        User::updateOrCreate(
+        $karyawan = User::updateOrCreate(
             ['email' => 'karyawan@hamana.co.id'],
             [
                 'nik' => '1232.31.23.13',
@@ -37,5 +38,18 @@ class DatabaseSeeder extends Seeder
                 'email_verified_at' => now(),
             ],
         );
+
+        foreach ([$admin, $karyawan] as $user) {
+            Employee::updateOrCreate(
+                ['user_id' => $user->id],
+                [
+                    'nik' => $user->nik,
+                    'nama' => $user->name,
+                    'jabatan' => $user->position,
+                    'posisi' => $user->position,
+                    'status_pegawai' => Employee::STATUS_AKTIF,
+                ],
+            );
+        }
     }
 }

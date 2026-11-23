@@ -9,6 +9,13 @@ function initProfilKelolaFile() {
 
     initializedRoots.add(root);
 
+    const params = {};
+    const nik = new URLSearchParams(window.location.search).get('nik');
+
+    if (nik) {
+        params.nik = nik;
+    }
+
     var MAX = 10 * 1024 * 1024,
         EXT = /\.(pdf|jpe?g|png)$/i,
         PDF = /\.pdf$/i;
@@ -52,64 +59,19 @@ function initProfilKelolaFile() {
         return root.querySelector('#' + id);
     }
 
-    var nomor = {};
-
-    try {
-        nomor = JSON.parse(localStorage.getItem('dokumen-nomor')) || {};
-    } catch (e) {
-        nomor = {};
-    }
-
-    var docs = [],
-        urls = {},
+    var nomor = {},
+        docs = [],
         pending = null,
+        saveTimer = null,
         toast = $('toast'),
         ov = $('ov');
 
-    // ---- penyimpanan file (IndexedDB, cadangan: memori) ----
-    function db() {
-        return new Promise(function (res, rej) {
-            if (!window.indexedDB) {
-                return rej();
-            }
-
-            var r = indexedDB.open('dokumen-pegawai', 1);
-
-            r.onupgradeneeded = function () {
-                r.result.createObjectStore('files', { keyPath: 'id' });
-            };
-            r.onsuccess = function () {
-                res(r.result);
-            };
-            r.onerror = function () {
-                rej(r.error);
-            };
-        });
-    }
-
-    function tx(mode, fn) {
-        return db()
-            .then(function (d) {
-                return new Promise(function (res, rej) {
-                    var t = d.transaction('files', mode),
-                        q = fn(t.objectStore('files'));
-
-                    t.oncomplete = function () {
-                        res(q && q.result);
-                    };
-                    t.onerror = function () {
-                        rej(t.error);
-                    };
-                });
-            })
-            .catch(function () {
-                return null;
-            });
-    }
-
     // ---- util ----
     function esc(v) {
-        return String(v).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
+        return String(v == null ? '' : v)
+            .replace(/&/g, '&amp;')
+            .replace(/"/g, '&quot;')
+            .replace(/</g, '&lt;');
     }
 
     function size(n) {
@@ -129,8 +91,11 @@ function initProfilKelolaFile() {
         }, 2600);
     }
 
-    function urlOf(d) {
-        return urls[d.id] || (urls[d.id] = URL.createObjectURL(d.blob));
+    function fail(e) {
+        var errors = e && e.response && e.response.data && e.response.data.errors;
+        var first = errors ? Object.keys(errors)[0] : null;
+
+        say(first ? errors[first][0] : (e && e.response && e.response.data && e.response.data.message) || 'Dokumen gagal diproses.');
     }
 
     function isPdf(d) {
@@ -139,7 +104,7 @@ function initProfilKelolaFile() {
 
     function byId(id) {
         return docs.filter(function (d) {
-            return d.id === id;
+            return String(d.id) === String(id);
         })[0];
     }
 
@@ -153,10 +118,6 @@ function initProfilKelolaFile() {
         return CATS.filter(function (c) {
             return c.id === id;
         })[0];
-    }
-
-    function emit(n, d) {
-        document.dispatchEvent(new CustomEvent(n, { detail: d }));
     }
 
     function numErr(c) {
@@ -186,7 +147,7 @@ function initProfilKelolaFile() {
     }
 
     function row(d) {
-        var th = isPdf(d) ? 'PDF' : '<img alt="" src="' + urlOf(d) + '">';
+        var th = isPdf(d) ? 'PDF' : '<img alt="" src="' + d.url + '">';
         var ty = isPdf(d) ? 'PDF' : /png$/i.test(d.name) ? 'PNG' : 'JPG';
         var judul = d.title ? String(d.title).trim() : '';
         // Judul opsional: bila kosong, nama file yang ditampilkan.
@@ -268,6 +229,10 @@ function initProfilKelolaFile() {
         var i = $('n-' + c.id),
             e = $('en-' + c.id);
 
+        if (!i || !e) {
+            return;
+        }
+
         e.textContent = m;
         i.classList.toggle('bad', !!m);
 
@@ -275,6 +240,38 @@ function initProfilKelolaFile() {
             i.focus();
             i.scrollIntoView({ block: 'center', behavior: 'smooth' });
         }
+    }
+
+    // ---- data ----
+    function load() {
+        return window.axios
+            .get('/api/profil/dokumen', { params: params })
+            .then(function (res) {
+                nomor = res.data.nomor || {};
+                docs = res.data.dokumen || [];
+                render();
+            })
+            .catch(fail);
+    }
+
+    function persistNumbers() {
+        var body = {};
+
+        CATS.forEach(function (c) {
+            body[c.id] = (nomor[c.id] || '').trim();
+        });
+
+        return window.axios
+            .put('/api/profil/dokumen-nomor', { nomor: body }, { params: params })
+            .then(function (res) {
+                nomor = res.data.nomor || nomor;
+            })
+            .catch(fail);
+    }
+
+    function scheduleNumbers() {
+        clearTimeout(saveTimer);
+        saveTimer = setTimeout(persistNumbers, 500);
     }
 
     // ---- unggah ----
@@ -337,7 +334,7 @@ function initProfilKelolaFile() {
             return;
         }
 
-        save(cid, ok, errs, null);
+        upload(cid, ok, null);
     }
 
     // Modal pemberian judul untuk tiap file yang akan diunggah.
@@ -383,59 +380,34 @@ function initProfilKelolaFile() {
         }
     }
 
-    function save(cid, ok, errs, titles) {
+    function upload(cid, files, titles) {
         var c = cat(cid);
 
-        if (c) {
-            ofCat(cid).forEach(function (d) {
-                remove(d);
-            });
-        }
+        var tasks = Array.prototype.map.call(files, function (f, i) {
+            var body = new FormData();
 
-        ok.forEach(function (f, i) {
-            var t = titles ? String(titles[i] || '').trim() : '';
-            var d = {
-                id: Date.now().toString(36) + Math.random().toString(36).slice(2, 7),
-                cat: cid,
-                name: f.name,
-                title: t || null,
-                type: f.type || (PDF.test(f.name) ? 'application/pdf' : 'image/' + (/png$/i.test(f.name) ? 'png' : 'jpeg')),
-                size: f.size,
-                date: Date.now(),
-                blob: f,
-            };
+            body.append('kategori', cid);
+            body.append('file', f);
 
-            docs.push(d);
-            tx('readwrite', function (s) {
-                return s.put(d);
-            });
-            emit('dokumen-upload', { kategori: cid, nomor: c ? nomor[cid].trim() : null, judul: d.title, file: f });
+            if (titles && titles[i]) {
+                body.append('judul', titles[i]);
+            }
+
+            if (c) {
+                body.append('nomor', (nomor[cid] || '').trim());
+            }
+
+            return window.axios.post('/api/profil/dokumen', body, { params: params });
         });
 
-        render();
-
-        var box = $('ef-' + cid);
-
-        if (box) {
-            box.innerHTML = errs.map(esc).join('<br>');
-        }
-
-        say(c ? 'Dokumen ' + c.title + ' berhasil diunggah.' : ok.length + ' dokumen berhasil diunggah.');
-    }
-
-    function remove(d) {
-        docs = docs.filter(function (x) {
-            return x.id !== d.id;
-        });
-
-        if (urls[d.id]) {
-            URL.revokeObjectURL(urls[d.id]);
-            delete urls[d.id];
-        }
-
-        tx('readwrite', function (s) {
-            return s.delete(d.id);
-        });
+        Promise.all(tasks)
+            .then(function () {
+                return load();
+            })
+            .then(function () {
+                say(c ? 'Dokumen ' + c.title + ' berhasil diunggah.' : files.length + ' dokumen berhasil diunggah.');
+            })
+            .catch(fail);
     }
 
     // ---- modal ----
@@ -466,15 +438,13 @@ function initProfilKelolaFile() {
     }
 
     function view(d) {
-        var u = urlOf(d);
-
         open(
             'big',
             d.name,
             isPdf(d)
-                ? '<iframe src="' + u + '" title="' + esc(d.name) + '"></iframe>'
-                : '<img src="' + u + '" alt="' + esc(d.name) + '">',
-            '<a href="' + u + '" target="_blank" rel="noopener">Buka di tab baru</a><button type="button" class="btn" data-act="close">Tutup</button>',
+                ? '<iframe src="' + d.url + '" title="' + esc(d.name) + '"></iframe>'
+                : '<img src="' + d.url + '" alt="' + esc(d.name) + '">',
+            '<a href="' + d.url + '" target="_blank" rel="noopener">Buka di tab baru</a><button type="button" class="btn" data-act="close">Tutup</button>',
         );
     }
 
@@ -542,13 +512,18 @@ function initProfilKelolaFile() {
             });
 
             close();
-            save('LAIN', p.files, p.errs, titles);
+            upload('LAIN', p.files, titles);
         } else if (a === 'ok' && d) {
-            remove(d);
-            close();
-            render();
-            emit('dokumen-hapus', { kategori: d.cat, nama: d.name });
-            say('Dokumen berhasil dihapus.');
+            window.axios
+                .delete('/api/profil/dokumen/' + d.id, { params: params })
+                .then(function () {
+                    close();
+                    return load();
+                })
+                .then(function () {
+                    say('Dokumen berhasil dihapus.');
+                })
+                .catch(fail);
         } else if (a === 'close') {
             close();
         }
@@ -581,15 +556,9 @@ function initProfilKelolaFile() {
         }
 
         nomor[el.dataset.cat] = el.value;
-
-        try {
-            localStorage.setItem('dokumen-nomor', JSON.stringify(nomor));
-        } catch (x) {
-            // abaikan bila penyimpanan lokal penuh
-        }
-
         el.classList.remove('bad');
         $('en-' + el.dataset.cat).textContent = '';
+        scheduleNumbers();
     });
 
     root.addEventListener('focusout', function (e) {
@@ -598,6 +567,9 @@ function initProfilKelolaFile() {
         if (!el.classList || !el.classList.contains('num')) {
             return;
         }
+
+        clearTimeout(saveTimer);
+        persistNumbers();
 
         var c = cat(el.dataset.cat);
 
@@ -661,15 +633,7 @@ function initProfilKelolaFile() {
     });
 
     render();
-
-    tx('readonly', function (s) {
-        return s.getAll();
-    }).then(function (r) {
-        if (r && r.length) {
-            docs = r;
-            render();
-        }
-    });
+    load();
 }
 
 if (document.readyState === 'loading') {

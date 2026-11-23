@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Livewire\Pengaturan;
+use App\Models\Employee;
 use App\Models\User;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Support\Facades\Hash;
@@ -169,5 +170,129 @@ class PengaturanUserTest extends TestCase
             ->call('openCreateForm')
             ->assertForbidden()
             ->assertSet('showUserForm', false);
+    }
+
+    public function test_creating_user_creates_linked_employee(): void
+    {
+        $admin = $this->makeAdmin();
+
+        Livewire::actingAs($admin)
+            ->test(Pengaturan::class)
+            ->call('openCreateForm')
+            ->set($this->formData())
+            ->call('saveUser')
+            ->assertHasNoErrors();
+
+        $user = User::where('email', 'pengguna-baru@hamana.co.id')->firstOrFail();
+
+        $this->assertDatabaseHas('employees', [
+            'user_id' => $user->id,
+            'nik' => '8000.00.00.01',
+            'nama' => 'Pengguna Baru',
+            'jabatan' => 'Staff Test',
+            'posisi' => 'Staff Test',
+            'status_pegawai' => Employee::STATUS_AKTIF,
+        ]);
+    }
+
+    public function test_updating_user_syncs_linked_employee(): void
+    {
+        $admin = $this->makeAdmin();
+        $user = $this->makeUser(['email' => 'sinkron@hamana.co.id']);
+
+        $employee = Employee::query()->create([
+            'user_id' => $user->id,
+            'nik' => $user->nik,
+            'nama' => $user->name,
+            'jabatan' => $user->position,
+            'posisi' => $user->position,
+            'status_pegawai' => Employee::STATUS_AKTIF,
+        ]);
+
+        Livewire::actingAs($admin)
+            ->test(Pengaturan::class)
+            ->call('openEditForm', $user->id)
+            ->set('formName', 'Nama Tersinkron')
+            ->set('formPosition', 'Supervisor Test')
+            ->call('saveUser')
+            ->assertHasNoErrors();
+
+        $employee->refresh();
+
+        $this->assertSame('Nama Tersinkron', $employee->nama);
+        $this->assertSame('Supervisor Test', $employee->jabatan);
+        $this->assertSame('Supervisor Test', $employee->posisi);
+    }
+
+    public function test_creating_user_links_existing_employee_by_nik(): void
+    {
+        $admin = $this->makeAdmin();
+
+        $employee = Employee::query()->create([
+            'nik' => '8000.00.00.09',
+            'nama' => 'Pegawai Lama',
+            'jabatan' => 'Operator',
+            'posisi' => 'Operator Produksi',
+            'status_pegawai' => Employee::STATUS_AKTIF,
+        ]);
+
+        Livewire::actingAs($admin)
+            ->test(Pengaturan::class)
+            ->call('openCreateForm')
+            ->set($this->formData([
+                'formNik' => '8000.00.00.09',
+                'formEmail' => 'pegawai-lama@hamana.co.id',
+            ]))
+            ->call('saveUser')
+            ->assertHasNoErrors();
+
+        $user = User::where('email', 'pegawai-lama@hamana.co.id')->firstOrFail();
+
+        $employee->refresh();
+
+        $this->assertSame($user->id, $employee->user_id);
+        $this->assertSame('Pengguna Baru', $employee->nama);
+        $this->assertSame(1, Employee::query()->where('nik', '8000.00.00.09')->count());
+    }
+
+    public function test_user_can_change_own_password(): void
+    {
+        $user = $this->makeUser(['email' => 'ganti-password@hamana.co.id', 'password' => 'password']);
+
+        Livewire::actingAs($user)
+            ->test(Pengaturan::class)
+            ->set('currentPassword', 'password')
+            ->set('newPassword', 'rahasia123')
+            ->set('newPasswordConfirmation', 'rahasia123')
+            ->call('updatePassword')
+            ->assertHasNoErrors()
+            ->assertSet('passwordStatus', 'Password berhasil diubah.');
+
+        $this->assertTrue(Hash::check('rahasia123', $user->refresh()->password));
+    }
+
+    public function test_password_change_requires_current_password_and_matching_confirmation(): void
+    {
+        $user = $this->makeUser(['email' => 'password-salah@hamana.co.id', 'password' => 'password']);
+
+        Livewire::actingAs($user)
+            ->test(Pengaturan::class)
+            ->set('currentPassword', 'salah')
+            ->set('newPassword', 'rahasia123')
+            ->set('newPasswordConfirmation', 'rahasia123')
+            ->call('updatePassword')
+            ->assertHasErrors(['currentPassword']);
+
+        $this->assertTrue(Hash::check('password', $user->refresh()->password));
+
+        Livewire::actingAs($user)
+            ->test(Pengaturan::class)
+            ->set('currentPassword', 'password')
+            ->set('newPassword', 'rahasia123')
+            ->set('newPasswordConfirmation', 'beda123')
+            ->call('updatePassword')
+            ->assertHasErrors(['newPassword' => 'same']);
+
+        $this->assertTrue(Hash::check('password', $user->refresh()->password));
     }
 }

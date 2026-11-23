@@ -33,67 +33,26 @@ function initDataPegawai() {
         'Driver',
         'Intern',
     ];
-    // Data contoh (ganti dengan data dari server)
-    var SEED = [
-        ['2018001', 'Budi Santoso', 'Direktur Utama', 'Direktur Utama', 1],
-        ['2018002', 'Siti Rahmawati', 'Direktur', 'Direktur Keuangan', 1],
-        ['2018003', 'Agus Prasetyo', 'General Manager', 'General Manager Operasional', 1],
-        ['2019004', 'Dewi Lestari', 'Asisstant General Manager', 'Asisstant GM Produksi', 1],
-        ['2019005', 'Rudi Hartono', 'Manager', 'Manager HRD', 1],
-        ['2019006', 'Nina Kusumawati', 'Manager', 'Manager Keuangan', 1],
-        ['2020007', 'Hendra Wijaya', 'Supervisor', 'Supervisor Produksi', 1],
-        ['2020008', 'Fitri Handayani', 'Supervisor', 'Supervisor Gudang', 1],
-        ['2020009', 'Joko Susilo', 'Foreman', 'Foreman Line A', 1],
-        ['2020010', 'Eko Prabowo', 'Foreman', 'Foreman Line B', 0],
-        ['2021011', 'Wahyu Nugroho', 'Head', 'Head Quality Control', 1],
-        ['2021012', 'Lina Marlina', 'Leader', 'Leader Packing', 1],
-        ['2021013', 'Dimas Aditya', 'Leader', 'Leader Maintenance', 1],
-        ['2021014', 'Rina Wulandari', 'Officer', 'Officer Payroll', 1],
-        ['2021015', 'Yoga Pratama', 'Officer', 'Officer IT', 1],
-        ['2022016', 'Sari Indrawati', 'Officer', 'Officer Pajak', 0],
-        ['2022017', 'Tono Sugiarto', 'Operator', 'Operator Mesin', 1],
-        ['2022018', 'Slamet Riyadi', 'Operator', 'Operator Forklift', 1],
-        ['2022019', 'Bayu Setiawan', 'Driver', 'Driver Direksi', 1],
-        ['2023020', 'Candra Kirana', 'Driver', 'Driver Operasional', 0],
-        ['2024021', 'Putri Anggraini', 'Intern', 'Intern Administrasi', 1],
-        ['2024022', 'Fajar Ramadhan', 'Intern', 'Intern IT', 0],
-    ].map(function (r) {
-        return { nik: r[0], nama: r[1], jabatan: r[2], posisi: r[3], aktif: r[4] === 1 };
-    });
-
-    var KEY = 'data-pegawai',
-        all = SEED,
-        saved = null;
-
-    try {
-        saved = JSON.parse(localStorage.getItem(KEY));
-    } catch (e) {
-        saved = null;
-    }
-
-    if (saved && saved.length) {
-        all = saved;
-    }
-
-    function persist() {
-        try {
-            localStorage.setItem(KEY, JSON.stringify(all));
-        } catch (e) {
-            // abaikan bila penyimpanan lokal penuh
-        }
-    }
 
     var q = '',
         filt = '1',
         page = 1,
-        SIZE = 10;
+        SIZE = 10,
+        all = [],
+        meta = {},
+        counts = { aktif: 0, tidak_aktif: 0, semua: 0 },
+        searchTimer = null;
+
     var tb = document.getElementById('tb'),
         mn = document.getElementById('mn'),
         ov = document.getElementById('ov'),
         toast = document.getElementById('toast');
 
     function esc(v) {
-        return String(v).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
+        return String(v == null ? '' : v)
+            .replace(/&/g, '&amp;')
+            .replace(/"/g, '&quot;')
+            .replace(/</g, '&lt;');
     }
 
     function say(m) {
@@ -105,20 +64,43 @@ function initDataPegawai() {
         }, 2600);
     }
 
+    function fail(e) {
+        var errors = e && e.response && e.response.data && e.response.data.errors;
+        var first = errors ? Object.keys(errors)[0] : null;
+
+        say(first ? errors[first][0] : (e && e.response && e.response.data && e.response.data.message) || 'Data gagal diproses.');
+    }
+
     function emit(n, d) {
         document.dispatchEvent(new CustomEvent(n, { detail: d }));
     }
 
-    function list() {
-        var s = q.trim().toLowerCase();
+    function params() {
+        return {
+            search: q.trim(),
+            status: filt,
+            page: page,
+            per_page: SIZE,
+        };
+    }
 
-        return all.filter(function (p) {
-            if (filt !== 'all' && p.aktif !== (filt === '1')) {
-                return false;
-            }
+    function load() {
+        return window.axios
+            .get('/api/data-pegawai', { params: params() })
+            .then(function (res) {
+                all = res.data.data || [];
+                meta = res.data.meta || {};
+                counts = res.data.counts || counts;
 
-            return !s || p.nama.toLowerCase().indexOf(s) >= 0 || p.nik.toLowerCase().indexOf(s) >= 0;
-        });
+                if (meta.last_page && page > meta.last_page) {
+                    page = meta.last_page;
+                    return load();
+                }
+
+                page = meta.current_page || page;
+                render();
+            })
+            .catch(fail);
     }
 
     // ---- dropdown kustom (satu komponen untuk semua dropdown) ----
@@ -176,6 +158,7 @@ function initDataPegawai() {
             '<circle cx="6" cy="5" r="2.5"/><path d="M1.5 14c0-3 2-4.5 4.5-4.5s4.5 1.5 4.5 4.5zM10.5 3a2.5 2.5 0 010 4.5M12 9.8c1.6.4 2.5 1.7 2.5 4.2"/>',
         fisik: '<circle cx="8" cy="3" r="1.5"/><path d="M3 6h10M8 6v4M5 14l3-4 3 4"/>',
         file: '<path d="M1.5 3.5h4l1.5 1.5h7.5v8h-13z"/>',
+        edit: '<path d="M11 2.5l2.5 2.5L5.5 13H3v-2.5L11 2.5z"/>',
         hapus: '<path d="M2.5 4.5h11M6.5 4.5V2.5h3v2M4.5 4.5l.6 9h5.8l.6-9M6.5 7v4M9.5 7v4"/>',
     };
     var ITEMS = [
@@ -210,6 +193,11 @@ function initDataPegawai() {
                 );
             }).join('') +
             '<div class="sep" role="separator"></div>' +
+            '<button type="button" role="menuitem" data-aksi="edit" data-nik="' +
+            esc(nik) +
+            '"><svg class="i" viewBox="0 0 16 16">' +
+            IC.edit +
+            '</svg>Edit Pegawai</button>' +
             '<button type="button" role="menuitem" class="dg" data-aksi="hapus" data-nik="' +
             esc(nik) +
             '"><svg class="i" viewBox="0 0 16 16">' +
@@ -231,14 +219,17 @@ function initDataPegawai() {
         );
 
         document.getElementById('ok').onclick = function () {
-            all = all.filter(function (x) {
-                return x.nik !== p.nik;
-            });
-            persist();
-            close();
-            render();
-            emit('pegawai-hapus', p);
-            say('Pegawai ' + p.nama + ' berhasil dihapus.');
+            window.axios
+                .delete('/api/data-pegawai/' + p.id)
+                .then(function () {
+                    close();
+                    return load();
+                })
+                .then(function () {
+                    emit('pegawai-hapus', p);
+                    say('Pegawai ' + p.nama + ' berhasil dihapus.');
+                })
+                .catch(fail);
         };
     }
 
@@ -315,6 +306,11 @@ function initDataPegawai() {
                 return;
             }
 
+            if (p && a.dataset.aksi === 'edit') {
+                editEmployee(p);
+                return;
+            }
+
             emit('pegawai-aksi', { aksi: a.dataset.aksi, pegawai: p });
             return;
         }
@@ -352,33 +348,19 @@ function initDataPegawai() {
     });
 
     // ---- render ----
-    function counts() {
-        var a = all.filter(function (p) {
-            return p.aktif;
-        }).length;
-
-        document.getElementById('n1').textContent = a;
-        document.getElementById('n0').textContent = all.length - a;
-        document.getElementById('nall').textContent = all.length;
+    function render() {
+        document.getElementById('n1').textContent = counts.aktif;
+        document.getElementById('n0').textContent = counts.tidak_aktif;
+        document.getElementById('nall').textContent = counts.semua;
         root.querySelectorAll('.sc').forEach(function (b) {
             b.classList.toggle('on', b.dataset.f === filt);
         });
-    }
 
-    function render() {
-        counts();
+        var total = meta.total || 0,
+            current = meta.current_page || 1,
+            pages = Math.max(1, meta.last_page || 1);
 
-        var L = list(),
-            pages = Math.max(1, Math.ceil(L.length / SIZE));
-
-        if (page > pages) {
-            page = pages;
-        }
-
-        var from = (page - 1) * SIZE,
-            rows = L.slice(from, from + SIZE);
-
-        tb.innerHTML = rows
+        tb.innerHTML = all
             .map(function (p) {
                 return (
                     '<tr><td class="c1"><button type="button" class="btn sm" data-menu="' +
@@ -402,21 +384,21 @@ function initDataPegawai() {
             })
             .join('');
 
-        document.getElementById('empty').hidden = L.length > 0;
-        document.getElementById('cnt').textContent = L.length
-            ? 'Menampilkan ' + (from + 1) + '–' + (from + rows.length) + ' dari ' + L.length + ' pegawai'
+        document.getElementById('empty').hidden = total > 0;
+        document.getElementById('cnt').textContent = total
+            ? 'Menampilkan ' + meta.from + '–' + meta.to + ' dari ' + total + ' pegawai'
             : '0 pegawai';
 
         var h =
                 '<button type="button" data-p="' +
-                (page - 1) +
+                (current - 1) +
                 '"' +
-                (page <= 1 ? ' disabled' : '') +
+                (current <= 1 ? ' disabled' : '') +
                 '>Previous</button>',
             last = 0;
 
         for (var n = 1; n <= pages; n++) {
-            if (!(n === 1 || n === pages || Math.abs(n - page) <= 1)) {
+            if (!(n === 1 || n === pages || Math.abs(n - current) <= 1)) {
                 continue;
             }
 
@@ -428,7 +410,7 @@ function initDataPegawai() {
                 '<button type="button" data-p="' +
                 n +
                 '"' +
-                (n === page ? ' class="on" aria-current="page"' : '') +
+                (n === current ? ' class="on" aria-current="page"' : '') +
                 '>' +
                 n +
                 '</button>';
@@ -437,9 +419,9 @@ function initDataPegawai() {
 
         h +=
             '<button type="button" data-p="' +
-            (page + 1) +
+            (current + 1) +
             '"' +
-            (page >= pages ? ' disabled' : '') +
+            (current >= pages ? ' disabled' : '') +
             '>Next</button>';
 
         document.getElementById('pn').innerHTML = h;
@@ -449,7 +431,7 @@ function initDataPegawai() {
     dd('st', [['1', 'Aktif'], ['0', 'Tidak Aktif'], ['all', 'Semua']], '1', function (v) {
         filt = v;
         page = 1;
-        render();
+        load();
     });
 
     document.getElementById('sum').addEventListener('click', function (e) {
@@ -463,13 +445,14 @@ function initDataPegawai() {
         DD.st.val = filt;
         paint('st');
         page = 1;
-        render();
+        load();
     });
 
     document.getElementById('q').addEventListener('input', function () {
         q = this.value;
         page = 1;
-        render();
+        clearTimeout(searchTimer);
+        searchTimer = setTimeout(load, 300);
     });
 
     document.getElementById('pn').addEventListener('click', function (e) {
@@ -477,7 +460,7 @@ function initDataPegawai() {
 
         if (b && !b.disabled) {
             page = +b.dataset.p;
-            render();
+            load();
         }
     });
 
@@ -528,23 +511,33 @@ function initDataPegawai() {
         }
     });
 
-    // ---- tambah karyawan ----
+    // ---- form tambah / edit ----
     var CH = '<svg class="i" viewBox="0 0 16 16"><path d="M4 6l4 4 4-4"/></svg>';
 
-    document.getElementById('add').onclick = function () {
-        open(
-            'Tambah Karyawan',
-            '<div class="f"><label for="a-nik">NIK <span class="rq">*</span></label><input class="fld" id="a-nik" autocomplete="off"><p class="er" id="e-nik"></p></div>' +
-                '<div class="f"><label for="a-nama">Nama Lengkap <span class="rq">*</span></label><input class="fld" id="a-nama" autocomplete="off"><p class="er" id="e-nama"></p></div>' +
-                '<div class="f"><label>Jabatan <span class="rq">*</span></label><button type="button" class="fld dd" data-dd="a-jab" id="a-jab" aria-haspopup="listbox"><span class="l"></span>' +
-                CH +
-                '</button><p class="er" id="e-jab"></p></div>' +
-                '<div class="f"><label for="a-pos">Posisi <span class="rq">*</span></label><input class="fld" id="a-pos" autocomplete="off"><p class="er" id="e-pos"></p></div>' +
-                '<div class="f"><label>Status</label><button type="button" class="fld dd" data-dd="a-st" aria-haspopup="listbox"><span class="l"></span>' +
-                CH +
-                '</button></div>',
-            '<button type="button" class="btn" data-close>Batal</button><button type="button" class="btn go" id="a-save">Simpan</button>',
+    function form(p) {
+        p = p || {};
+
+        return (
+            '<div class="f"><label for="a-nik">NIK <span class="rq">*</span></label><input class="fld" id="a-nik" autocomplete="off" value="' +
+            esc(p.nik) +
+            '"><p class="er" id="e-nik"></p></div>' +
+            '<div class="f"><label for="a-nama">Nama Lengkap <span class="rq">*</span></label><input class="fld" id="a-nama" autocomplete="off" value="' +
+            esc(p.nama) +
+            '"><p class="er" id="e-nama"></p></div>' +
+            '<div class="f"><label>Jabatan <span class="rq">*</span></label><button type="button" class="fld dd" data-dd="a-jab" id="a-jab" aria-haspopup="listbox"><span class="l"></span>' +
+            CH +
+            '</button><p class="er" id="e-jab"></p></div>' +
+            '<div class="f"><label for="a-pos">Posisi <span class="rq">*</span></label><input class="fld" id="a-pos" autocomplete="off" value="' +
+            esc(p.posisi) +
+            '"><p class="er" id="e-pos"></p></div>' +
+            '<div class="f"><label>Status</label><button type="button" class="fld dd" data-dd="a-st" aria-haspopup="listbox"><span class="l"></span>' +
+            CH +
+            '</button></div>'
         );
+    }
+
+    function fillForm(p) {
+        p = p || {};
 
         dd(
             'a-jab',
@@ -553,253 +546,131 @@ function initDataPegawai() {
                     return [j, j];
                 }),
             ),
-            '',
+            p.jabatan || '',
             function () {
                 document.getElementById('a-jab').classList.remove('bad');
                 document.getElementById('e-jab').textContent = '';
             },
         );
 
-        dd('a-st', [['1', 'Aktif'], ['0', 'Tidak Aktif']], '1');
+        dd('a-st', [['Aktif', 'Aktif'], ['Tidak Aktif', 'Tidak Aktif']], p.status || 'Aktif');
         document.getElementById('a-nik').focus();
+    }
+
+    function readForm() {
+        return {
+            nik: document.getElementById('a-nik').value.trim(),
+            nama: document.getElementById('a-nama').value.trim(),
+            jabatan: DD['a-jab'].val,
+            posisi: document.getElementById('a-pos').value.trim(),
+            status: DD['a-st'].val,
+        };
+    }
+
+    function validateForm(v) {
+        var err = {
+            nik: !v.nik ? 'NIK wajib diisi.' : '',
+            nama: v.nama ? '' : 'Nama wajib diisi.',
+            jab: v.jabatan ? '' : 'Jabatan wajib dipilih.',
+            pos: v.posisi ? '' : 'Posisi wajib diisi.',
+        };
+        var map = { nik: 'a-nik', nama: 'a-nama', jab: 'a-jab', pos: 'a-pos' },
+            first = null;
+
+        Object.keys(err).forEach(function (k) {
+            document.getElementById('e-' + k).textContent = err[k];
+            document.getElementById(map[k]).classList.toggle('bad', !!err[k]);
+
+            if (err[k] && !first) {
+                first = map[k];
+            }
+        });
+
+        if (first) {
+            document.getElementById(first).focus();
+            return false;
+        }
+
+        return true;
+    }
+
+    function resetList() {
+        filt = 'all';
+        DD.st.val = 'all';
+        paint('st');
+        q = '';
+        document.getElementById('q').value = '';
+        page = 1;
+    }
+
+    document.getElementById('add').onclick = function () {
+        open(
+            'Tambah Karyawan',
+            form(),
+            '<button type="button" class="btn" data-close>Batal</button><button type="button" class="btn go" id="a-save">Simpan</button>',
+        );
+
+        fillForm();
 
         document.getElementById('a-save').onclick = function () {
-            var v = {
-                nik: document.getElementById('a-nik').value.trim(),
-                nama: document.getElementById('a-nama').value.trim(),
-                jabatan: DD['a-jab'].val,
-                posisi: document.getElementById('a-pos').value.trim(),
-                aktif: DD['a-st'].val === '1',
-            };
-            var err = {
-                nik: !v.nik
-                    ? 'NIK wajib diisi.'
-                    : all.some(function (p) {
-                          return p.nik === v.nik;
-                      })
-                      ? 'NIK sudah terdaftar.'
-                      : '',
-                nama: v.nama ? '' : 'Nama wajib diisi.',
-                jab: v.jabatan ? '' : 'Jabatan wajib dipilih.',
-                pos: v.posisi ? '' : 'Posisi wajib diisi.',
-            };
-            var map = { nik: 'a-nik', nama: 'a-nama', jab: 'a-jab', pos: 'a-pos' },
-                first = null;
+            var v = readForm();
 
-            Object.keys(err).forEach(function (k) {
-                document.getElementById('e-' + k).textContent = err[k];
-                document.getElementById(map[k]).classList.toggle('bad', !!err[k]);
-
-                if (err[k] && !first) {
-                    first = map[k];
-                }
-            });
-
-            if (first) {
-                document.getElementById(first).focus();
+            if (!validateForm(v)) {
                 return;
             }
 
-            all.push(v);
-            persist();
-
-            if (filt !== 'all' && filt !== (v.aktif ? '1' : '0')) {
-                filt = 'all';
-                DD.st.val = 'all';
-                paint('st');
-            }
-
-            q = '';
-            document.getElementById('q').value = '';
-            page = Math.ceil(list().length / SIZE);
-            close();
-            render();
-            emit('pegawai-tambah', v);
-            say('Karyawan ' + v.nama + ' berhasil ditambahkan.');
+            window.axios
+                .post('/api/data-pegawai', v)
+                .then(function (res) {
+                    resetList();
+                    close();
+                    return load().then(function () {
+                        emit('pegawai-tambah', res.data.pegawai);
+                        say('Karyawan ' + v.nama + ' berhasil ditambahkan.');
+                    });
+                })
+                .catch(fail);
         };
     };
 
-    // ---- export (CSV) ----
-    function cell(v) {
-        return '"' + String(v).replace(/"/g, '""') + '"';
-    }
+    function editEmployee(p) {
+        open(
+            'Edit Karyawan',
+            form(p),
+            '<button type="button" class="btn" data-close>Batal</button><button type="button" class="btn go" id="a-save">Simpan</button>',
+        );
 
-    function download(name, text) {
-        var a = document.createElement('a');
+        fillForm(p);
 
-        a.href = URL.createObjectURL(new Blob(['\uFEFF' + text], { type: 'text/csv;charset=utf-8' }));
-        a.download = name;
-        document.body.appendChild(a);
-        a.click();
-        a.remove();
-        setTimeout(function () {
-            URL.revokeObjectURL(a.href);
-        }, 1000);
-    }
+        document.getElementById('a-save').onclick = function () {
+            var v = readForm();
 
-    document.getElementById('exp').onclick = function () {
-        var L = list();
-        var csv = ['No,NIK,Nama,Jabatan,Posisi,Status']
-            .concat(
-                L.map(function (p, i) {
-                    return [i + 1, p.nik, p.nama, p.jabatan, p.posisi, p.aktif ? 'Aktif' : 'Tidak Aktif']
-                        .map(cell)
-                        .join(',');
-                }),
-            )
-            .join('\r\n');
-
-        download('data-pegawai.csv', csv);
-        emit('pegawai-export', L);
-        say(L.length + ' data pegawai diekspor.');
-    };
-
-    // ---- import (CSV) ----
-    function parseCSV(t) {
-        t = t.replace(/^\uFEFF/, '');
-
-        var first = t.split(/\r?\n/)[0] || '',
-            d = first.split(';').length > first.split(',').length ? ';' : ',';
-        var rows = [],
-            row = [],
-            cur = '',
-            inq = false;
-
-        for (var i = 0; i < t.length; i++) {
-            var c = t[i];
-
-            if (inq) {
-                if (c === '"') {
-                    if (t[i + 1] === '"') {
-                        cur += '"';
-                        i++;
-                    } else {
-                        inq = false;
-                    }
-                } else {
-                    cur += c;
-                }
-            } else if (c === '"') {
-                inq = true;
-            } else if (c === d) {
-                row.push(cur);
-                cur = '';
-            } else if (c === '\n' || c === '\r') {
-                if (c === '\r' && t[i + 1] === '\n') {
-                    i++;
-                }
-
-                row.push(cur);
-                cur = '';
-
-                if (
-                    row.some(function (x) {
-                        return x.trim();
-                    })
-                ) {
-                    rows.push(row);
-                }
-
-                row = [];
-            } else {
-                cur += c;
-            }
-        }
-
-        row.push(cur);
-
-        if (
-            row.some(function (x) {
-                return x.trim();
-            })
-        ) {
-            rows.push(row);
-        }
-
-        return rows;
-    }
-
-    function doImport(text) {
-        var R = parseCSV(text);
-
-        if (R.length < 2) {
-            say('File kosong atau format tidak sesuai.');
-            return;
-        }
-
-        var H = R[0].map(function (h) {
-            return h.trim().toLowerCase();
-        });
-
-        function ix(n) {
-            return H.indexOf(n);
-        }
-
-        var iN = ix('nik'),
-            iM = ix('nama');
-
-        if (iN < 0 || iM < 0) {
-            say('Kolom NIK dan Nama wajib ada di baris pertama.');
-            return;
-        }
-
-        var add = 0,
-            upd = 0,
-            skip = 0;
-
-        R.slice(1).forEach(function (r) {
-            function g(n) {
-                var k = ix(n);
-
-                return k >= 0 ? (r[k] || '').trim() : '';
-            }
-
-            var v = {
-                nik: (r[iN] || '').trim(),
-                nama: (r[iM] || '').trim(),
-                jabatan: g('jabatan'),
-                posisi: g('posisi'),
-                aktif: !/tidak|non|^0$|false/i.test(g('status')),
-            };
-
-            if (!v.nik || !v.nama) {
-                skip++;
+            if (!validateForm(v)) {
                 return;
             }
 
-            var ex = all.filter(function (p) {
-                return p.nik === v.nik;
-            })[0];
-
-            if (ex) {
-                ex.nama = v.nama;
-
-                if (v.jabatan) {
-                    ex.jabatan = v.jabatan;
-                }
-
-                if (v.posisi) {
-                    ex.posisi = v.posisi;
-                }
-
-                if (g('status')) {
-                    ex.aktif = v.aktif;
-                }
-
-                upd++;
-            } else {
-                all.push(v);
-                add++;
-            }
-        });
-
-        persist();
-        page = 1;
-        render();
-        emit('pegawai-import', { ditambah: add, diperbarui: upd, dilewati: skip });
-        say(add + ' ditambahkan, ' + upd + ' diperbarui' + (skip ? ', ' + skip + ' dilewati' : '') + '.');
+            window.axios
+                .put('/api/data-pegawai/' + p.id, v)
+                .then(function (res) {
+                    close();
+                    return load().then(function () {
+                        emit('pegawai-edit', res.data.pegawai);
+                        say('Data karyawan berhasil diperbarui.');
+                    });
+                })
+                .catch(fail);
+        };
     }
 
+    // ---- export (CSV) ----
+    document.getElementById('exp').onclick = function () {
+        var p = new URLSearchParams({ search: q.trim(), status: filt });
+        window.location.href = '/api/data-pegawai/export?' + p.toString();
+        emit('pegawai-export', params());
+        say('Data pegawai sedang diekspor.');
+    };
+
+    // ---- import (CSV) ----
     document.getElementById('imp').onclick = function () {
         open(
             'Import Data Pegawai',
@@ -809,10 +680,18 @@ function initDataPegawai() {
         );
 
         document.getElementById('i-tpl').onclick = function () {
-            download(
-                'template-data-pegawai.csv',
-                'NIK,Nama,Jabatan,Posisi,Status\r\n2025001,Contoh Nama,Officer,Officer Administrasi,Aktif',
+            var a = document.createElement('a');
+
+            a.href = URL.createObjectURL(
+                new Blob(['\uFEFFNIK,Nama,Jabatan,Posisi,Status\r\n'], { type: 'text/csv;charset=utf-8' }),
             );
+            a.download = 'template-data-pegawai.csv';
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            setTimeout(function () {
+                URL.revokeObjectURL(a.href);
+            }, 1000);
         };
 
         var inp = document.getElementById('i-file');
@@ -828,18 +707,33 @@ function initDataPegawai() {
                 return;
             }
 
-            var rd = new FileReader();
+            var body = new FormData();
+            body.append('file', f);
 
-            rd.onload = function () {
-                close();
-                doImport(String(rd.result));
-            };
+            window.axios
+                .post('/api/data-pegawai/import', body)
+                .then(function (res) {
+                    var h = res.data.hasil || {};
 
-            rd.readAsText(f);
+                    close();
+                    page = 1;
+                    return load().then(function () {
+                        emit('pegawai-import', h);
+                        say(
+                            (h.ditambah || 0) +
+                                ' ditambahkan, ' +
+                                (h.diperbarui || 0) +
+                                ' diperbarui' +
+                                (h.dilewati ? ', ' + h.dilewati + ' dilewati' : '') +
+                                '.',
+                        );
+                    });
+                })
+                .catch(fail);
         };
     };
 
-    render();
+    load();
 }
 
 if (document.readyState === 'loading') {

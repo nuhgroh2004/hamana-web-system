@@ -9,7 +9,13 @@ function initProfilAnggotaKeluarga() {
 
     initializedRoots.add(root);
 
-    var KEY = 'anggota-keluarga';
+    const params = {};
+    const nik = new URLSearchParams(window.location.search).get('nik');
+
+    if (nik) {
+        params.nik = nik;
+    }
+
     // add:true = bisa ditambah (AYAH 1 -> AYAH 2, dst); num:true = diberi nomor
     var GROUPS = [
         { k: 'AYAH', add: true, num: true },
@@ -19,45 +25,48 @@ function initProfilAnggotaKeluarga() {
         { k: 'ISTRI', add: true, num: true },
         { k: 'ANAK', add: true, num: true },
     ];
-    // Data awal (ganti dengan data dari server bila perlu)
-    var SEED = {
-        AYAH: [{ nama: 'Achmad Humajanto', usia: '62', pekerjaan: 'Wiraswasta' }],
-        IBU: [{ nama: 'Kholilah', usia: '58', pekerjaan: 'Guru SD (PNS Gol. IIIa)' }],
-    };
-    var saved = null;
-
-    try {
-        saved = JSON.parse(localStorage.getItem(KEY));
-    } catch (e) {
-        saved = null;
-    }
 
     function blank() {
         return { nama: '', usia: '', pekerjaan: '', on: true };
     }
 
-    var G = GROUPS.map(function (g) {
-        var src = (saved && saved[g.k]) || SEED[g.k] || [blank()];
+    function groupsFrom(items) {
+        var byKey = {};
 
-        if (!src.length) {
-            src = [blank()];
-        }
+        (items || []).forEach(function (item) {
+            if (!byKey[item.hubungan]) {
+                byKey[item.hubungan] = [];
+            }
 
-        return {
-            k: g.k,
-            add: g.add,
-            num: g.num,
-            items: src.map(function (s) {
-                return {
-                    nama: s.nama || '',
-                    usia: s.usia || '',
-                    pekerjaan: s.pekerjaan || '',
-                    on: s.on !== false,
-                };
-            }),
-        };
-    });
+            byKey[item.hubungan].push(item);
+        });
 
+        return GROUPS.map(function (g) {
+            var src = (byKey[g.k] || []).sort(function (a, b) {
+                return (a.urutan || 0) - (b.urutan || 0);
+            });
+
+            if (!src.length) {
+                src = [blank()];
+            }
+
+            return {
+                k: g.k,
+                add: g.add,
+                num: g.num,
+                items: src.map(function (item) {
+                    return {
+                        nama: item.nama || '',
+                        usia: item.usia == null ? '' : String(item.usia),
+                        pekerjaan: item.pekerjaan || '',
+                        on: item.aktif !== false,
+                    };
+                }),
+            };
+        });
+    }
+
+    var G = groupsFrom([]);
     var editing = false,
         tb = document.getElementById('tb'),
         tbl = document.getElementById('tbl'),
@@ -68,7 +77,26 @@ function initProfilAnggotaKeluarga() {
     var PLUS = '<svg class="i" viewBox="0 0 16 16"><path d="M8 3v10M3 8h10"/></svg>';
 
     function esc(v) {
-        return v.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
+        return String(v == null ? '' : v)
+            .replace(/&/g, '&amp;')
+            .replace(/"/g, '&quot;')
+            .replace(/</g, '&lt;');
+    }
+
+    function say(m) {
+        toast.textContent = m;
+        toast.classList.add('on');
+        clearTimeout(say.t);
+        say.t = setTimeout(function () {
+            toast.classList.remove('on');
+        }, 2600);
+    }
+
+    function fail(e) {
+        var errors = e && e.response && e.response.data && e.response.data.errors;
+        var first = errors ? Object.keys(errors)[0] : null;
+
+        say(first ? errors[first][0] : (e && e.response && e.response.data && e.response.data.message) || 'Data gagal disimpan.');
     }
 
     function label(g, i) {
@@ -229,43 +257,45 @@ function initProfilAnggotaKeluarga() {
     };
 
     saveBtn.onclick = function () {
-        var store = {},
-            out = [];
+        var items = [];
 
         G.forEach(function (g) {
-            g.items.forEach(function (it) {
+            g.items.forEach(function (it, i) {
                 it.nama = it.nama.trim();
                 it.usia = it.usia.trim();
                 it.pekerjaan = it.pekerjaan.trim();
-            });
-            // baris tambahan yang kosong dibuang (baris pertama tetap ada)
-            g.items = g.items.filter(function (it, i) {
-                return i === 0 || it.nama || it.usia || it.pekerjaan;
-            });
-            store[g.k] = g.items;
-            g.items.forEach(function (it, i) {
-                if (it.on && (it.nama || it.usia || it.pekerjaan)) {
-                    out.push({ hubungan: label(g, i), nama: it.nama, usia: it.usia, pekerjaan: it.pekerjaan });
+
+                if (it.nama || it.usia || it.pekerjaan) {
+                    items.push({
+                        hubungan: g.k,
+                        urutan: i + 1,
+                        nama: it.nama,
+                        usia: it.usia,
+                        pekerjaan: it.pekerjaan,
+                        aktif: it.on,
+                    });
                 }
             });
         });
 
-        try {
-            localStorage.setItem(KEY, JSON.stringify(store));
-        } catch (e) {
-            // abaikan bila penyimpanan lokal penuh
-        }
-
-        editing = false;
-        render();
-        document.dispatchEvent(new CustomEvent('keluarga-save', { detail: out }));
-        toast.textContent = 'Anggota keluarga berhasil disimpan.';
-        toast.classList.add('on');
-        clearTimeout(toast.t);
-        toast.t = setTimeout(function () {
-            toast.classList.remove('on');
-        }, 2400);
+        window.axios
+            .put('/api/profil/keluarga', { items: items }, { params: params })
+            .then(function (res) {
+                G = groupsFrom(res.data.items);
+                editing = false;
+                render();
+                say('Anggota keluarga berhasil disimpan.');
+            })
+            .catch(fail);
     };
+
+    window.axios
+        .get('/api/profil/keluarga', { params: params })
+        .then(function (res) {
+            G = groupsFrom(res.data.items);
+            render();
+        })
+        .catch(fail);
 
     render();
 }

@@ -9,15 +9,38 @@ function initProfilCiriFisik() {
 
     initializedRoots.add(root);
 
-    var KEY = 'ciri-fisik',
-        f = document.getElementById('f'),
+    const params = {};
+    const nik = new URLSearchParams(window.location.search).get('nik');
+
+    if (nik) {
+        params.nik = nik;
+    }
+
+    var f = document.getElementById('f'),
         toast = document.getElementById('toast'),
         editBtn = document.getElementById('edit'),
         saveBtn = document.getElementById('save'),
-        bar = document.getElementById('bar');
+        bar = document.getElementById('bar'),
+        last = {};
 
     function fields() {
         return Array.prototype.slice.call(f.querySelectorAll('.fld'));
+    }
+
+    function say(m) {
+        toast.textContent = m;
+        toast.classList.add('on');
+        clearTimeout(say.t);
+        say.t = setTimeout(function () {
+            toast.classList.remove('on');
+        }, 2600);
+    }
+
+    function fail(e) {
+        var errors = e && e.response && e.response.data && e.response.data.errors;
+        var first = errors ? Object.keys(errors)[0] : null;
+
+        say(first ? errors[first][0] : (e && e.response && e.response.data && e.response.data.message) || 'Data gagal disimpan.');
     }
 
     function mode(on) {
@@ -29,18 +52,23 @@ function initProfilCiriFisik() {
         bar.hidden = !on;
     }
 
-    function load() {
-        var d = {};
-
-        try {
-            d = JSON.parse(localStorage.getItem(KEY)) || {};
-        } catch (e) {
-            d = {};
-        }
+    function apply(d) {
+        last = d || {};
 
         fields().forEach(function (el) {
-            el.value = d[el.id] || '';
+            el.value = d[el.id] == null ? '' : d[el.id];
+            el.classList.remove('bad');
         });
+    }
+
+    function load() {
+        window.axios
+            .get('/api/profil/ciri-fisik', { params: params })
+            .then(function (res) {
+                apply(res.data);
+                mode(false);
+            })
+            .catch(fail);
     }
 
     editBtn.onclick = function () {
@@ -49,7 +77,7 @@ function initProfilCiriFisik() {
     };
 
     document.getElementById('cancel').onclick = function () {
-        load();
+        apply(last);
         mode(false);
     };
 
@@ -65,24 +93,17 @@ function initProfilCiriFisik() {
             d[el.id] = el.value;
         });
 
-        try {
-            localStorage.setItem(KEY, JSON.stringify(d));
-        } catch (e) {
-            // abaikan bila penyimpanan lokal penuh
-        }
-
-        mode(false);
-        document.dispatchEvent(new CustomEvent('cirifisik-save', { detail: d }));
-        toast.textContent = 'Ciri fisik berhasil disimpan.';
-        toast.classList.add('on');
-        clearTimeout(toast.t);
-        toast.t = setTimeout(function () {
-            toast.classList.remove('on');
-        }, 2400);
+        window.axios
+            .put('/api/profil/ciri-fisik', d, { params: params })
+            .then(function (res) {
+                apply(res.data);
+                mode(false);
+                say('Ciri fisik berhasil disimpan.');
+            })
+            .catch(fail);
     };
 
     load();
-    mode(false);
 }
 
 if (document.readyState === 'loading') {

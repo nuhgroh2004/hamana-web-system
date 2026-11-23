@@ -9,8 +9,14 @@ function initProfilDataPribadi() {
 
     initializedRoots.add(root);
 
-    var KEY = 'profil-karyawan',
-        f = document.getElementById('f'),
+    const params = {};
+    const nik = new URLSearchParams(window.location.search).get('nik');
+
+    if (nik) {
+        params.nik = nik;
+    }
+
+    var f = document.getElementById('f'),
         bar = document.getElementById('bar'),
         editBtn = document.getElementById('edit'),
         phbtn = document.getElementById('phbtn'),
@@ -21,7 +27,8 @@ function initProfilDataPribadi() {
         fkn = document.getElementById('fkn'),
         toast = document.getElementById('toast'),
         editing = false,
-        state = { faskes: true, photo: '' };
+        last = {},
+        state = { faskes: false, photo: '' };
 
     // avatar piksel bawaan
     (function () {
@@ -49,58 +56,78 @@ function initProfilDataPribadi() {
         clearTimeout(say.t);
         say.t = setTimeout(function () {
             toast.classList.remove('on');
-        }, 2400);
+        }, 2600);
     }
 
-    function read() {
-        try {
-            return JSON.parse(localStorage.getItem(KEY)) || {};
-        } catch (e) {
-            return {};
-        }
-    }
+    function fail(e) {
+        var errors = e && e.response && e.response.data && e.response.data.errors;
+        var first = errors ? Object.keys(errors)[0] : null;
 
-    function write(d) {
-        try {
-            localStorage.setItem(KEY, JSON.stringify(d));
-        } catch (e) {
-            say('Penyimpanan lokal penuh, data tidak tersimpan.');
+        if (first) {
+            say(errors[first][0]);
+            return;
         }
+
+        say((e && e.response && e.response.data && e.response.data.message) || 'Data gagal disimpan.');
     }
 
     function apply(d) {
+        last = d || {};
+
         fields().forEach(function (el) {
-            el.value = d[el.id] || '';
+            el.value = d[el.id] == null ? '' : d[el.id];
             el.classList.remove('bad');
         });
+
         f.querySelectorAll('input[name="gender"]').forEach(function (r) {
             r.checked = d.gender === r.value;
         });
-        state.faskes = d.faskes !== false;
-        state.photo = d.photo || '';
+
+        state.faskes = d.faskes_terpilih === true;
+        state.photo = d.photo_url || '';
         showFaskes();
         showPhoto();
         head();
     }
 
+    function hasFaskes() {
+        return [
+            'faskes_provinsi',
+            'faskes_kantor_regional',
+            'faskes_kantor_cabang',
+            'faskes_kabupaten_kota',
+            'faskes_kode_ppk',
+            'faskes_nama_ppk',
+            'faskes_alamat_ppk',
+            'faskes_telp_ppk',
+        ].some(function (id) {
+            return document.getElementById(id).value.trim() !== '';
+        });
+    }
+
     function collect() {
         var d = {};
+
         fields().forEach(function (el) {
             d[el.id] = el.value.trim();
         });
+
         ['code_pajak', 'code_nikah', 'code_status'].forEach(function (k) {
-            d[k] = d[k].toUpperCase();
+            d[k] = (d[k] || '').toUpperCase();
         });
+
         var g = f.querySelector('input[name="gender"]:checked');
+
         d.gender = g ? g.value : '';
-        d.faskes = state.faskes;
-        d.photo = state.photo;
+        d.faskes_terpilih = state.faskes || hasFaskes();
         return d;
     }
 
     function showFaskes() {
-        fkd.hidden = !state.faskes;
-        fkn.hidden = state.faskes;
+        var show = state.faskes || editing;
+
+        fkd.hidden = !show;
+        fkn.hidden = show;
     }
 
     function showPhoto() {
@@ -140,6 +167,17 @@ function initProfilDataPribadi() {
         bar.hidden = !on;
         editBtn.hidden = on;
         phbtn.hidden = !on;
+        showFaskes();
+    }
+
+    function load() {
+        window.axios
+            .get('/api/profil/data-pribadi', { params: params })
+            .then(function (res) {
+                apply(res.data);
+                mode(false);
+            })
+            .catch(fail);
     }
 
     editBtn.onclick = function () {
@@ -148,11 +186,24 @@ function initProfilDataPribadi() {
     };
 
     document.getElementById('cancel').onclick = function () {
-        apply(read());
+        apply(last);
         mode(false);
     };
 
     fkdel.onclick = function () {
+        [
+            'faskes_provinsi',
+            'faskes_kantor_regional',
+            'faskes_kantor_cabang',
+            'faskes_kabupaten_kota',
+            'faskes_kode_ppk',
+            'faskes_nama_ppk',
+            'faskes_alamat_ppk',
+            'faskes_telp_ppk',
+        ].forEach(function (id) {
+            document.getElementById(id).value = '';
+        });
+
         state.faskes = false;
         showFaskes();
     };
@@ -169,26 +220,17 @@ function initProfilDataPribadi() {
             return;
         }
 
-        var rd = new FileReader();
+        var body = new FormData();
+        body.append('photo', file);
 
-        rd.onload = function () {
-            var im = new Image();
-
-            im.onload = function () {
-                var c = document.createElement('canvas'),
-                    s = Math.min(im.width, im.height),
-                    n = 256;
-
-                c.width = c.height = n;
-                c.getContext('2d').drawImage(im, (im.width - s) / 2, (im.height - s) / 2, s, s, 0, 0, n, n);
-                state.photo = c.toDataURL('image/jpeg', 0.85);
+        window.axios
+            .post('/api/profil/data-pribadi/photo', body, { params: params })
+            .then(function (res) {
+                state.photo = res.data.photo_url || '';
                 showPhoto();
-            };
-
-            im.src = rd.result;
-        };
-
-        rd.readAsDataURL(file);
+                say('Foto profil berhasil diperbarui.');
+            })
+            .catch(fail);
     };
 
     f.addEventListener('submit', function (e) {
@@ -218,20 +260,18 @@ function initProfilDataPribadi() {
             return;
         }
 
-        var d = collect();
-
-        write(d);
-        apply(d);
-        mode(false);
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-        say('Profil berhasil disimpan.');
-
-        // Hubungkan ke backend Anda lewat event ini:
-        document.dispatchEvent(new CustomEvent('profile-save', { detail: d }));
+        window.axios
+            .put('/api/profil/data-pribadi', collect(), { params: params })
+            .then(function (res) {
+                apply(res.data);
+                mode(false);
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                say('Profil berhasil disimpan.');
+            })
+            .catch(fail);
     });
 
-    apply(read());
-    mode(false);
+    load();
 }
 
 if (document.readyState === 'loading') {
