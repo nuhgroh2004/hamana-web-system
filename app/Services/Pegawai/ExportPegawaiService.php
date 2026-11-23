@@ -75,7 +75,9 @@ class ExportPegawaiService
      */
     private function query(array $filters): Builder
     {
-        $query = Employee::query()->with(['profile', 'educations', 'familyMembers', 'physical']);
+        $query = Employee::query()
+            ->forDataPegawai()
+            ->with(['profile', 'educations', 'familyMembers', 'physical']);
 
         $search = trim((string) ($filters['search'] ?? ''));
 
@@ -91,7 +93,9 @@ class ExportPegawaiService
         if ($status === '1') {
             $query->where('status_pegawai', Employee::STATUS_AKTIF);
         } elseif ($status === '0') {
-            $query->where('status_pegawai', Employee::STATUS_TIDAK_AKTIF);
+            $query->where(fn (Builder $query) => $query
+                ->where('status_pegawai', Employee::STATUS_TIDAK_AKTIF)
+                ->orWhereNull('status_pegawai'));
         }
 
         return $query;

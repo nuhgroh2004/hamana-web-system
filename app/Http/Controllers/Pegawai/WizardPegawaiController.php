@@ -242,22 +242,12 @@ class WizardPegawaiController extends Controller
     private function dataPribadiRules(?Employee $employee = null): array
     {
         $requiresAccount = $employee === null || $employee->user_id === null;
-        $emailRules = [
-            $requiresAccount ? 'required' : 'nullable',
-            'email',
-            'max:255',
-        ];
+        $emailRules = ['nullable', 'email', 'max:255'];
         $birthDateRules = [
-            $requiresAccount ? 'required' : 'nullable',
+            'nullable',
             'date',
             'before:today',
         ];
-
-        if ($employee?->user_id !== null) {
-            $emailRules[] = Rule::unique('users', 'email')->ignore($employee->user_id);
-        } else {
-            $emailRules[] = Rule::unique('users', 'email');
-        }
 
         if ($employee?->profile !== null) {
             $emailRules[] = Rule::unique('employee_profiles', 'email')->ignore($employee->profile->id);

@@ -6,6 +6,7 @@ use App\Models\Employee;
 use App\Models\EmployeeDocument;
 use App\Models\User;
 use App\Services\Pegawai\DeletePegawaiService;
+use App\Services\Pegawai\GetDaftarPegawaiService;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Hash;
@@ -72,6 +73,12 @@ class ProfilPegawaiApiTest extends TestCase
         $this->assertDatabaseHas('employee_profiles', [
             'departemen' => 'HRD',
             'code_grup_pajak' => 'A1',
+        ]);
+        $this->assertDatabaseHas('users', [
+            'id' => $user->id,
+            'name' => 'Karyawan Profil Baru',
+            'email' => 'profil@example.test',
+            'position' => 'Officer HRD',
         ]);
 
         $this->actingAs($user)
@@ -177,8 +184,15 @@ class ProfilPegawaiApiTest extends TestCase
                 'nik' => 'TEST.00.00.40',
                 'nama' => 'Pegawai Tanpa Data Akun',
             ])
-            ->assertStatus(422)
-            ->assertJsonValidationErrors(['email', 'tanggal_lahir']);
+            ->assertCreated()
+            ->assertJsonPath('pegawai.email', null);
+
+        $employeeWithoutEmail = Employee::query()
+            ->where('nik', 'TEST.00.00.40')
+            ->firstOrFail();
+        $userWithoutEmail = User::query()->findOrFail($employeeWithoutEmail->user_id);
+        $this->assertNull($userWithoutEmail->email);
+        $this->assertSame('karyawan', $userWithoutEmail->role);
 
         $response = $this->actingAs($admin)
             ->postJson('/api/data-pegawai', [
@@ -203,6 +217,9 @@ class ProfilPegawaiApiTest extends TestCase
             ->putJson('/api/data-pegawai/'.$employee->id, [
                 'nik' => 'TEST.00.00.04',
                 'nama' => 'Pegawai Diubah',
+                'email' => 'pegawai.diubah@example.test',
+                'tanggal_lahir' => '1991-04-20',
+                'password' => 'password-baru',
                 'jabatan' => 'Supervisor',
                 'posisi' => 'Supervisor Produksi',
                 'status' => 'Tidak Aktif',
@@ -210,6 +227,23 @@ class ProfilPegawaiApiTest extends TestCase
             ->assertOk()
             ->assertJsonPath('pegawai.nama', 'Pegawai Diubah')
             ->assertJsonPath('pegawai.aktif', false);
+
+        $employeeUser->refresh();
+        $this->assertSame('pegawai.diubah@example.test', $employeeUser->email);
+        $this->assertSame('TEST.00.00.04', $employeeUser->nik);
+        $this->assertSame('Supervisor Produksi', $employeeUser->position);
+        $this->assertFalse($employeeUser->is_active);
+        $this->assertTrue(Hash::check('password-baru', $employeeUser->password));
+
+        $storedPassword = $employeeUser->password;
+        $this->actingAs($admin)
+            ->putJson('/api/data-pegawai/'.$employee->id, [
+                'nik' => 'TEST.00.00.04',
+                'nama' => 'Pegawai Diubah Lagi',
+            ])
+            ->assertOk();
+        $employeeUser->refresh();
+        $this->assertSame($storedPassword, $employeeUser->password);
 
         $this->actingAs($admin)
             ->get('/api/data-pegawai/export')
@@ -270,6 +304,54 @@ class ProfilPegawaiApiTest extends TestCase
 
         $this->assertDatabaseMissing('employees', ['id' => $employee->id]);
         $this->assertDatabaseHas('users', ['id' => $admin->id]);
+    }
+
+    public function test_data_pegawai_counts_and_lists_exclude_employees_linked_to_admins(): void
+    {
+        $baseline = app(GetDaftarPegawaiService::class)->handle(['per_page' => 1])['counts'];
+
+        $admin = $this->makeUser(['role' => 'admin', 'nik' => 'TEST.00.00.70']);
+        Employee::query()->create([
+            'user_id' => $admin->id,
+            'nik' => 'TEST.00.00.70',
+            'nama' => 'Admin Tersembunyi',
+            'status_pegawai' => Employee::STATUS_AKTIF,
+        ]);
+
+        $worker = $this->makeUser(['role' => 'karyawan', 'nik' => 'TEST.00.00.71']);
+        Employee::query()->create([
+            'user_id' => $worker->id,
+            'nik' => 'TEST.00.00.71',
+            'nama' => 'Pegawai Terlihat',
+            'status_pegawai' => Employee::STATUS_AKTIF,
+        ]);
+        Employee::query()->create([
+            'nik' => 'TEST.00.00.72',
+            'nama' => 'Pegawai Tanpa User',
+            'status_pegawai' => Employee::STATUS_TIDAK_AKTIF,
+        ]);
+
+        $result = app(GetDaftarPegawaiService::class)->handle([
+            'per_page' => 100,
+            'search' => 'TEST.00.00.7',
+        ]);
+
+        $this->assertSame([
+            'aktif' => $baseline['aktif'] + 1,
+            'tidak_aktif' => $baseline['tidak_aktif'] + 1,
+            'semua' => $baseline['semua'] + 2,
+        ], $result['counts']);
+        $this->assertEqualsCanonicalizing(
+            ['TEST.00.00.71', 'TEST.00.00.72'],
+            array_column($result['data'], 'nik'),
+        );
+
+        $inactive = app(GetDaftarPegawaiService::class)->handle([
+            'per_page' => 100,
+            'status' => '0',
+            'search' => 'TEST.00.00.7',
+        ]);
+        $this->assertSame(['TEST.00.00.72'], array_column($inactive['data'], 'nik'));
     }
 
     public function test_profile_and_employee_pages_render(): void

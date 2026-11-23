@@ -27,8 +27,8 @@ class CreatePegawaiService
             ]);
 
             $employee->profile()->create([
-                'email' => mb_strtolower(trim($data['email'])),
-                'tanggal_lahir' => $data['tanggal_lahir'],
+                'email' => $this->email($data['email'] ?? null),
+                'tanggal_lahir' => $data['tanggal_lahir'] ?? null,
             ]);
 
             $status = $this->createUser->handle($employee);
@@ -54,6 +54,13 @@ class CreatePegawaiService
         $value = trim((string) $value);
 
         return $value === '' ? null : $value;
+    }
+
+    private function email(?string $value): ?string
+    {
+        $value = trim((string) $value);
+
+        return $value === '' ? null : mb_strtolower($value);
     }
 
     /**

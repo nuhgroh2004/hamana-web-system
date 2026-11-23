@@ -5,6 +5,7 @@ namespace App\Services\Pegawai;
 use App\Models\Employee;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class CreateUserFromEmployeeProfileService
 {
@@ -18,49 +19,51 @@ class CreateUserFromEmployeeProfileService
 
     public const CONFLICT = 'conflict';
 
-    public function handle(Employee $employee): string
+    public function handle(Employee $employee, ?string $password = null): string
     {
-        return DB::transaction(function () use ($employee) {
+        return DB::transaction(function () use ($employee, $password) {
             $employee = Employee::query()
-                ->with('profile')
+                ->with(['profile', 'user'])
                 ->lockForUpdate()
                 ->findOrFail($employee->id);
 
-            if ($employee->user_id !== null) {
-                if ($employee->profile !== null) {
-                    $profileEmail = trim((string) $employee->profile->email);
-
-                    if (filter_var($profileEmail, FILTER_VALIDATE_EMAIL)) {
-                        $normalizedEmail = mb_strtolower($profileEmail);
-
-                        if ($employee->profile->email !== $normalizedEmail) {
-                            $employee->profile->email = $normalizedEmail;
-                            $employee->profile->save();
-                        }
-                    }
-                }
-
-                return self::ALREADY_LINKED;
-            }
-
             $profile = $employee->profile;
-            $email = mb_strtolower(trim((string) $profile?->email));
             $name = trim($employee->nama);
             $firstName = preg_split('/\s+/u', $name, -1, PREG_SPLIT_NO_EMPTY)[0] ?? '';
+            $profileEmail = trim((string) $profile?->email);
+            $email = filter_var($profileEmail, FILTER_VALIDATE_EMAIL)
+                ? mb_strtolower($profileEmail)
+                : null;
 
-            if (
-                $profile?->tanggal_lahir === null
-                || ! filter_var($email, FILTER_VALIDATE_EMAIL)
-                || $firstName === ''
-            ) {
+            if ($firstName === '') {
                 return self::INCOMPLETE;
             }
 
-            $byEmail = User::query()->whereRaw('lower(email) = ?', [$email])->first();
+            $byEmail = $email === null
+                ? null
+                : User::query()->whereRaw('lower(email) = ?', [$email])->first();
             $byNik = User::query()->where('nik', $employee->nik)->first();
 
             if ($byEmail && $byNik && $byEmail->id !== $byNik->id) {
                 return self::CONFLICT;
+            }
+
+            if ($employee->user_id !== null) {
+                $user = $employee->user;
+
+                if (
+                    ! $user
+                    || $user->role !== User::ROLE_KARYAWAN
+                    || ($byEmail && $byEmail->id !== $user->id)
+                    || ($byNik && $byNik->id !== $user->id)
+                ) {
+                    return self::CONFLICT;
+                }
+
+                $this->syncUser($user, $employee, $email, $name, $password);
+                $this->normalizeProfileEmail($profile, $email);
+
+                return self::ALREADY_LINKED;
             }
 
             $existingUser = $byEmail ?? $byNik;
@@ -73,14 +76,8 @@ class CreateUserFromEmployeeProfileService
                     return self::CONFLICT;
                 }
 
-                $existingUser->update([
-                    'nik' => $employee->nik,
-                    'name' => $name,
-                    'email' => $email,
-                    'position' => $employee->posisi ?: $employee->jabatan,
-                ]);
-                $profile->email = $email;
-                $profile->save();
+                $this->syncUser($existingUser, $employee, $email, $name, $password);
+                $this->normalizeProfileEmail($profile, $email);
                 $employee->user_id = $existingUser->id;
                 $employee->save();
 
@@ -91,20 +88,55 @@ class CreateUserFromEmployeeProfileService
                 'nik' => $employee->nik,
                 'name' => $name,
                 'email' => $email,
-                'password' => mb_strtolower($firstName).$profile->tanggal_lahir->format('dm'),
+                'password' => $password
+                    ?? ($profile?->tanggal_lahir
+                        ? mb_strtolower($firstName).$profile->tanggal_lahir->format('dm')
+                        : Str::random(48)),
                 'role' => User::ROLE_KARYAWAN,
                 'position' => $employee->posisi ?: $employee->jabatan,
                 'permissions' => null,
                 'is_active' => $employee->status_pegawai !== Employee::STATUS_TIDAK_AKTIF,
-                'email_verified_at' => now(),
             ]);
 
-            $profile->email = $email;
-            $profile->save();
+            $this->normalizeProfileEmail($profile, $email);
             $employee->user_id = $user->id;
             $employee->save();
 
             return self::CREATED;
         });
+    }
+
+    /**
+     * Synchronize login-facing employee data without changing permissions.
+     */
+    private function syncUser(
+        User $user,
+        Employee $employee,
+        ?string $email,
+        string $name,
+        ?string $password,
+    ): void {
+        $user->nik = $employee->nik;
+        $user->name = $name;
+        $user->email = $email;
+        $user->position = $employee->posisi ?: $employee->jabatan;
+        $user->is_active = $employee->status_pegawai !== Employee::STATUS_TIDAK_AKTIF;
+
+        if ($password !== null) {
+            $user->password = $password;
+        }
+
+        $user->save();
+    }
+
+    /**
+     * Normalize valid profile email addresses without discarding invalid source data.
+     */
+    private function normalizeProfileEmail(?\App\Models\EmployeeProfile $profile, ?string $email): void
+    {
+        if ($profile !== null && $email !== null && $profile->email !== $email) {
+            $profile->email = $email;
+            $profile->save();
+        }
     }
 }

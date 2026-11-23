@@ -23,21 +23,16 @@ class ProvisionEmployeeUsers extends Command
             'email_missing' => 0,
             'email_invalid' => 0,
             'birth_date_missing' => 0,
-            'name_missing' => 0,
         ];
 
         Employee::query()
+            ->forDataPegawai()
             ->with('profile')
-            ->whereHas('profile')
             ->orderBy('id')
             ->chunkById(100, function ($employees) use ($createUser, &$counts) {
                 foreach ($employees as $employee) {
                     $status = $createUser->handle($employee);
                     $counts[$status]++;
-
-                    if ($status !== CreateUserFromEmployeeProfileService::INCOMPLETE) {
-                        continue;
-                    }
 
                     $email = trim((string) $employee->profile?->email);
 
@@ -50,10 +45,6 @@ class ProvisionEmployeeUsers extends Command
                     if ($employee->profile?->tanggal_lahir === null) {
                         $counts['birth_date_missing']++;
                     }
-
-                    if (trim((string) $employee->nama) === '') {
-                        $counts['name_missing']++;
-                    }
                 }
             });
 
@@ -63,11 +54,10 @@ class ProvisionEmployeeUsers extends Command
                 ['Akun dibuat', $counts[CreateUserFromEmployeeProfileService::CREATED]],
                 ['Akun lama dihubungkan', $counts[CreateUserFromEmployeeProfileService::LINKED]],
                 ['Sudah terhubung', $counts[CreateUserFromEmployeeProfileService::ALREADY_LINKED]],
-                ['Profil belum lengkap', $counts[CreateUserFromEmployeeProfileService::INCOMPLETE]],
-                ['Email kosong', $counts['email_missing']],
-                ['Email tidak valid', $counts['email_invalid']],
+                ['Nama pegawai kosong', $counts[CreateUserFromEmployeeProfileService::INCOMPLETE]],
+                ['Email kosong (tetap dibuat)', $counts['email_missing']],
+                ['Email tidak valid (login nonaktif)', $counts['email_invalid']],
                 ['Tanggal lahir kosong', $counts['birth_date_missing']],
-                ['Nama kosong', $counts['name_missing']],
                 ['Konflik email/NIK', $counts[CreateUserFromEmployeeProfileService::CONFLICT]],
             ],
         );

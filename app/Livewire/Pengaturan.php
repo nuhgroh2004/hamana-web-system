@@ -3,8 +3,6 @@
 namespace App\Livewire;
 
 use App\Models\User;
-use App\Services\Access\SetUserCustomAccessService;
-use App\Services\Access\SetUserDefaultAccessService;
 use App\Services\Access\ToggleUserModuleAccessService;
 use App\Services\Access\ToggleUserModuleGroupAccessService;
 use App\Services\Employee\SyncEmployeeFromUserService;
@@ -298,32 +296,6 @@ class Pengaturan extends Component
             $user,
             $slug,
         );
-    }
-
-    /**
-     * Restore the default permissions (karyawan baseline).
-     */
-    public function useDefaultAccess(int $userId): void
-    {
-        $this->authorizeAdmin();
-
-        $user = User::findOrFail($userId);
-
-        app(SetUserDefaultAccessService::class)->handle($user);
-    }
-
-    /**
-     * Switch the user to a custom permission set.
-     *
-     * Starts from the current permissions so the switches do not change.
-     */
-    public function useCustomAccess(int $userId): void
-    {
-        $this->authorizeAdmin();
-
-        $user = User::findOrFail($userId);
-
-        app(SetUserCustomAccessService::class)->handle($user);
     }
 
     /**

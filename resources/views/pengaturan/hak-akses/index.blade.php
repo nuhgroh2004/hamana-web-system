@@ -193,6 +193,20 @@
                             </div>
 
                             <div class="ha-access-actions">
+                                @if ($locked)
+                                    <div class="ha-modes" role="group" aria-label="Status akses admin">
+                                        <div class="ha-mode on" aria-current="true">
+                                            <span class="ha-mode-text">
+                                                <b>Admin</b>
+                                                <small>Akses penuh</small>
+                                            </span>
+                                            <span class="ha-mode-mark" aria-hidden="true">
+                                                <x-master-komponen::icon name="check" />
+                                            </span>
+                                        </div>
+                                    </div>
+                                @endif
+
                                 @if (! $canManage)
                                     <span class="ha-bulk">
                                         <x-master-komponen::icon name="shield" />
@@ -201,12 +215,9 @@
                                 @endif
 
                                 @unless ($locked)
-                                    <div class="ha-modes" role="group" aria-label="Mode hak akses">
-                                        <button type="button"
-                                                class="ha-mode{{ $selectedUser->permissions === null ? ' on' : '' }}"
-                                                aria-pressed="{{ $selectedUser->permissions === null ? 'true' : 'false' }}"
-                                                @disabled(! $canManage)
-                                                wire:click="useDefaultAccess({{ $selectedUser->id }})">
+                                    <div class="ha-modes" role="group" aria-label="Status mode hak akses">
+                                        <div class="ha-mode{{ $selectedUser->permissions === null ? ' on' : '' }}"
+                                             @if ($selectedUser->permissions === null) aria-current="true" @endif>
                                             <span class="ha-mode-text">
                                                 <b>Default User</b>
                                                 <small>Akses bawaan</small>
@@ -214,13 +225,10 @@
                                             <span class="ha-mode-mark" aria-hidden="true">
                                                 <x-master-komponen::icon name="check" />
                                             </span>
-                                        </button>
+                                        </div>
 
-                                        <button type="button"
-                                                class="ha-mode{{ $selectedUser->permissions !== null ? ' on' : '' }}"
-                                                aria-pressed="{{ $selectedUser->permissions !== null ? 'true' : 'false' }}"
-                                                @disabled(! $canManage)
-                                                wire:click="useCustomAccess({{ $selectedUser->id }})">
+                                        <div class="ha-mode{{ $selectedUser->permissions !== null ? ' on' : '' }}"
+                                             @if ($selectedUser->permissions !== null) aria-current="true" @endif>
                                             <span class="ha-mode-text">
                                                 <b>Custom User</b>
                                                 <small>Atur sendiri</small>
@@ -228,7 +236,7 @@
                                             <span class="ha-mode-mark" aria-hidden="true">
                                                 <x-master-komponen::icon name="check" />
                                             </span>
-                                        </button>
+                                        </div>
                                     </div>
                                 @endunless
                             </div>

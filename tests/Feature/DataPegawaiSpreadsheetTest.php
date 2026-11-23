@@ -18,7 +18,7 @@ class DataPegawaiSpreadsheetTest extends TestCase
 {
     use DatabaseTransactions;
 
-    public function test_new_import_rows_require_email_and_birth_date(): void
+    public function test_new_import_rows_without_email_or_birth_date_still_get_user_accounts(): void
     {
         $admin = User::factory()->create(['role' => 'admin', 'nik' => 'TEST.XLSX.INVALID']);
 
@@ -29,10 +29,17 @@ class DataPegawaiSpreadsheetTest extends TestCase
                     "NIK,Nama,Email,Tanggal Lahir\nTEST.XLSX.INVALID.01,Pegawai Baru,,\n",
                 ),
             ], ['Accept' => 'application/json'])
-            ->assertStatus(422)
-            ->assertJsonValidationErrors('file');
+            ->assertOk()
+            ->assertJsonPath('hasil.ditambah', 1)
+            ->assertJsonPath('hasil.akun_dibuat', 1);
 
-        $this->assertDatabaseMissing('employees', ['nik' => 'TEST.XLSX.INVALID.01']);
+        $employee = Employee::query()
+            ->where('nik', 'TEST.XLSX.INVALID.01')
+            ->firstOrFail();
+        $user = User::query()->findOrFail($employee->user_id);
+        $this->assertSame('karyawan', $user->role);
+        $this->assertNull($user->email);
+        $this->assertNull($employee->profile?->tanggal_lahir);
     }
 
     public function test_admin_can_import_full_xlsx_and_export_it_again(): void

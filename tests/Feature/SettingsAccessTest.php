@@ -171,6 +171,7 @@ class SettingsAccessTest extends TestCase
         Livewire::actingAs($user)
             ->test(Pengaturan::class, ['panel' => 'hak-akses'])
             ->assertSee('Hanya admin yang dapat mengubah')
+            ->assertSeeHtml('disabled')
             ->assertDontSee('Tambah Pengguna')
             ->assertDontSee('Nonaktifkan semua');
     }
@@ -193,7 +194,7 @@ class SettingsAccessTest extends TestCase
             ->assertSee('Daftar Hitam Presensi');
     }
 
-    public function test_access_mode_cards_switch_between_default_and_custom(): void
+    public function test_access_mode_cards_are_read_only_status_labels(): void
     {
         $admin = $this->makeUser([
             'email' => 'settings-mode@hamana.co.id',
@@ -210,24 +211,18 @@ class SettingsAccessTest extends TestCase
         $component = Livewire::actingAs($admin)
             ->test(Pengaturan::class, ['panel' => 'hak-akses'])
             ->call('selectUser', $user->id)
-            ->assertSeeHtml('class="ha-mode on"')
-            ->assertSeeHtml('type="button"')
-            ->assertSeeHtml('wire:click="useDefaultAccess('.$user->id.')"')
-            ->assertSeeHtml('wire:click="useCustomAccess('.$user->id.')"')
+            ->assertSeeHtml('<div class="ha-mode on"')
+            ->assertSeeHtml('<div class="ha-mode"')
+            ->assertDontSeeHtml('<button class="ha-mode')
+            ->assertDontSeeHtml('wire:click="useDefaultAccess(')
+            ->assertDontSeeHtml('wire:click="useCustomAccess(')
             ->assertSee('Default User')
             ->assertDontSeeHtml('type="radio"');
 
-        $component->call('useCustomAccess', $user->id);
-
+        $component->call('toggleAccess', $user->id, 'data-pegawai')
+            ->assertSeeHtml('<div class="ha-mode on"')
+            ->assertSee('Custom User');
         $this->assertNotNull($user->fresh()->permissions);
-        $this->assertSame($user->permissionList(), $user->fresh()->permissionList());
-        $component->assertSeeHtml('class="ha-mode on"');
-        $component->assertSee('Custom User');
-
-        $component->call('useDefaultAccess', $user->id);
-
-        $this->assertNull($user->fresh()->permissions);
-        $component->assertSeeHtml('class="ha-mode on"');
     }
 
     public function test_access_returns_to_default_when_toggles_match_the_baseline(): void

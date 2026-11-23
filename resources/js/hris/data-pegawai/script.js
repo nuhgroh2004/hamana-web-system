@@ -142,6 +142,7 @@ function initDataPegawai() {
             '<circle cx="6" cy="5" r="2.5"/><path d="M1.5 14c0-3 2-4.5 4.5-4.5s4.5 1.5 4.5 4.5zM10.5 3a2.5 2.5 0 010 4.5M12 9.8c1.6.4 2.5 1.7 2.5 4.2"/>',
         fisik: '<circle cx="8" cy="3" r="1.5"/><path d="M3 6h10M8 6v4M5 14l3-4 3 4"/>',
         file: '<path d="M1.5 3.5h4l1.5 1.5h7.5v8h-13z"/>',
+        edit: '<path d="M2.5 11.5V14h2.5L13.8 5.2l-2.5-2.5zM9.8 4.2l2.5 2.5"/>',
         hapus: '<path d="M2.5 4.5h11M6.5 4.5V2.5h3v2M4.5 4.5l.6 9h5.8l.6-9M6.5 7v4M9.5 7v4"/>',
     };
     var ITEMS = [
@@ -175,6 +176,11 @@ function initDataPegawai() {
                     '</a>'
                 );
             }).join('') +
+            '<button type="button" role="menuitem" data-aksi="edit" data-nik="' +
+            esc(nik) +
+            '"><svg class="i" viewBox="0 0 16 16">' +
+            IC.edit +
+            '</svg>Edit Data Pegawai</button>' +
             '<div class="sep" role="separator"></div>' +
             '<button type="button" role="menuitem" class="dg" data-aksi="hapus" data-nik="' +
             esc(nik) +
@@ -196,6 +202,68 @@ function initDataPegawai() {
                 say('Pegawai ' + p.nama + ' berhasil dihapus.');
             })
             .catch(fail);
+    }
+
+    function editEmployee(p) {
+        var field = function (id, label, value, type, hint) {
+            return (
+                '<div class="f"><label for="employee-' +
+                id +
+                '">' +
+                esc(label) +
+                '</label><input class="fld" id="employee-' +
+                id +
+                '" type="' +
+                type +
+                '" value="' +
+                esc(value) +
+                '">' +
+                (hint ? '<p>' + esc(hint) + '</p>' : '') +
+                '</div>'
+            );
+        };
+        var body =
+            field('nik', 'NIK', p.nik || '', 'text') +
+            field('nama', 'Nama Lengkap', p.nama || '', 'text') +
+            field('email', 'Email untuk login (boleh kosong)', p.email || '', 'email') +
+            field('tanggal-lahir', 'Tanggal Lahir (boleh kosong)', p.tanggal_lahir || '', 'date') +
+            field('password', 'Password Baru (opsional)', '', 'password', 'Kosongkan jika tidak ingin mengubah password.') +
+            field('jabatan', 'Jabatan', p.jabatan || '', 'text') +
+            field('posisi', 'Posisi', p.posisi || '', 'text') +
+            '<div class="f"><label for="employee-status">Status Pegawai</label><select class="fld" id="employee-status"><option value="Aktif"' +
+            (p.status === 'Tidak Aktif' ? '' : ' selected') +
+            '>Aktif</option><option value="Tidak Aktif"' +
+            (p.status === 'Tidak Aktif' ? ' selected' : '') +
+            '>Tidak Aktif</option></select></div>';
+
+        open(
+            'Edit Data Pegawai',
+            body,
+            '<button type="button" class="btn" data-close>Batal</button><button type="button" class="btn go" id="save-employee">Simpan</button>',
+        );
+
+        document.getElementById('save-employee').onclick = function () {
+            var password = document.getElementById('employee-password').value;
+            var data = {
+                nik: document.getElementById('employee-nik').value.trim(),
+                nama: document.getElementById('employee-nama').value.trim(),
+                email: document.getElementById('employee-email').value.trim() || null,
+                tanggal_lahir: document.getElementById('employee-tanggal-lahir').value || null,
+                password: password || null,
+                jabatan: document.getElementById('employee-jabatan').value.trim() || null,
+                posisi: document.getElementById('employee-posisi').value.trim() || null,
+                status: document.getElementById('employee-status').value,
+            };
+
+            window.axios
+                .put('/api/data-pegawai/' + p.id, data)
+                .then(function () {
+                    close();
+                    say('Data pegawai dan akun pengguna berhasil disinkronkan.');
+                    return load();
+                })
+                .catch(fail);
+        };
     }
 
     function openDD(btn) {
@@ -268,6 +336,11 @@ function initDataPegawai() {
 
             if (p && a.dataset.aksi === 'hapus') {
                 deleteEmployee(p);
+                return;
+            }
+
+            if (p && a.dataset.aksi === 'edit') {
+                editEmployee(p);
                 return;
             }
 
@@ -483,8 +556,8 @@ function initDataPegawai() {
     document.getElementById('imp').onclick = function () {
         open(
             'Import Data Pegawai',
-            '<p>Unggah file Excel <b>.xlsx</b> (atau CSV) sesuai template. Baris baru wajib memiliki NIK, Nama Lengkap, Email, dan Tanggal Lahir. Baris dengan NIK yang sudah ada akan diperbarui, dan baris tanpa NIK atau Nama Lengkap dilewati.</p>' +
-                '<p class="hint">Email digunakan untuk login. Password awal: nama depan (huruf kecil) + tanggal lahir (DDMM).</p>' +
+            '<p>Unggah file Excel <b>.xlsx</b> (atau CSV) sesuai template. Baris baru wajib memiliki NIK dan Nama Lengkap; Email dan Tanggal Lahir boleh kosong. Baris dengan NIK yang sudah ada akan diperbarui, dan baris tanpa NIK atau Nama Lengkap dilewati.</p>' +
+                '<p class="hint">Email kosong membuat akun tidak bisa login. Jika tanggal lahir tersedia, password awal adalah nama depan (huruf kecil) + tanggal lahir (DDMM); jika tidak, atur password melalui aksi Edit.</p>' +
                 '<p class="hint">Template memuat seluruh kolom data pegawai, pendidikan, keluarga, dan ciri fisik.</p>' +
                 '<input type="file" id="i-file" accept=".xlsx,.csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,text/csv" hidden>',
             '<button type="button" class="btn" id="i-tpl" style="margin-right:auto">Unduh template XLSX</button><button type="button" class="btn" data-close>Batal</button><button type="button" class="btn go" id="i-pick">Pilih file Excel</button>',

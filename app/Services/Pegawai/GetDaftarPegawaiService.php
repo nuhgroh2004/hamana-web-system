@@ -16,9 +16,14 @@ class GetDaftarPegawaiService
         $page = max(1, (int) ($filters['page'] ?? 1));
 
         $counts = [
-            'aktif' => Employee::query()->where('status_pegawai', Employee::STATUS_AKTIF)->count(),
-            'tidak_aktif' => Employee::query()->where('status_pegawai', Employee::STATUS_TIDAK_AKTIF)->count(),
-            'semua' => Employee::query()->count(),
+            'aktif' => Employee::query()->forDataPegawai()->where('status_pegawai', Employee::STATUS_AKTIF)->count(),
+            'tidak_aktif' => Employee::query()
+                ->forDataPegawai()
+                ->where(fn (Builder $query) => $query
+                    ->where('status_pegawai', '!=', Employee::STATUS_AKTIF)
+                    ->orWhereNull('status_pegawai'))
+                ->count(),
+            'semua' => Employee::query()->forDataPegawai()->count(),
         ];
 
         $paginator = $this->query($filters)
@@ -33,6 +38,8 @@ class GetDaftarPegawaiService
                     'nama' => $employee->nama,
                     'jabatan' => $employee->jabatan,
                     'posisi' => $employee->posisi,
+                    'email' => $employee->profile?->email,
+                    'tanggal_lahir' => $employee->profile?->tanggal_lahir?->format('Y-m-d'),
                     'aktif' => $employee->isAktif(),
                     'status' => $employee->status_pegawai,
                 ])
@@ -54,7 +61,7 @@ class GetDaftarPegawaiService
      */
     private function query(array $filters): Builder
     {
-        $query = Employee::query();
+        $query = Employee::query()->forDataPegawai()->with('profile');
 
         $search = trim((string) ($filters['search'] ?? ''));
 
@@ -70,7 +77,9 @@ class GetDaftarPegawaiService
         if ($status === '1') {
             $query->where('status_pegawai', Employee::STATUS_AKTIF);
         } elseif ($status === '0') {
-            $query->where('status_pegawai', Employee::STATUS_TIDAK_AKTIF);
+            $query->where(fn (Builder $query) => $query
+                ->where('status_pegawai', Employee::STATUS_TIDAK_AKTIF)
+                ->orWhereNull('status_pegawai'));
         }
 
         return $query;

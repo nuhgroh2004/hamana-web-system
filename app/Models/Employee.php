@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
@@ -34,6 +35,14 @@ class Employee extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function scopeForDataPegawai(Builder $query): Builder
+    {
+        return $query->where(function (Builder $query) {
+            $query->whereNull('user_id')
+                ->orWhereHas('user', fn (Builder $userQuery) => $userQuery->where('role', User::ROLE_KARYAWAN));
+        });
     }
 
     public function profile(): HasOne

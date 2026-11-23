@@ -4,14 +4,18 @@ namespace App\Http\Controllers\Profile;
 
 use App\Http\Controllers\Controller;
 use App\Models\Employee;
+use App\Models\User;
 use App\Services\Employee\AuthorizeEmployeeAccessService;
 use App\Services\Employee\ResolveEmployeeService;
+use App\Services\Pegawai\CreateUserFromEmployeeProfileService;
 use App\Services\Profile\GetDataPribadiService;
 use App\Services\Profile\GetFotoProfilService;
 use App\Services\Profile\SaveDataPribadiService;
 use App\Services\Profile\SaveFotoProfilService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\ValidationException;
 
 class DataPribadiController extends Controller
 {
@@ -29,6 +33,7 @@ class DataPribadiController extends Controller
         Request $request,
         ResolveEmployeeService $resolveEmployee,
         SaveDataPribadiService $saveDataPribadi,
+        CreateUserFromEmployeeProfileService $syncUser,
         GetDataPribadiService $getDataPribadi,
     ) {
         $employee = $resolveEmployee->handle($request->user(), $request->query('nik'));
@@ -82,7 +87,21 @@ class DataPribadiController extends Controller
             'twitter' => ['nullable', 'string', 'max:255'],
         ]);
 
-        $employee = $saveDataPribadi->handle($employee, $data);
+        $employee = DB::transaction(function () use ($employee, $data, $saveDataPribadi, $syncUser) {
+            $employee = $saveDataPribadi->handle($employee, $data);
+
+            if ($employee->user?->role === User::ROLE_KARYAWAN) {
+                $status = $syncUser->handle($employee);
+
+                if ($status !== CreateUserFromEmployeeProfileService::ALREADY_LINKED) {
+                    throw ValidationException::withMessages([
+                        'email' => 'Email/NIK pegawai sudah digunakan akun lain.',
+                    ]);
+                }
+            }
+
+            return $employee;
+        });
 
         return response()->json($getDataPribadi->handle($employee));
     }

@@ -94,6 +94,10 @@ class ImportPegawaiService
         $employee = Employee::query()->where('nik', $nik)->first();
         $created = $employee === null;
 
+        if ($employee && $employee->user_id !== null && $employee->user?->role !== \App\Models\User::ROLE_KARYAWAN) {
+            return null;
+        }
+
         if ($created) {
             $employee = new Employee([
                 'nik' => $nik,
@@ -141,11 +145,9 @@ class ImportPegawaiService
         } else {
             $accountCounts['akun_dilewati']++;
 
-            if ($created) {
-                throw ValidationException::withMessages([
-                    'file' => "Pegawai dengan NIK {$nik} tidak dibuat karena email atau tanggal lahir tidak valid, atau email/NIK telah digunakan akun lain.",
-                ]);
-            }
+            throw ValidationException::withMessages([
+                'file' => "Pegawai dengan NIK {$nik} tidak dapat disinkronkan karena nama kosong atau email/NIK telah digunakan akun lain.",
+            ]);
         }
 
         return $created ? 'added' : 'updated';

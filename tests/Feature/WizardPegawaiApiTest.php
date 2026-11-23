@@ -233,19 +233,28 @@ class WizardPegawaiApiTest extends TestCase
             ->assertJsonValidationErrors('nomor.KK');
     }
 
-    public function test_wizard_requires_account_details_and_allows_empty_optional_steps(): void
+    public function test_wizard_requires_name_and_nik_but_allows_empty_optional_account_details(): void
     {
         $admin = $this->makeAdmin();
 
         $this->actingAs($admin)
             ->postJson('/api/data-pegawai/wizard', [])
             ->assertStatus(422)
-            ->assertJsonValidationErrors(['nik', 'nama', 'tgl_lahir', 'email']);
+            ->assertJsonValidationErrors(['nik', 'nama']);
 
+        $data = $this->dataPribadi();
+        $data['email'] = '';
+        $data['tgl_lahir'] = '';
         $employeeId = $this->actingAs($admin)
-            ->postJson('/api/data-pegawai/wizard', $this->dataPribadi())
+            ->postJson('/api/data-pegawai/wizard', $data)
             ->assertCreated()
             ->json('employee.id');
+
+        $employee = Employee::query()->findOrFail($employeeId);
+        $user = User::query()->findOrFail($employee->user_id);
+        $this->assertNull($user->email);
+        $this->assertNull($employee->profile?->tanggal_lahir);
+        $this->assertSame('karyawan', $user->role);
 
         $this->actingAs($admin)
             ->putJson('/api/data-pegawai/wizard/'.$employeeId.'/pendidikan', ['items' => []])

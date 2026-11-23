@@ -30,8 +30,8 @@ class DataPegawaiController extends Controller
         $data = $request->validate([
             'nik' => ['required', 'string', 'max:30', 'unique:employees,nik'],
             'nama' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'email', 'max:255', 'unique:users,email', 'unique:employee_profiles,email'],
-            'tanggal_lahir' => ['required', 'date', 'before:today'],
+            'email' => ['nullable', 'email', 'max:255', Rule::unique('employee_profiles', 'email')],
+            'tanggal_lahir' => ['nullable', 'date', 'before:today'],
             'jabatan' => ['nullable', 'string', 'max:255'],
             'posisi' => ['nullable', 'string', 'max:255'],
             'status' => ['nullable', 'string', 'in:Aktif,Tidak Aktif'],
@@ -47,6 +47,15 @@ class DataPegawaiController extends Controller
         Employee $employee,
         UpdatePegawaiService $updatePegawai,
     ) {
+        $profile = $employee->profile;
+        $emailRules = ['nullable', 'email', 'max:255'];
+
+        if ($profile !== null) {
+            $emailRules[] = Rule::unique('employee_profiles', 'email')->ignore($profile->id);
+        } else {
+            $emailRules[] = Rule::unique('employee_profiles', 'email');
+        }
+
         $data = $request->validate([
             'nik' => [
                 'required',
@@ -55,6 +64,9 @@ class DataPegawaiController extends Controller
                 Rule::unique('employees', 'nik')->ignore($employee->id),
             ],
             'nama' => ['required', 'string', 'max:255'],
+            'email' => $emailRules,
+            'tanggal_lahir' => ['nullable', 'date', 'before:today'],
+            'password' => ['nullable', 'string', 'min:6'],
             'jabatan' => ['nullable', 'string', 'max:255'],
             'posisi' => ['nullable', 'string', 'max:255'],
             'status' => ['nullable', 'string', 'in:Aktif,Tidak Aktif'],
@@ -117,6 +129,8 @@ class DataPegawaiController extends Controller
             'id' => $employee->id,
             'nik' => $employee->nik,
             'nama' => $employee->nama,
+            'email' => $employee->profile?->email,
+            'tanggal_lahir' => $employee->profile?->tanggal_lahir?->format('Y-m-d'),
             'jabatan' => $employee->jabatan,
             'posisi' => $employee->posisi,
             'aktif' => $employee->isAktif(),
