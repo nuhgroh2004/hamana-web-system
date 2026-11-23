@@ -25,6 +25,8 @@ Route::get('/login', Login::class)->middleware('guest')->name('login');
 Route::middleware('auth')->group(function () {
     Route::redirect('/', '/dashboard');
 
+    Route::get('/csrf-token', fn () => response()->json(['token' => csrf_token()]))->name('csrf.token');
+
     Route::get('/dashboard', Dashboard::class)->name('dashboard');
 
     Route::get('/pengaturan', Pengaturan::class)->name('pengaturan');

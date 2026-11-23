@@ -25,4 +25,16 @@ class AuthTest extends TestCase
         Livewire::test(Login::class)
             ->assertSet('remember', true);
     }
+
+    public function test_csrf_token_endpoint_returns_current_session_token(): void
+    {
+        $user = User::factory()->make();
+
+        $response = $this->actingAs($user)->getJson('/csrf-token');
+
+        $response->assertOk()
+            ->assertJsonStructure(['token']);
+
+        $this->assertSame(session()->token(), $response->json('token'));
+    }
 }
