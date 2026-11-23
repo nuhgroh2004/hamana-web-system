@@ -1,5 +1,5 @@
 @php
-    $roleLabels = ['admin' => 'Admin', 'karyawan' => 'Karyawan'];
+    $roleLabels = ['admin' => 'Admin', 'karyawan' => 'Karyawan', 'satpam' => 'Satpam'];
     $initial = fn ($name) => mb_strtoupper(mb_substr(trim((string) $name), 0, 1));
     $allowed = $selectedUser ? $selectedUser->permissionList() : [];
     $selectedCount = count($allowed);
@@ -56,6 +56,7 @@
                         Role
                         <select id="user-role" wire:model="formRole">
                             <option value="karyawan">Karyawan</option>
+                            <option value="satpam">Satpam</option>
                             <option value="admin">Admin</option>
                         </select>
                         @error('formRole') <span class="err-line">{{ $message }}</span> @enderror
@@ -110,6 +111,13 @@
                             wire:click="setRoleFilter('karyawan')"
                             aria-selected="{{ $roleFilter === 'karyawan' ? 'true' : 'false' }}">
                         Karyawan
+                    </button>
+                    <button type="button"
+                            role="tab"
+                            class="ha-tab{{ $roleFilter === 'satpam' ? ' on' : '' }}"
+                            wire:click="setRoleFilter('satpam')"
+                            aria-selected="{{ $roleFilter === 'satpam' ? 'true' : 'false' }}">
+                        Satpam
                     </button>
                 </div>
             </div>

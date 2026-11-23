@@ -15,6 +15,12 @@ class User extends Authenticatable
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
 
+    public const ROLE_ADMIN = 'admin';
+
+    public const ROLE_KARYAWAN = 'karyawan';
+
+    public const ROLE_SATPAM = 'satpam';
+
     /**
      * Default page access for a karyawan account.
      *
@@ -43,6 +49,18 @@ class User extends Authenticatable
     ];
 
     /**
+     * Default page access for a satpam account.
+     *
+     * @var list<string>
+     */
+    public const SATPAM_PERMISSIONS = [
+        'dashboard',
+        'form-absensi',
+        'saran',
+        'ubah-password',
+    ];
+
+    /**
      * The attributes that are mass assignable.
      *
      * @var list<string>
@@ -53,6 +71,7 @@ class User extends Authenticatable
         'email',
         'password',
         'role',
+        'is_active',
         'position',
         'permissions',
         'email_verified_at',
@@ -79,12 +98,18 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'permissions' => 'array',
+            'is_active' => 'boolean',
         ];
     }
 
     public function isAdmin(): bool
     {
-        return $this->role === 'admin';
+        return $this->role === self::ROLE_ADMIN;
+    }
+
+    public function isActive(): bool
+    {
+        return $this->is_active !== false;
     }
 
     public function employee(): HasOne
@@ -105,9 +130,13 @@ class User extends Authenticatable
             return $all;
         }
 
+        $defaults = $this->role === self::ROLE_SATPAM
+            ? static::SATPAM_PERMISSIONS
+            : static::DEFAULT_PERMISSIONS;
+
         $permissions = is_array($this->permissions)
             ? $this->permissions
-            : static::DEFAULT_PERMISSIONS;
+            : $defaults;
 
         return array_values(array_intersect($permissions, $all));
     }

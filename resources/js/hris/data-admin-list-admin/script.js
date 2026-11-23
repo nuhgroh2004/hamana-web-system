@@ -9,38 +9,14 @@ function initDataAdminListAdmin() {
 
     initializedRoots.add(root);
 
-    // Data contoh (ganti dengan data dari server)
-    var SEED = [
-        { id: 'a1', username: 'admin.utama', nama: 'Budi Santoso', nik: '1026.29.01.04', akun: true, kary: true },
-        { id: 'a2', username: 'siti.rahma', nama: 'Siti Rahmawati', nik: '1026.29.01.05', akun: true, kary: true },
-        { id: 'a3', username: 'andi.pratama', nama: 'Andi Pratama', nik: '1027.30.02.11', akun: false, kary: false },
-    ];
-    var KEY = 'user-admin-v2',
-        SIZE = 10,
-        page = 1,
+    var SIZE = 10,
         q = '',
-        uid = Date.now(),
-        all = SEED,
+        page = 1,
+        all = [],
+        meta = {},
+        searchTimer = null,
         curBtn = null,
         curId = null;
-
-    try {
-        var sv = JSON.parse(localStorage.getItem(KEY));
-
-        if (sv && sv.length) {
-            all = sv;
-        }
-    } catch (e) {
-        // abaikan data lokal yang rusak
-    }
-
-    function persist() {
-        try {
-            localStorage.setItem(KEY, JSON.stringify(all));
-        } catch (e) {
-            // abaikan bila penyimpanan lokal penuh
-        }
-    }
 
     var $ = function (id) {
             return document.getElementById(id);
@@ -66,22 +42,41 @@ function initDataAdminListAdmin() {
         }, 2600);
     }
 
+    function fail(e) {
+        var errors = e && e.response && e.response.data && e.response.data.errors;
+        var first = errors ? Object.keys(errors)[0] : null;
+
+        say(first ? errors[first][0] : (e && e.response && e.response.data && e.response.data.message) || 'Data gagal diproses.');
+    }
+
     function emit(n, d) {
         document.dispatchEvent(new CustomEvent(n, { detail: d }));
     }
 
     function byId(id) {
         return all.filter(function (r) {
-            return r.id === id;
+            return String(r.id) === String(id);
         })[0];
     }
 
-    function list() {
-        var s = q.trim().toLowerCase();
+    function load() {
+        return window.axios
+            .get('/api/data-admin/admin', {
+                params: { search: q.trim(), page: page, per_page: SIZE },
+            })
+            .then(function (res) {
+                all = res.data.data || [];
+                meta = res.data.meta || {};
 
-        return all.filter(function (r) {
-            return !s || r.username.toLowerCase().indexOf(s) >= 0 || r.nama.toLowerCase().indexOf(s) >= 0;
-        });
+                if (meta.last_page && page > meta.last_page) {
+                    page = meta.last_page;
+                    return load();
+                }
+
+                page = meta.current_page || page;
+                render();
+            })
+            .catch(fail);
     }
 
     function bdg(on) {
@@ -89,52 +84,46 @@ function initDataAdminListAdmin() {
     }
 
     function render() {
-        var L = list(),
-            pages = Math.max(1, Math.ceil(L.length / SIZE));
+        var total = meta.total || 0,
+            current = meta.current_page || 1,
+            pages = Math.max(1, meta.last_page || 1);
 
-        if (page > pages) {
-            page = pages;
-        }
-
-        var from = (page - 1) * SIZE,
-            rows = L.slice(from, from + SIZE);
-
-        tb.innerHTML = rows
+        tb.innerHTML = all
             .map(function (r) {
                 return (
                     '<tr><td class="c1"><button type="button" class="btn sm" data-act="' +
                     r.id +
                     '" aria-haspopup="menu">Aksi<svg class="i" viewBox="0 0 16 16"><path d="M4 6l4 4 4-4"/></svg></button></td>' +
                     '<td class="un">' +
-                    esc(r.username) +
+                    esc(r.email) +
                     '</td><td class="nw">' +
                     esc(r.nik) +
                     '</td><td>' +
                     esc(r.nama) +
                     '</td><td>' +
-                    bdg(r.akun) +
+                    bdg(r.aktif) +
                     '</td><td>' +
-                    bdg(r.kary) +
+                    bdg(r.karyawan_aktif) +
                     '</td></tr>'
                 );
             })
             .join('');
 
-        $('empty').hidden = L.length > 0;
-        $('cnt').textContent = L.length
-            ? 'Menampilkan ' + (from + 1) + '–' + (from + rows.length) + ' dari ' + L.length + ' akun'
+        $('empty').hidden = total > 0;
+        $('cnt').textContent = total
+            ? 'Menampilkan ' + meta.from + '–' + meta.to + ' dari ' + total + ' akun'
             : '0 akun';
 
         var h =
                 '<button type="button" data-p="' +
-                (page - 1) +
+                (current - 1) +
                 '"' +
-                (page <= 1 ? ' disabled' : '') +
+                (current <= 1 ? ' disabled' : '') +
                 '>Previous</button>',
             last = 0;
 
         for (var n = 1; n <= pages; n++) {
-            if (!(n === 1 || n === pages || Math.abs(n - page) <= 1)) {
+            if (!(n === 1 || n === pages || Math.abs(n - current) <= 1)) {
                 continue;
             }
 
@@ -146,7 +135,7 @@ function initDataAdminListAdmin() {
                 '<button type="button" data-p="' +
                 n +
                 '"' +
-                (n === page ? ' class="on" aria-current="page"' : '') +
+                (n === current ? ' class="on" aria-current="page"' : '') +
                 '>' +
                 n +
                 '</button>';
@@ -155,9 +144,9 @@ function initDataAdminListAdmin() {
 
         h +=
             '<button type="button" data-p="' +
-            (page + 1) +
+            (current + 1) +
             '"' +
-            (page >= pages ? ' disabled' : '') +
+            (current >= pages ? ' disabled' : '') +
             '>Next</button>';
 
         $('pn').innerHTML = h;
@@ -166,7 +155,8 @@ function initDataAdminListAdmin() {
     $('q').addEventListener('input', function () {
         q = this.value;
         page = 1;
-        render();
+        clearTimeout(searchTimer);
+        searchTimer = setTimeout(load, 300);
     });
 
     $('pn').addEventListener('click', function (e) {
@@ -174,7 +164,7 @@ function initDataAdminListAdmin() {
 
         if (b && !b.disabled) {
             page = +b.dataset.p;
-            render();
+            load();
         }
     });
 
@@ -365,74 +355,62 @@ function initDataAdminListAdmin() {
     }
 
     function form(r, isNew) {
-        r = r || { akun: true, kary: true };
+        r = r || { aktif: true, karyawan_aktif: true };
 
         return (
-            inp('username', 'Username', r.username, { req: 1 }) +
+            inp('email', 'Username (Email)', r.email, { req: 1, type: 'email' }) +
             inp('nik', 'NIK Pemegang Akses', r.nik, { req: 1, hint: 'Contoh: 1026.29.01.04' }) +
             inp('nama', 'Nama Pemegang Akses', r.nama, { req: 1 }) +
             inp('password', 'Password', '', {
                 req: isNew,
                 type: 'password',
                 ac: 'new-password',
-                hint: isNew ? 'Minimal 8 karakter.' : 'Kosongkan jika tidak diubah.',
+                hint: isNew ? 'Minimal 6 karakter.' : 'Kosongkan jika tidak diubah.',
             }) +
-            sel('akun', 'Status Akun Admin', r.akun) +
-            sel('kary', 'Status Karyawan', r.kary)
+            sel('aktif', 'Status Akun Admin', r.aktif) +
+            sel('karyawan_aktif', 'Status Karyawan', r.karyawan_aktif)
         );
     }
 
     function read() {
         return {
+            email: $('f-email').value.trim().toLowerCase(),
             nik: $('f-nik').value.trim(),
             nama: $('f-nama').value.trim(),
-            username: $('f-username').value.trim().toLowerCase(),
             password: $('f-password').value,
-            akun: $('f-akun').value === '1',
-            kary: $('f-kary').value === '1',
+            aktif: $('f-aktif').value === '1',
+            karyawan_aktif: $('f-karyawan_aktif').value === '1',
         };
     }
 
-    function validate(v, self, isNew) {
+    function validate(v, isNew) {
         var E = {};
+
+        if (!v.email) {
+            E.email = 'Username wajib diisi.';
+        } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.email)) {
+            E.email = 'Format email tidak valid.';
+        }
 
         if (!v.nik) {
             E.nik = 'NIK wajib diisi.';
         } else if (!/^\d+(\.\d+)*$/.test(v.nik)) {
             E.nik = 'NIK hanya boleh angka dan titik, contoh 1026.29.01.04.';
-        } else if (
-            all.some(function (r) {
-                return r.nik === v.nik && r !== self;
-            })
-        ) {
-            E.nik = 'NIK sudah terdaftar.';
         }
 
         if (!v.nama) {
             E.nama = 'Nama wajib diisi.';
         }
 
-        if (!v.username) {
-            E.username = 'Username wajib diisi.';
-        } else if (!/^[a-z0-9._-]{3,}$/.test(v.username)) {
-            E.username = 'Minimal 3 karakter: huruf, angka, titik, minus, atau garis bawah.';
-        } else if (
-            all.some(function (r) {
-                return r.username === v.username && r !== self;
-            })
-        ) {
-            E.username = 'Username sudah digunakan.';
-        }
-
         if (isNew && !v.password) {
             E.password = 'Password wajib diisi.';
-        } else if (v.password && v.password.length < 8) {
-            E.password = 'Password minimal 8 karakter.';
+        } else if (v.password && v.password.length < 6) {
+            E.password = 'Password minimal 6 karakter.';
         }
 
         var first = null;
 
-        ['username', 'nik', 'nama', 'password'].forEach(function (k) {
+        ['email', 'nik', 'nama', 'password'].forEach(function (k) {
             $('e-' + k).textContent = E[k] || '';
             $('f-' + k).classList.toggle('bad', !!E[k]);
 
@@ -448,29 +426,65 @@ function initDataAdminListAdmin() {
         return !first;
     }
 
+    function showErrors(e) {
+        var errors = e && e.response && e.response.data && e.response.data.errors;
+
+        if (!errors) {
+            fail(e);
+            return;
+        }
+
+        var first = null;
+
+        Object.keys(errors).forEach(function (key) {
+            var field = document.getElementById('f-' + key),
+                box = document.getElementById('e-' + key);
+
+            if (box) {
+                box.textContent = errors[key][0];
+            }
+
+            if (field) {
+                field.classList.add('bad');
+
+                if (!first) {
+                    first = field;
+                }
+            }
+        });
+
+        if (first) {
+            first.focus();
+        } else {
+            fail(e);
+        }
+    }
+
     var SAVE = '<button type="button" class="btn" data-close>Batal</button><button type="button" class="btn go" id="sv">Simpan</button>';
 
     $('add').onclick = function () {
         open('Tambah Akun Admin', form(null, true), SAVE, 'w', 'g2');
-        $('f-username').focus();
+        $('f-email').focus();
         $('sv').onclick = function () {
             var v = read();
 
-            if (!validate(v, null, true)) {
+            if (!validate(v, true)) {
                 return;
             }
 
-            var r = { id: 'n' + uid++, nik: v.nik, nama: v.nama, username: v.username, akun: v.akun, kary: v.kary };
-
-            all.push(r);
-            persist();
-            q = '';
-            $('q').value = '';
-            close();
-            page = Math.ceil(all.length / SIZE);
-            render();
-            emit('admin-tambah', v);
-            say('Akun admin berhasil ditambahkan.');
+            window.axios
+                .post('/api/data-admin/admin', v)
+                .then(function (res) {
+                    close();
+                    q = '';
+                    $('q').value = '';
+                    page = 1;
+                    return load().then(function () {
+                        emit('admin-tambah', res.data.data);
+                        say('Akun admin berhasil ditambahkan.');
+                    });
+                })
+                .catch(showErrors);
         };
     };
 
@@ -486,28 +500,20 @@ function initDataAdminListAdmin() {
         $('sv').onclick = function () {
             var v = read();
 
-            if (!validate(v, r, false)) {
+            if (!validate(v, false)) {
                 return;
             }
 
-            r.nik = v.nik;
-            r.nama = v.nama;
-            r.username = v.username;
-            r.akun = v.akun;
-            r.kary = v.kary;
-            persist();
-            close();
-            render();
-            emit('admin-edit', {
-                id: r.id,
-                nik: v.nik,
-                nama: v.nama,
-                username: v.username,
-                akun: v.akun,
-                kary: v.kary,
-                password: v.password || null,
-            });
-            say('Akun admin berhasil diperbarui.');
+            window.axios
+                .put('/api/data-admin/admin/' + r.id, v)
+                .then(function (res) {
+                    close();
+                    return load().then(function () {
+                        emit('admin-edit', res.data.data);
+                        say('Akun admin berhasil diperbarui.');
+                    });
+                })
+                .catch(showErrors);
         };
     }
 
@@ -521,25 +527,27 @@ function initDataAdminListAdmin() {
         open(
             'Hapus akun admin?',
             '<p>Akun <b style="color:var(--fg)">' +
-                esc(d.username) +
+                esc(d.email) +
                 '</b> (' +
                 esc(d.nama) +
                 ') akan dihapus. Tindakan ini tidak dapat dibatalkan.</p>',
             '<button type="button" class="btn" data-close>Batal</button><button type="button" class="btn dgb" id="ok">Hapus</button>',
         );
         $('ok').onclick = function () {
-            all = all.filter(function (x) {
-                return x !== d;
-            });
-            persist();
-            close();
-            render();
-            emit('admin-hapus', d);
-            say('Akun admin berhasil dihapus.');
+            window.axios
+                .delete('/api/data-admin/admin/' + d.id)
+                .then(function () {
+                    close();
+                    return load().then(function () {
+                        emit('admin-hapus', d);
+                        say('Akun admin berhasil dihapus.');
+                    });
+                })
+                .catch(fail);
         };
     }
 
-    render();
+    load();
 }
 
 if (document.readyState === 'loading') {

@@ -48,6 +48,16 @@ main.dash-on #dash {
     line-height: 1.25;
 }
 
+#dash .pf img.avatar {
+    object-fit: cover;
+}
+
+#dash .pf .pfp {
+    margin: 2px 0 0;
+    color: var(--mute);
+    font-size: 14px;
+}
+
 #dash .g2 {
     display: grid;
     grid-template-columns: 1fr 1fr;

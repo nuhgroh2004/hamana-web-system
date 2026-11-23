@@ -9,38 +9,14 @@ function initDataAdminTingkat() {
 
     initializedRoots.add(root);
 
-    // Data awal (ganti dengan data dari server)
-    var SEED = ['6D', '6C-5', '6C-4'].map(
-        function (n, i) {
-            return { id: 't' + (i + 1), nama: n };
-        },
-    );
-    var KEY = 'data-tingkat-v1',
-        SIZE = 10,
-        page = 1,
+    var SIZE = 10,
         q = '',
-        uid = Date.now(),
-        all = SEED,
+        page = 1,
+        all = [],
+        meta = {},
+        searchTimer = null,
         curBtn = null,
         curId = null;
-
-    try {
-        var sv = JSON.parse(localStorage.getItem(KEY));
-
-        if (sv && sv.length) {
-            all = sv;
-        }
-    } catch (e) {
-        // abaikan data lokal yang rusak
-    }
-
-    function persist() {
-        try {
-            localStorage.setItem(KEY, JSON.stringify(all));
-        } catch (e) {
-            // abaikan bila penyimpanan lokal penuh
-        }
-    }
 
     var $ = function (id) {
             return document.getElementById(id);
@@ -66,43 +42,57 @@ function initDataAdminTingkat() {
         }, 2600);
     }
 
+    function fail(e) {
+        var errors = e && e.response && e.response.data && e.response.data.errors;
+        var first = errors ? Object.keys(errors)[0] : null;
+
+        say(first ? errors[first][0] : (e && e.response && e.response.data && e.response.data.message) || 'Data gagal diproses.');
+    }
+
     function emit(n, d) {
         document.dispatchEvent(new CustomEvent(n, { detail: d }));
     }
 
     function byId(id) {
         return all.filter(function (r) {
-            return r.id === id;
+            return String(r.id) === String(id);
         })[0];
     }
 
-    function list() {
-        var s = q.trim().toLowerCase();
+    function load() {
+        return window.axios
+            .get('/api/data-admin/tingkat', {
+                params: { search: q.trim(), page: page, per_page: SIZE },
+            })
+            .then(function (res) {
+                all = res.data.data || [];
+                meta = res.data.meta || {};
 
-        return all.filter(function (r) {
-            return !s || r.nama.toLowerCase().indexOf(s) >= 0;
-        });
+                if (meta.last_page && page > meta.last_page) {
+                    page = meta.last_page;
+                    return load();
+                }
+
+                page = meta.current_page || page;
+                render();
+            })
+            .catch(fail);
     }
 
     function render() {
-        var L = list(),
-            pages = Math.max(1, Math.ceil(L.length / SIZE));
+        var total = meta.total || 0,
+            current = meta.current_page || 1,
+            pages = Math.max(1, meta.last_page || 1),
+            from = meta.from || 0;
 
-        if (page > pages) {
-            page = pages;
-        }
-
-        var from = (page - 1) * SIZE,
-            rows = L.slice(from, from + SIZE);
-
-        tb.innerHTML = rows
+        tb.innerHTML = all
             .map(function (r, i) {
                 return (
                     '<tr><td class="c1"><button type="button" class="btn sm" data-act="' +
                     r.id +
                     '" aria-haspopup="menu">Aksi<svg class="i" viewBox="0 0 16 16"><path d="M4 6l4 4 4-4"/></svg></button></td>' +
                     '<td class="c2">' +
-                    (from + i + 1) +
+                    (from + i) +
                     '</td><td>' +
                     esc(r.nama) +
                     '</td></tr>'
@@ -110,21 +100,21 @@ function initDataAdminTingkat() {
             })
             .join('');
 
-        $('empty').hidden = L.length > 0;
-        $('cnt').textContent = L.length
-            ? 'Menampilkan ' + (from + 1) + '–' + (from + rows.length) + ' dari ' + L.length + ' tingkat'
+        $('empty').hidden = total > 0;
+        $('cnt').textContent = total
+            ? 'Menampilkan ' + meta.from + '–' + meta.to + ' dari ' + total + ' tingkat'
             : '0 tingkat';
 
         var h =
                 '<button type="button" data-p="' +
-                (page - 1) +
+                (current - 1) +
                 '"' +
-                (page <= 1 ? ' disabled' : '') +
+                (current <= 1 ? ' disabled' : '') +
                 '>Previous</button>',
             last = 0;
 
         for (var n = 1; n <= pages; n++) {
-            if (!(n === 1 || n === pages || Math.abs(n - page) <= 1)) {
+            if (!(n === 1 || n === pages || Math.abs(n - current) <= 1)) {
                 continue;
             }
 
@@ -136,7 +126,7 @@ function initDataAdminTingkat() {
                 '<button type="button" data-p="' +
                 n +
                 '"' +
-                (n === page ? ' class="on" aria-current="page"' : '') +
+                (n === current ? ' class="on" aria-current="page"' : '') +
                 '>' +
                 n +
                 '</button>';
@@ -145,9 +135,9 @@ function initDataAdminTingkat() {
 
         h +=
             '<button type="button" data-p="' +
-            (page + 1) +
+            (current + 1) +
             '"' +
-            (page >= pages ? ' disabled' : '') +
+            (current >= pages ? ' disabled' : '') +
             '>Next</button>';
 
         $('pn').innerHTML = h;
@@ -156,7 +146,8 @@ function initDataAdminTingkat() {
     $('q').addEventListener('input', function () {
         q = this.value;
         page = 1;
-        render();
+        clearTimeout(searchTimer);
+        searchTimer = setTimeout(load, 300);
     });
 
     $('pn').addEventListener('click', function (e) {
@@ -164,7 +155,7 @@ function initDataAdminTingkat() {
 
         if (b && !b.disabled) {
             page = +b.dataset.p;
-            render();
+            load();
         }
     });
 
@@ -315,18 +306,8 @@ function initDataAdminTingkat() {
         );
     }
 
-    function validate(v, self) {
-        var m = '';
-
-        if (!v) {
-            m = 'Tingkat wajib diisi.';
-        } else if (
-            all.some(function (r) {
-                return r !== self && r.nama.toLowerCase() === v.toLowerCase();
-            })
-        ) {
-            m = 'Tingkat sudah ada.';
-        }
+    function validate(v) {
+        var m = v ? '' : 'Tingkat wajib diisi.';
 
         $('e-nama').textContent = m;
         $('f-nama').classList.toggle('bad', !!m);
@@ -338,8 +319,6 @@ function initDataAdminTingkat() {
         return !m;
     }
 
-    var SAVE = '<button type="button" class="btn" data-close>Batal</button><button type="button" class="btn go" id="sv">Simpan</button>';
-
     function bindEnter() {
         $('f-nama').addEventListener('keydown', function (e) {
             if (e.key === 'Enter') {
@@ -348,6 +327,8 @@ function initDataAdminTingkat() {
         });
     }
 
+    var SAVE = '<button type="button" class="btn" data-close>Batal</button><button type="button" class="btn go" id="sv">Simpan</button>';
+
     $('add').onclick = function () {
         open('Tambah Data Tingkat', form(), SAVE);
         $('f-nama').focus();
@@ -355,21 +336,34 @@ function initDataAdminTingkat() {
         $('sv').onclick = function () {
             var v = $('f-nama').value.trim();
 
-            if (!validate(v, null)) {
+            if (!validate(v)) {
                 return;
             }
 
-            var r = { id: 'n' + uid++, nama: v };
+            window.axios
+                .post('/api/data-admin/tingkat', { nama: v })
+                .then(function (res) {
+                    close();
+                    q = '';
+                    $('q').value = '';
+                    page = 1;
+                    return load().then(function () {
+                        emit('tingkat-tambah', res.data.data);
+                        say('Data tingkat berhasil ditambahkan.');
+                    });
+                })
+                .catch(function (e) {
+                    var errors = e && e.response && e.response.data && e.response.data.errors;
 
-            all.push(r);
-            persist();
-            q = '';
-            $('q').value = '';
-            close();
-            page = Math.ceil(all.length / SIZE);
-            render();
-            emit('tingkat-tambah', r);
-            say('Data tingkat berhasil ditambahkan.');
+                    if (errors && errors.nama) {
+                        $('e-nama').textContent = errors.nama[0];
+                        $('f-nama').classList.add('bad');
+                        $('f-nama').focus();
+                        return;
+                    }
+
+                    fail(e);
+                });
         };
     };
 
@@ -386,16 +380,31 @@ function initDataAdminTingkat() {
         $('sv').onclick = function () {
             var v = $('f-nama').value.trim();
 
-            if (!validate(v, r)) {
+            if (!validate(v)) {
                 return;
             }
 
-            r.nama = v;
-            persist();
-            close();
-            render();
-            emit('tingkat-edit', r);
-            say('Data tingkat berhasil diperbarui.');
+            window.axios
+                .put('/api/data-admin/tingkat/' + r.id, { nama: v })
+                .then(function (res) {
+                    close();
+                    return load().then(function () {
+                        emit('tingkat-edit', res.data.data);
+                        say('Data tingkat berhasil diperbarui.');
+                    });
+                })
+                .catch(function (e) {
+                    var errors = e && e.response && e.response.data && e.response.data.errors;
+
+                    if (errors && errors.nama) {
+                        $('e-nama').textContent = errors.nama[0];
+                        $('f-nama').classList.add('bad');
+                        $('f-nama').focus();
+                        return;
+                    }
+
+                    fail(e);
+                });
         };
     }
 
@@ -414,18 +423,20 @@ function initDataAdminTingkat() {
             '<button type="button" class="btn" data-close>Batal</button><button type="button" class="btn dgb" id="ok">Hapus</button>',
         );
         $('ok').onclick = function () {
-            all = all.filter(function (x) {
-                return x !== d;
-            });
-            persist();
-            close();
-            render();
-            emit('tingkat-hapus', d);
-            say('Data tingkat berhasil dihapus.');
+            window.axios
+                .delete('/api/data-admin/tingkat/' + d.id)
+                .then(function () {
+                    close();
+                    return load().then(function () {
+                        emit('tingkat-hapus', d);
+                        say('Data tingkat berhasil dihapus.');
+                    });
+                })
+                .catch(fail);
         };
     }
 
-    render();
+    load();
 }
 
 if (document.readyState === 'loading') {

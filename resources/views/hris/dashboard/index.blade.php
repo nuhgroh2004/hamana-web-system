@@ -17,8 +17,12 @@
 <div id="dash" data-routes="{{ json_encode($routes) }}">
     <div class="dw">
         <section class="cd pf">
-            <svg class="avatar" id="av3" width="72" height="72" viewBox="0 0 5 5"></svg>
-            <div><small>Selamat datang di HWI</small><h2>Nuhgroh Ramadani</h2></div>
+            @if ($photoUrl)
+                <img class="avatar" src="{{ $photoUrl }}" alt="Foto {{ $user->name }}" width="72" height="72">
+            @else
+                <svg class="avatar" id="av3" width="72" height="72" viewBox="0 0 5 5"></svg>
+            @endif
+            <div><small>Selamat datang di HWI</small><h2>{{ $user->name }}</h2><p class="pfp">{{ $position ?: 'Karyawan' }}</p></div>
         </section>
         <div class="g2">
             <section class="cd pad">

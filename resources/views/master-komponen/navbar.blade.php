@@ -1,5 +1,13 @@
 @props(['title' => 'Hamana'])
 
+@php
+    $navUser = auth()->user();
+    $navEmployee = $navUser?->employee;
+    $navPhoto = $navEmployee?->profile?->foto_path
+        ? route('api.profil.foto', $navEmployee).'?v='.($navEmployee->profile->updated_at?->timestamp ?? time())
+        : null;
+@endphp
+
 <header>
     <button class="ib" id="menu" aria-label="Buka/tutup sidebar" aria-expanded="true">
         <svg class="i" viewBox="0 0 16 16"><path d="M2 4h12M2 8h12M2 12h12"/></svg>
@@ -9,5 +17,9 @@
     <button class="ib dot" id="bell" aria-label="Notifikasi">
         <svg class="i" viewBox="0 0 16 16"><path d="M3 11V7a5 5 0 0110 0v4l1 2H2zM6.5 14.5h3"/></svg>
     </button>
-    <svg class="avatar" id="av1" width="40" height="40" viewBox="0 0 5 5" aria-hidden="true"></svg>
+    @if ($navPhoto)
+        <img class="avatar" src="{{ $navPhoto }}" alt="Foto {{ $navUser->name }}" width="40" height="40">
+    @else
+        <svg class="avatar" id="av1" width="40" height="40" viewBox="0 0 5 5" aria-hidden="true"></svg>
+    @endif
 </header>

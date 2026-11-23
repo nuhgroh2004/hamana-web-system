@@ -10,60 +10,39 @@ function initDataAdminFaskesBpjs() {
     initializedRoots.add(root);
 
     var FIELDS = [
-        ['prov', 'Nama Provinsi', 1],
-        ['reg', 'Kantor Regional', 0],
-        ['cab', 'Kantor Cabang', 0],
-        ['kab', 'Kabupaten/Kota', 1],
-        ['kode', 'Kode PPK', 0],
-        ['nama', 'Nama PPK', 1],
-        ['alamat', 'Alamat PPK', 0],
-        ['telp', 'Telp PPK', 0],
+        ['nama_provinsi', 'Nama Provinsi', 1],
+        ['kantor_regional', 'Kantor Regional', 0],
+        ['kantor_cabang', 'Kantor Cabang', 0],
+        ['kabupaten_kota', 'Kabupaten/Kota', 1],
+        ['kode_ppk', 'Kode PPK', 0],
+        ['nama_ppk', 'Nama PPK', 1],
+        ['alamat_ppk', 'Alamat PPK', 0],
+        ['telp_ppk', 'Telp PPK', 0],
     ];
-    var UP = ['prov', 'reg', 'cab', 'kab', 'kode', 'nama'];
-    // Data contoh (ganti dengan data dari server)
-    var SEED = [
-        {
-            id: 's0',
-            prov: 'SULAWESI SELATAN',
-            reg: 'REGIONAL IX - MAKASSAR',
-            cab: 'PALOPO',
-            kab: 'KAB. TORAJA UTARA',
-            kode: '0508U008',
-            nama: 'AGNES TJUNGADI (JSP)',
-            alamat: 'DIPONEGORO 13',
-            telp: '81342594689',
-        },
+    var UP = ['nama_provinsi', 'kantor_regional', 'kantor_cabang', 'kabupaten_kota', 'kode_ppk', 'nama_ppk'];
+    var HEAD = [
+        'Nama Provinsi',
+        'Kantor Regional',
+        'Kantor Cabang',
+        'Kabupaten/Kota',
+        'Kode PPK',
+        'Nama PPK',
+        'Alamat PPK',
+        'Telp PPK',
     ];
 
-    var KEY = 'data-faskes-bpjs-v2',
-        all = SEED,
-        saved = null,
-        uid = Date.now();
-
-    try {
-        saved = JSON.parse(localStorage.getItem(KEY));
-    } catch (e) {
-        saved = null;
-    }
-
-    if (saved && saved.length) {
-        all = saved;
-    }
-
-    function persist() {
-        try {
-            localStorage.setItem(KEY, JSON.stringify(all));
-        } catch (e) {
-            // abaikan bila penyimpanan lokal penuh
-        }
-    }
-
-    var q = '',
+    var SIZE = 10,
+        q = '',
         prov = 'all',
         kab = 'all',
         noKode = false,
         page = 1,
-        SIZE = 10;
+        all = [],
+        meta = {},
+        counts = { total: 0, tanpa_kode: 0 },
+        options = { provinsi: [], kabupaten: [] },
+        searchTimer = null;
+
     var tb = document.getElementById('tb'),
         mn = document.getElementById('mn'),
         ov = document.getElementById('ov'),
@@ -85,65 +64,72 @@ function initDataAdminFaskesBpjs() {
         }, 2600);
     }
 
+    function fail(e) {
+        var errors = e && e.response && e.response.data && e.response.data.errors;
+        var first = errors ? Object.keys(errors)[0] : null;
+
+        say(first ? errors[first][0] : (e && e.response && e.response.data && e.response.data.message) || 'Data gagal diproses.');
+    }
+
     function emit(n, d) {
         document.dispatchEvent(new CustomEvent(n, { detail: d }));
     }
 
     function byId(id) {
         return all.filter(function (r) {
-            return r.id === id;
+            return String(r.id) === String(id);
         })[0];
     }
 
-    function list() {
-        var s = q.trim().toLowerCase();
-
-        return all.filter(function (r) {
-            if (prov !== 'all' && r.prov !== prov) {
-                return false;
-            }
-
-            if (kab !== 'all' && r.kab !== kab) {
-                return false;
-            }
-
-            if (noKode && r.kode) {
-                return false;
-            }
-
-            return (
-                !s ||
-                r.nama.toLowerCase().indexOf(s) >= 0 ||
-                r.kode.toLowerCase().indexOf(s) >= 0 ||
-                r.alamat.toLowerCase().indexOf(s) >= 0
-            );
-        });
+    function params() {
+        return {
+            search: q.trim(),
+            provinsi: prov === 'all' ? '' : prov,
+            kabupaten: kab === 'all' ? '' : kab,
+            tanpa_kode: noKode ? 1 : '',
+            page: page,
+            per_page: SIZE,
+        };
     }
 
-    function uniq(key, where) {
-        var o = {};
+    function load() {
+        return window.axios
+            .get('/api/data-admin/faskes', { params: params() })
+            .then(function (res) {
+                all = res.data.data || [];
+                meta = res.data.meta || {};
+                counts = res.data.counts || counts;
+                options = res.data.options || { provinsi: [], kabupaten: [] };
 
-        all.forEach(function (r) {
-            if ((!where || where(r)) && r[key]) {
-                o[r[key]] = 1;
-            }
-        });
+                if (meta.last_page && page > meta.last_page) {
+                    page = meta.last_page;
+                    return load();
+                }
 
-        return Object.keys(o).sort();
+                page = meta.current_page || page;
+                syncFilters();
+                render();
+            })
+            .catch(fail);
     }
 
     // ---- dropdown kustom ----
-    var curAct = null,
-        DD = {},
+    var DD = {},
         CK = '<svg class="i ck" viewBox="0 0 16 16"><path d="M3 8.5l3.5 3.5L13 4.5"/></svg>',
         curBtn = null,
-        curDD = null;
+        curDD = null,
+        curAct = null;
 
     function paint(id) {
-        var d = DD[id],
-            o = d.opts.filter(function (x) {
-                return x[0] === d.val;
-            })[0];
+        var d = DD[id];
+
+        if (!d) {
+            return;
+        }
+
+        var o = d.opts.filter(function (x) {
+            return x[0] === d.val;
+        })[0];
 
         root.querySelectorAll('[data-dd="' + id + '"] .l').forEach(function (el) {
             el.textContent = o ? o[1] : '';
@@ -306,39 +292,32 @@ function initDataAdminFaskesBpjs() {
     }
 
     function syncFilters() {
-        // provinsi
-        if (prov !== 'all' && uniq('prov').indexOf(prov) < 0) {
+        if (prov !== 'all' && options.provinsi.indexOf(prov) < 0) {
             prov = 'all';
         }
 
         DD.prov = {
-            opts: opts(uniq('prov')),
+            opts: opts(options.provinsi),
             val: prov,
             cb: function (v) {
                 prov = v;
                 kab = 'all';
-                syncFilters();
                 page = 1;
-                render();
+                load();
             },
         };
 
-        // kabupaten/kota mengikuti provinsi terpilih
-        var kl = uniq('kab', function (r) {
-            return prov === 'all' || r.prov === prov;
-        });
-
-        if (kab !== 'all' && kl.indexOf(kab) < 0) {
+        if (kab !== 'all' && options.kabupaten.indexOf(kab) < 0) {
             kab = 'all';
         }
 
         DD.kab = {
-            opts: opts(kl),
+            opts: opts(options.kabupaten),
             val: kab,
             cb: function (v) {
                 kab = v;
                 page = 1;
-                render();
+                load();
             },
         };
 
@@ -348,69 +327,60 @@ function initDataAdminFaskesBpjs() {
 
     // ---- render ----
     function render() {
-        var nokode = all.filter(function (r) {
-            return !r.kode;
-        }).length;
-
-        document.getElementById('nall').textContent = all.length;
-        document.getElementById('nno').textContent = nokode;
+        document.getElementById('nall').textContent = counts.total || 0;
+        document.getElementById('nno').textContent = counts.tanpa_kode || 0;
         root.querySelectorAll('.sc').forEach(function (b) {
             b.classList.toggle('on', b.dataset.s === 'nokode' && noKode);
         });
 
-        var L = list(),
-            pages = Math.max(1, Math.ceil(L.length / SIZE));
+        var total = meta.total || 0,
+            current = meta.current_page || 1,
+            pages = Math.max(1, meta.last_page || 1),
+            from = meta.from || 0;
 
-        if (page > pages) {
-            page = pages;
-        }
-
-        var from = (page - 1) * SIZE,
-            rows = L.slice(from, from + SIZE);
-
-        tb.innerHTML = rows
+        tb.innerHTML = all
             .map(function (r) {
                 return (
                     '<tr><td class="c1"><button type="button" class="btn sm" data-act="' +
                     r.id +
                     '" aria-haspopup="menu">Aksi<svg class="i" viewBox="0 0 16 16"><path d="M4 6l4 4 4-4"/></svg></button></td>' +
                     '<td>' +
-                    esc(r.prov) +
+                    esc(r.nama_provinsi) +
                     '</td><td>' +
-                    esc(r.reg) +
+                    esc(r.kantor_regional) +
                     '</td><td>' +
-                    esc(r.cab) +
+                    esc(r.kantor_cabang) +
                     '</td><td>' +
-                    esc(r.kab) +
+                    esc(r.kabupaten_kota) +
                     '</td>' +
                     '<td class="nw">' +
-                    (r.kode ? esc(r.kode) : '<span class="bdg">Belum ada</span>') +
+                    (r.kode_ppk ? esc(r.kode_ppk) : '<span class="bdg">Belum ada</span>') +
                     '</td><td class="nm">' +
-                    esc(r.nama) +
+                    esc(r.nama_ppk) +
                     '</td><td>' +
-                    esc(r.alamat) +
+                    esc(r.alamat_ppk) +
                     '</td><td class="nw">' +
-                    esc(r.telp) +
+                    esc(r.telp_ppk) +
                     '</td></tr>'
                 );
             })
             .join('');
 
-        document.getElementById('empty').hidden = L.length > 0;
-        document.getElementById('cnt').textContent = L.length
-            ? 'Menampilkan ' + (from + 1) + '–' + (from + rows.length) + ' dari ' + L.length + ' faskes'
+        document.getElementById('empty').hidden = total > 0;
+        document.getElementById('cnt').textContent = total
+            ? 'Menampilkan ' + meta.from + '–' + meta.to + ' dari ' + total + ' faskes'
             : '0 faskes';
 
         var h =
                 '<button type="button" data-p="' +
-                (page - 1) +
+                (current - 1) +
                 '"' +
-                (page <= 1 ? ' disabled' : '') +
+                (current <= 1 ? ' disabled' : '') +
                 '>Previous</button>',
             last = 0;
 
         for (var n = 1; n <= pages; n++) {
-            if (!(n === 1 || n === pages || Math.abs(n - page) <= 1)) {
+            if (!(n === 1 || n === pages || Math.abs(n - current) <= 1)) {
                 continue;
             }
 
@@ -422,7 +392,7 @@ function initDataAdminFaskesBpjs() {
                 '<button type="button" data-p="' +
                 n +
                 '"' +
-                (n === page ? ' class="on" aria-current="page"' : '') +
+                (n === current ? ' class="on" aria-current="page"' : '') +
                 '>' +
                 n +
                 '</button>';
@@ -431,9 +401,9 @@ function initDataAdminFaskesBpjs() {
 
         h +=
             '<button type="button" data-p="' +
-            (page + 1) +
+            (current + 1) +
             '"' +
-            (page >= pages ? ' disabled' : '') +
+            (current >= pages ? ' disabled' : '') +
             '>Next</button>';
 
         document.getElementById('pn').innerHTML = h;
@@ -443,7 +413,8 @@ function initDataAdminFaskesBpjs() {
     document.getElementById('q').addEventListener('input', function () {
         q = this.value;
         page = 1;
-        render();
+        clearTimeout(searchTimer);
+        searchTimer = setTimeout(load, 300);
     });
 
     document.getElementById('pn').addEventListener('click', function (e) {
@@ -451,7 +422,7 @@ function initDataAdminFaskesBpjs() {
 
         if (b && !b.disabled) {
             page = +b.dataset.p;
-            render();
+            load();
         }
     });
 
@@ -470,11 +441,10 @@ function initDataAdminFaskesBpjs() {
             kab = 'all';
             q = '';
             document.getElementById('q').value = '';
-            syncFilters();
         }
 
         page = 1;
-        render();
+        load();
     });
 
     // ---- modal ----
@@ -532,7 +502,7 @@ function initDataAdminFaskesBpjs() {
         r = r || {};
 
         return FIELDS.map(function (f) {
-            var wide = f[0] === 'alamat' ? ' wide' : '';
+            var wide = f[0] === 'alamat_ppk' ? ' wide' : '';
 
             return (
                 '<div class="f' +
@@ -567,21 +537,11 @@ function initDataAdminFaskesBpjs() {
         return v;
     }
 
-    function validate(v, self) {
+    function validate(v) {
         var first = null;
 
         FIELDS.forEach(function (f) {
             var m = f[2] && !v[f[0]] ? f[1] + ' wajib diisi.' : '';
-
-            if (
-                f[0] === 'kode' &&
-                v.kode &&
-                all.some(function (r) {
-                    return r.kode === v.kode && r !== self;
-                })
-            ) {
-                m = 'Kode PPK sudah terdaftar.';
-            }
 
             document.getElementById('e-' + f[0]).textContent = m;
             document.getElementById('f-' + f[0]).classList.toggle('bad', !!m);
@@ -598,9 +558,38 @@ function initDataAdminFaskesBpjs() {
         return !first;
     }
 
-    function afterChange() {
-        syncFilters();
-        render();
+    function showErrors(e) {
+        var errors = e && e.response && e.response.data && e.response.data.errors;
+
+        if (!errors) {
+            fail(e);
+            return;
+        }
+
+        var first = null;
+
+        Object.keys(errors).forEach(function (key) {
+            var field = document.getElementById('f-' + key),
+                box = document.getElementById('e-' + key);
+
+            if (box) {
+                box.textContent = errors[key][0];
+            }
+
+            if (field) {
+                field.classList.add('bad');
+
+                if (!first) {
+                    first = field;
+                }
+            }
+        });
+
+        if (first) {
+            first.focus();
+        } else {
+            fail(e);
+        }
     }
 
     // tambah manual
@@ -612,28 +601,30 @@ function initDataAdminFaskesBpjs() {
             'w',
             'g2',
         );
-        document.getElementById('f-prov').focus();
+        document.getElementById('f-nama_provinsi').focus();
         document.getElementById('sv').onclick = function () {
             var v = read();
 
-            if (!validate(v, null)) {
+            if (!validate(v)) {
                 return;
             }
 
-            v.id = 'n' + uid++;
-            all.push(v);
-            persist();
-            noKode = false;
-            q = '';
-            document.getElementById('q').value = '';
-            prov = 'all';
-            kab = 'all';
-            close();
-            syncFilters();
-            page = Math.ceil(list().length / SIZE);
-            render();
-            emit('faskes-tambah', v);
-            say('Data faskes berhasil ditambahkan.');
+            window.axios
+                .post('/api/data-admin/faskes', v)
+                .then(function (res) {
+                    close();
+                    noKode = false;
+                    q = '';
+                    document.getElementById('q').value = '';
+                    prov = 'all';
+                    kab = 'all';
+                    page = 1;
+                    return load().then(function () {
+                        emit('faskes-tambah', res.data.data);
+                        say('Data faskes berhasil ditambahkan.');
+                    });
+                })
+                .catch(showErrors);
         };
     };
 
@@ -652,22 +643,24 @@ function initDataAdminFaskesBpjs() {
             'w',
             'g2',
         );
-        document.getElementById('f-nama').focus();
+        document.getElementById('f-nama_ppk').focus();
         document.getElementById('sv').onclick = function () {
             var v = read();
 
-            if (!validate(v, r)) {
+            if (!validate(v)) {
                 return;
             }
 
-            FIELDS.forEach(function (f) {
-                r[f[0]] = v[f[0]];
-            });
-            persist();
-            close();
-            afterChange();
-            emit('faskes-edit', r);
-            say('Data faskes berhasil diperbarui.');
+            window.axios
+                .put('/api/data-admin/faskes/' + r.id, v)
+                .then(function (res) {
+                    close();
+                    return load().then(function () {
+                        emit('faskes-edit', res.data.data);
+                        say('Data faskes berhasil diperbarui.');
+                    });
+                })
+                .catch(showErrors);
         };
     }
 
@@ -681,29 +674,27 @@ function initDataAdminFaskesBpjs() {
         open(
             'Hapus data faskes?',
             '<p>Data <b style="color:var(--fg)">' +
-                esc(d.nama) +
+                esc(d.nama_ppk) +
                 '</b>' +
-                (d.kode ? ' (' + esc(d.kode) + ')' : '') +
+                (d.kode_ppk ? ' (' + esc(d.kode_ppk) + ')' : '') +
                 ' akan dihapus. Tindakan ini tidak dapat dibatalkan.</p>',
             '<button type="button" class="btn" data-close>Batal</button><button type="button" class="btn dgb" id="ok">Hapus</button>',
         );
         document.getElementById('ok').onclick = function () {
-            all = all.filter(function (x) {
-                return x !== d;
-            });
-            persist();
-            close();
-            afterChange();
-            emit('faskes-hapus', d);
-            say('Data faskes berhasil dihapus.');
+            window.axios
+                .delete('/api/data-admin/faskes/' + d.id)
+                .then(function () {
+                    close();
+                    return load().then(function () {
+                        emit('faskes-hapus', d);
+                        say('Data faskes berhasil dihapus.');
+                    });
+                })
+                .catch(fail);
         };
     }
 
     // ---- export (CSV) ----
-    function cell(v) {
-        return '"' + String(v == null ? '' : v).replace(/"/g, '""') + '"';
-    }
-
     function download(name, text) {
         var a = document.createElement('a');
 
@@ -717,176 +708,31 @@ function initDataAdminFaskesBpjs() {
         }, 1000);
     }
 
-    var HEAD = [
-        'Nama Provinsi',
-        'Kantor Regional',
-        'Kantor Cabang',
-        'Kabupaten/Kota',
-        'Kode PPK',
-        'Nama PPK',
-        'Alamat PPK',
-        'Telp PPK',
-    ];
-
     document.getElementById('exp').onclick = function () {
-        var L = list();
-        var csv = [['No'].concat(HEAD).join(',')]
-            .concat(
-                L.map(function (r, i) {
-                    return [i + 1]
-                        .concat(
-                            FIELDS.map(function (f) {
-                                return r[f[0]];
-                            }),
-                        )
-                        .map(cell)
-                        .join(',');
-                }),
-            )
-            .join('\r\n');
+        var p = new URLSearchParams();
 
-        download('data-faskes-bpjs.csv', csv);
-        emit('faskes-export', L);
-        say(L.length + ' data faskes diekspor.');
+        if (q.trim()) {
+            p.set('search', q.trim());
+        }
+
+        if (prov !== 'all') {
+            p.set('provinsi', prov);
+        }
+
+        if (kab !== 'all') {
+            p.set('kabupaten', kab);
+        }
+
+        if (noKode) {
+            p.set('tanpa_kode', '1');
+        }
+
+        window.location.href = '/api/data-admin/faskes/export?' + p.toString();
+        emit('faskes-export', params());
+        say('Data faskes sedang diekspor.');
     };
 
     // ---- import (CSV) ----
-    function parseCSV(t) {
-        t = t.replace(/^\uFEFF/, '');
-
-        var first = t.split(/\r?\n/)[0] || '',
-            d = [',', ';', '\t'].sort(function (x, y) {
-                return first.split(y).length - first.split(x).length;
-            })[0];
-        var rows = [],
-            row = [],
-            cur = '',
-            inq = false;
-
-        for (var i = 0; i < t.length; i++) {
-            var c = t[i];
-
-            if (inq) {
-                if (c === '"') {
-                    if (t[i + 1] === '"') {
-                        cur += '"';
-                        i++;
-                    } else {
-                        inq = false;
-                    }
-                } else {
-                    cur += c;
-                }
-            } else if (c === '"') {
-                inq = true;
-            } else if (c === d) {
-                row.push(cur);
-                cur = '';
-            } else if (c === '\n' || c === '\r') {
-                if (c === '\r' && t[i + 1] === '\n') {
-                    i++;
-                }
-
-                row.push(cur);
-                cur = '';
-
-                if (
-                    row.some(function (x) {
-                        return x.trim();
-                    })
-                ) {
-                    rows.push(row);
-                }
-
-                row = [];
-            } else {
-                cur += c;
-            }
-        }
-
-        row.push(cur);
-
-        if (
-            row.some(function (x) {
-                return x.trim();
-            })
-        ) {
-            rows.push(row);
-        }
-
-        return rows;
-    }
-
-    function norm(h) {
-        return h.toLowerCase().replace(/[^a-z]/g, '');
-    }
-
-    function doImport(text) {
-        var R = parseCSV(text);
-
-        if (R.length < 2) {
-            say('File kosong atau format tidak sesuai.');
-            return;
-        }
-
-        var H = R[0].map(norm),
-            idx = {};
-
-        FIELDS.forEach(function (f) {
-            idx[f[0]] = H.indexOf(norm(f[1]));
-        });
-
-        if (idx.nama < 0) {
-            say('Kolom Nama PPK tidak ditemukan di baris pertama.');
-            return;
-        }
-
-        var add = 0,
-            upd = 0,
-            skip = 0;
-
-        R.slice(1).forEach(function (r) {
-            var v = {};
-
-            FIELDS.forEach(function (f) {
-                var x = idx[f[0]] >= 0 ? (r[idx[f[0]]] || '').trim() : '';
-
-                v[f[0]] = UP.indexOf(f[0]) >= 0 ? x.toUpperCase() : x;
-            });
-
-            if (!v.nama) {
-                skip++;
-                return;
-            }
-
-            var ex = v.kode
-                ? all.filter(function (x) {
-                      return x.kode === v.kode;
-                  })[0]
-                : null;
-
-            if (ex) {
-                FIELDS.forEach(function (f) {
-                    if (v[f[0]]) {
-                        ex[f[0]] = v[f[0]];
-                    }
-                });
-                upd++;
-            } else {
-                v.id = 'i' + uid++;
-                all.push(v);
-                add++;
-            }
-        });
-
-        persist();
-        page = 1;
-        syncFilters();
-        render();
-        emit('faskes-import', { ditambah: add, diperbarui: upd, dilewati: skip });
-        say(add + ' ditambahkan, ' + upd + ' diperbarui' + (skip ? ', ' + skip + ' dilewati' : '') + '.');
-    }
-
     document.getElementById('imp').onclick = function () {
         open(
             'Import Data Faskes',
@@ -917,19 +763,33 @@ function initDataAdminFaskesBpjs() {
                 return;
             }
 
-            var rd = new FileReader();
+            var body = new FormData();
+            body.append('file', f);
 
-            rd.onload = function () {
-                close();
-                doImport(String(rd.result));
-            };
+            window.axios
+                .post('/api/data-admin/faskes/import', body)
+                .then(function (res) {
+                    var h = res.data.hasil || {};
 
-            rd.readAsText(f);
+                    close();
+                    page = 1;
+                    return load().then(function () {
+                        emit('faskes-import', h);
+                        say(
+                            (h.ditambah || 0) +
+                                ' ditambahkan, ' +
+                                (h.diperbarui || 0) +
+                                ' diperbarui' +
+                                (h.dilewati ? ', ' + h.dilewati + ' dilewati' : '') +
+                                '.',
+                        );
+                    });
+                })
+                .catch(fail);
         };
     };
 
-    syncFilters();
-    render();
+    load();
 }
 
 if (document.readyState === 'loading') {

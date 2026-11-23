@@ -248,7 +248,7 @@ class Pengaturan extends Component
      */
     public function setRoleFilter(string $role): void
     {
-        if (! in_array($role, ['all', 'admin', 'karyawan'], true)) {
+        if (! in_array($role, ['all', 'admin', 'karyawan', 'satpam'], true)) {
             return;
         }
 
@@ -530,7 +530,7 @@ class Pengaturan extends Component
                 Rule::unique('users', 'email')->ignore($this->editingUserId),
             ],
             'formPassword' => [$this->editingUserId ? 'nullable' : 'required', 'string', 'min:6'],
-            'formRole' => ['required', Rule::in(['admin', 'karyawan'])],
+            'formRole' => ['required', Rule::in(['admin', 'karyawan', 'satpam'])],
             'formPosition' => ['required', 'string', 'max:255'],
         ];
     }

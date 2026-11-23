@@ -9,38 +9,14 @@ function initListSatpam() {
 
     initializedRoots.add(root);
 
-    // Data contoh (ganti dengan data dari server)
-    var SEED = [
-        { id: 's1', email: 'joko.susilo@contoh.id', nama: 'Joko Susilo', aktif: true },
-        { id: 's2', email: 'slamet.riyadi@contoh.id', nama: 'Slamet Riyadi', aktif: true },
-        { id: 's3', email: 'eko.prasetyo@contoh.id', nama: 'Eko Prasetyo', aktif: false },
-    ];
-    var KEY = 'user-satpam-v1',
-        SIZE = 10,
-        page = 1,
+    var SIZE = 10,
         q = '',
-        uid = Date.now(),
-        all = SEED,
+        page = 1,
+        all = [],
+        meta = {},
+        searchTimer = null,
         curBtn = null,
         curId = null;
-
-    try {
-        var sv = JSON.parse(localStorage.getItem(KEY));
-
-        if (sv && sv.length) {
-            all = sv;
-        }
-    } catch (e) {
-        // abaikan data lokal yang rusak
-    }
-
-    function persist() {
-        try {
-            localStorage.setItem(KEY, JSON.stringify(all));
-        } catch (e) {
-            // abaikan bila penyimpanan lokal penuh
-        }
-    }
 
     var $ = function (id) {
             return root.querySelector('#' + id);
@@ -66,22 +42,41 @@ function initListSatpam() {
         }, 2600);
     }
 
+    function fail(e) {
+        var errors = e && e.response && e.response.data && e.response.data.errors;
+        var first = errors ? Object.keys(errors)[0] : null;
+
+        say(first ? errors[first][0] : (e && e.response && e.response.data && e.response.data.message) || 'Data gagal diproses.');
+    }
+
     function emit(n, d) {
         document.dispatchEvent(new CustomEvent(n, { detail: d }));
     }
 
     function byId(id) {
         return all.filter(function (r) {
-            return r.id === id;
+            return String(r.id) === String(id);
         })[0];
     }
 
-    function list() {
-        var s = q.trim().toLowerCase();
+    function load() {
+        return window.axios
+            .get('/api/list-satpam', {
+                params: { search: q.trim(), page: page, per_page: SIZE },
+            })
+            .then(function (res) {
+                all = res.data.data || [];
+                meta = res.data.meta || {};
 
-        return all.filter(function (r) {
-            return !s || r.email.toLowerCase().indexOf(s) >= 0 || r.nama.toLowerCase().indexOf(s) >= 0;
-        });
+                if (meta.last_page && page > meta.last_page) {
+                    page = meta.last_page;
+                    return load();
+                }
+
+                page = meta.current_page || page;
+                render();
+            })
+            .catch(fail);
     }
 
     function bdg(on) {
@@ -89,17 +84,11 @@ function initListSatpam() {
     }
 
     function render() {
-        var L = list(),
-            pages = Math.max(1, Math.ceil(L.length / SIZE));
+        var total = meta.total || 0,
+            current = meta.current_page || 1,
+            pages = Math.max(1, meta.last_page || 1);
 
-        if (page > pages) {
-            page = pages;
-        }
-
-        var from = (page - 1) * SIZE,
-            rows = L.slice(from, from + SIZE);
-
-        tb.innerHTML = rows
+        tb.innerHTML = all
             .map(function (r) {
                 return (
                     '<tr><td class="ak c1"><button type="button" class="btn sm" data-act="' +
@@ -116,21 +105,21 @@ function initListSatpam() {
             })
             .join('');
 
-        $('empty').hidden = L.length > 0;
-        $('cnt').textContent = L.length
-            ? 'Menampilkan ' + (from + 1) + '–' + (from + rows.length) + ' dari ' + L.length + ' akun'
+        $('empty').hidden = total > 0;
+        $('cnt').textContent = total
+            ? 'Menampilkan ' + meta.from + '–' + meta.to + ' dari ' + total + ' akun'
             : '0 akun';
 
         var h =
                 '<button type="button" data-p="' +
-                (page - 1) +
+                (current - 1) +
                 '"' +
-                (page <= 1 ? ' disabled' : '') +
+                (current <= 1 ? ' disabled' : '') +
                 '>Previous</button>',
             last = 0;
 
         for (var n = 1; n <= pages; n++) {
-            if (!(n === 1 || n === pages || Math.abs(n - page) <= 1)) {
+            if (!(n === 1 || n === pages || Math.abs(n - current) <= 1)) {
                 continue;
             }
 
@@ -142,7 +131,7 @@ function initListSatpam() {
                 '<button type="button" data-p="' +
                 n +
                 '"' +
-                (n === page ? ' class="on" aria-current="page"' : '') +
+                (n === current ? ' class="on" aria-current="page"' : '') +
                 '>' +
                 n +
                 '</button>';
@@ -151,9 +140,9 @@ function initListSatpam() {
 
         h +=
             '<button type="button" data-p="' +
-            (page + 1) +
+            (current + 1) +
             '"' +
-            (page >= pages ? ' disabled' : '') +
+            (current >= pages ? ' disabled' : '') +
             '>Next</button>';
 
         $('pn').innerHTML = h;
@@ -162,7 +151,8 @@ function initListSatpam() {
     $('q').addEventListener('input', function () {
         q = this.value;
         page = 1;
-        render();
+        clearTimeout(searchTimer);
+        searchTimer = setTimeout(load, 300);
     });
 
     $('pn').addEventListener('click', function (e) {
@@ -170,7 +160,7 @@ function initListSatpam() {
 
         if (b && !b.disabled) {
             page = +b.dataset.p;
-            render();
+            load();
         }
     });
 
@@ -396,9 +386,9 @@ function initListSatpam() {
                 pw: 1,
                 type: 'password',
                 ac: 'new-password',
-                hint: isNew ? 'Minimal 8 karakter.' : 'Kosongkan jika tidak diubah.',
+                hint: isNew ? 'Minimal 6 karakter.' : 'Kosongkan jika tidak diubah.',
             }) +
-            sel('akun', 'Status', r.aktif)
+            sel('aktif', 'Status', r.aktif)
         );
     }
 
@@ -407,23 +397,17 @@ function initListSatpam() {
             email: $('f-email').value.trim().toLowerCase(),
             nama: $('f-nama').value.trim(),
             password: $('f-password').value,
-            aktif: $('f-akun').value === '1',
+            aktif: $('f-aktif').value === '1',
         };
     }
 
-    function validate(v, self, isNew) {
+    function validate(v, isNew) {
         var E = {};
 
         if (!v.email) {
             E.email = 'Email wajib diisi.';
         } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.email)) {
             E.email = 'Format email tidak valid.';
-        } else if (
-            all.some(function (r) {
-                return r.email === v.email && r !== self;
-            })
-        ) {
-            E.email = 'Email sudah digunakan.';
         }
 
         if (!v.nama) {
@@ -432,8 +416,8 @@ function initListSatpam() {
 
         if (isNew && !v.password) {
             E.password = 'Password wajib diisi.';
-        } else if (v.password && v.password.length < 8) {
-            E.password = 'Password minimal 8 karakter.';
+        } else if (v.password && v.password.length < 6) {
+            E.password = 'Password minimal 6 karakter.';
         }
 
         var first = null;
@@ -454,6 +438,40 @@ function initListSatpam() {
         return !first;
     }
 
+    function showErrors(e) {
+        var errors = e && e.response && e.response.data && e.response.data.errors;
+
+        if (!errors) {
+            fail(e);
+            return;
+        }
+
+        var first = null;
+
+        Object.keys(errors).forEach(function (key) {
+            var field = document.getElementById('f-' + key),
+                box = document.getElementById('e-' + key);
+
+            if (box) {
+                box.textContent = errors[key][0];
+            }
+
+            if (field) {
+                field.classList.add('bad');
+
+                if (!first) {
+                    first = field;
+                }
+            }
+        });
+
+        if (first) {
+            first.focus();
+        } else {
+            fail(e);
+        }
+    }
+
     var SAVE = '<button type="button" class="btn" data-close>Batal</button><button type="button" class="btn go" id="sv">Simpan</button>';
 
     $('add').onclick = function () {
@@ -462,19 +480,23 @@ function initListSatpam() {
         $('sv').onclick = function () {
             var v = read();
 
-            if (!validate(v, null, true)) {
+            if (!validate(v, true)) {
                 return;
             }
 
-            all.push({ id: 'n' + uid++, email: v.email, nama: v.nama, aktif: v.aktif });
-            persist();
-            q = '';
-            $('q').value = '';
-            close();
-            page = Math.ceil(all.length / SIZE);
-            render();
-            emit('satpam-tambah', v);
-            say('Akun satpam berhasil ditambahkan.');
+            window.axios
+                .post('/api/list-satpam', v)
+                .then(function (res) {
+                    close();
+                    q = '';
+                    $('q').value = '';
+                    page = 1;
+                    return load().then(function () {
+                        emit('satpam-tambah', res.data.data);
+                        say('Akun satpam berhasil ditambahkan.');
+                    });
+                })
+                .catch(showErrors);
         };
     };
 
@@ -490,24 +512,20 @@ function initListSatpam() {
         $('sv').onclick = function () {
             var v = read();
 
-            if (!validate(v, r, false)) {
+            if (!validate(v, false)) {
                 return;
             }
 
-            r.email = v.email;
-            r.nama = v.nama;
-            r.aktif = v.aktif;
-            persist();
-            close();
-            render();
-            emit('satpam-edit', {
-                id: r.id,
-                email: v.email,
-                nama: v.nama,
-                aktif: v.aktif,
-                password: v.password || null,
-            });
-            say('Akun satpam berhasil diperbarui.');
+            window.axios
+                .put('/api/list-satpam/' + r.id, v)
+                .then(function (res) {
+                    close();
+                    return load().then(function () {
+                        emit('satpam-edit', res.data.data);
+                        say('Akun satpam berhasil diperbarui.');
+                    });
+                })
+                .catch(showErrors);
         };
     }
 
@@ -528,18 +546,20 @@ function initListSatpam() {
             '<button type="button" class="btn" data-close>Batal</button><button type="button" class="btn dgb" id="ok">Hapus</button>',
         );
         $('ok').onclick = function () {
-            all = all.filter(function (x) {
-                return x !== d;
-            });
-            persist();
-            close();
-            render();
-            emit('satpam-hapus', d);
-            say('Akun satpam berhasil dihapus.');
+            window.axios
+                .delete('/api/list-satpam/' + d.id)
+                .then(function () {
+                    close();
+                    return load().then(function () {
+                        emit('satpam-hapus', d);
+                        say('Akun satpam berhasil dihapus.');
+                    });
+                })
+                .catch(fail);
         };
     }
 
-    render();
+    load();
 }
 
 if (document.readyState === 'loading') {

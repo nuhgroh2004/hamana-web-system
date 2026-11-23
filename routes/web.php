@@ -1,6 +1,11 @@
 <?php
 
 use App\Http\Controllers\Auth\LogoutController;
+use App\Http\Controllers\DataAdmin\FaskesBpjsController;
+use App\Http\Controllers\DataAdmin\JabatanController;
+use App\Http\Controllers\DataAdmin\ListAdminController;
+use App\Http\Controllers\DataAdmin\SatpamController;
+use App\Http\Controllers\DataAdmin\TingkatController;
 use App\Http\Controllers\Pegawai\DataPegawaiController;
 use App\Http\Controllers\Profile\AnggotaKeluargaController;
 use App\Http\Controllers\Profile\CiriFisikController;
@@ -63,6 +68,45 @@ Route::middleware('auth')->group(function () {
             Route::get('data-pegawai/export', [DataPegawaiController::class, 'export'])->name('data-pegawai.export');
             Route::put('data-pegawai/{employee}', [DataPegawaiController::class, 'update'])->name('data-pegawai.update');
             Route::delete('data-pegawai/{employee}', [DataPegawaiController::class, 'destroy'])->name('data-pegawai.destroy');
+        });
+
+        Route::prefix('data-admin')->name('data-admin.')->group(function () {
+            Route::middleware('module.access:data-admin-tingkat')->group(function () {
+                Route::get('tingkat', [TingkatController::class, 'index'])->name('tingkat.index');
+                Route::post('tingkat', [TingkatController::class, 'store'])->name('tingkat.store');
+                Route::put('tingkat/{level}', [TingkatController::class, 'update'])->name('tingkat.update');
+                Route::delete('tingkat/{level}', [TingkatController::class, 'destroy'])->name('tingkat.destroy');
+            });
+
+            Route::middleware('module.access:data-admin-jabatan')->group(function () {
+                Route::get('jabatan', [JabatanController::class, 'index'])->name('jabatan.index');
+                Route::post('jabatan', [JabatanController::class, 'store'])->name('jabatan.store');
+                Route::put('jabatan/{jabatan}', [JabatanController::class, 'update'])->name('jabatan.update');
+                Route::delete('jabatan/{jabatan}', [JabatanController::class, 'destroy'])->name('jabatan.destroy');
+            });
+
+            Route::middleware('module.access:data-admin-faskes-bpjs')->group(function () {
+                Route::get('faskes', [FaskesBpjsController::class, 'index'])->name('faskes.index');
+                Route::post('faskes', [FaskesBpjsController::class, 'store'])->name('faskes.store');
+                Route::post('faskes/import', [FaskesBpjsController::class, 'import'])->name('faskes.import');
+                Route::get('faskes/export', [FaskesBpjsController::class, 'export'])->name('faskes.export');
+                Route::put('faskes/{faskes}', [FaskesBpjsController::class, 'update'])->name('faskes.update');
+                Route::delete('faskes/{faskes}', [FaskesBpjsController::class, 'destroy'])->name('faskes.destroy');
+            });
+
+            Route::middleware('module.access:data-admin-list-admin')->group(function () {
+                Route::get('admin', [ListAdminController::class, 'index'])->name('admin.index');
+                Route::post('admin', [ListAdminController::class, 'store'])->name('admin.store');
+                Route::put('admin/{user}', [ListAdminController::class, 'update'])->name('admin.update');
+                Route::delete('admin/{user}', [ListAdminController::class, 'destroy'])->name('admin.destroy');
+            });
+        });
+
+        Route::middleware('module.access:list-satpam')->group(function () {
+            Route::get('list-satpam', [SatpamController::class, 'index'])->name('list-satpam.index');
+            Route::post('list-satpam', [SatpamController::class, 'store'])->name('list-satpam.store');
+            Route::put('list-satpam/{user}', [SatpamController::class, 'update'])->name('list-satpam.update');
+            Route::delete('list-satpam/{user}', [SatpamController::class, 'destroy'])->name('list-satpam.destroy');
         });
     });
 

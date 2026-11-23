@@ -30,6 +30,16 @@ class Login extends Component
             return;
         }
 
+        if (! Auth::user()->isActive()) {
+            Auth::logout();
+            session()->invalidate();
+            session()->regenerateToken();
+            $this->reset('password');
+            $this->addError('email', 'Akun Anda tidak aktif. Hubungi admin.');
+
+            return;
+        }
+
         session()->regenerate();
 
         return $this->redirectIntended(route('dashboard'));
