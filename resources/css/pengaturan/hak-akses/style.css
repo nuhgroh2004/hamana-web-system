@@ -377,6 +377,18 @@
     color: var(--green);
 }
 
+#set-page .ha-badge.access-default {
+    border-color: var(--okbd);
+    background: var(--okbg);
+    color: var(--green);
+}
+
+#set-page .ha-badge.access-custom {
+    border-color: var(--blue);
+    background: rgba(9, 105, 218, 0.08);
+    color: var(--blue);
+}
+
 #set-page .ha-meta {
     color: var(--mute);
     font-size: 11.5px;

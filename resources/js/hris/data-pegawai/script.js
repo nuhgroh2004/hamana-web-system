@@ -496,7 +496,8 @@ function initDataPegawai() {
     document.getElementById('imp').onclick = function () {
         open(
             'Import Data Pegawai',
-            '<p>Unggah file Excel <b>.xlsx</b> (atau CSV) sesuai template. Baris dengan NIK yang sudah ada akan diperbarui, dan baris tanpa NIK atau Nama Lengkap dilewati.</p>' +
+            '<p>Unggah file Excel <b>.xlsx</b> (atau CSV) sesuai template. Baris baru wajib memiliki NIK, Nama Lengkap, Email, dan Tanggal Lahir. Baris dengan NIK yang sudah ada akan diperbarui, dan baris tanpa NIK atau Nama Lengkap dilewati.</p>' +
+                '<p class="hint">Email digunakan untuk login. Password awal: nama depan (huruf kecil) + tanggal lahir (DDMM).</p>' +
                 '<p class="hint">Template memuat seluruh kolom data pegawai, pendidikan, keluarga, dan ciri fisik.</p>' +
                 '<input type="file" id="i-file" accept=".xlsx,.csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,text/csv" hidden>',
             '<button type="button" class="btn" id="i-tpl" style="margin-right:auto">Unduh template XLSX</button><button type="button" class="btn" data-close>Batal</button><button type="button" class="btn go" id="i-pick">Pilih file Excel</button>',
@@ -538,6 +539,11 @@ function initDataPegawai() {
                                 (h.diperbarui || 0) +
                                 ' diperbarui' +
                                 (h.dilewati ? ', ' + h.dilewati + ' dilewati' : '') +
+                                '. Akun dibuat: ' +
+                                (h.akun_dibuat || 0) +
+                                (h.akun_dihubungkan ? ', dihubungkan: ' + h.akun_dihubungkan : '') +
+                                (h.akun_sudah_ada ? ', sudah ada: ' + h.akun_sudah_ada : '') +
+                                (h.akun_dilewati ? ', akun dilewati: ' + h.akun_dilewati : '') +
                                 '.',
                         );
                     });

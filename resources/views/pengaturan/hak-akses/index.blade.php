@@ -131,6 +131,11 @@
                             <span class="ha-who">
                                 <b>{{ $user->name }}</b>
                                 <small>{{ $user->position ?: 'Tanpa posisi' }}</small>
+                                @unless ($user->isAdmin())
+                                    <span class="ha-badge {{ $user->permissions === null ? 'access-default' : 'access-custom' }}">
+                                        {{ $user->permissions === null ? 'Default User' : 'Custom User' }}
+                                    </span>
+                                @endunless
                             </span>
                             <span class="ha-tally">{{ count($user->permissionList()) }}/{{ $totalModules }}</span>
                         </button>
@@ -162,6 +167,11 @@
                             <p class="ha-email">{{ $selectedUser->email }}</p>
                             <div class="ha-profile-badges">
                                 <span class="ha-badge {{ $selectedUser->role }}">{{ $roleLabels[$selectedUser->role] ?? ucfirst($selectedUser->role) }}</span>
+                                @unless ($locked)
+                                    <span class="ha-badge {{ $selectedUser->permissions === null ? 'access-default' : 'access-custom' }}">
+                                        {{ $selectedUser->permissions === null ? 'Default User' : 'Custom User' }}
+                                    </span>
+                                @endunless
                                 @if ($selectedUser->nik)
                                     <span class="ha-meta">NIK {{ $selectedUser->nik }}</span>
                                 @endif
@@ -199,7 +209,7 @@
                                                    @disabled(! $canManage)
                                                    wire:click="useDefaultAccess({{ $selectedUser->id }})">
                                             <span class="ha-mode-text">
-                                                <b>Default</b>
+                                                <b>Default User</b>
                                                 <small>Akses bawaan</small>
                                             </span>
                                             <span class="ha-mode-mark" aria-hidden="true">
@@ -214,7 +224,7 @@
                                                    @disabled(! $canManage)
                                                    wire:click="useCustomAccess({{ $selectedUser->id }})">
                                             <span class="ha-mode-text">
-                                                <b>Custom</b>
+                                                <b>Custom User</b>
                                                 <small>Atur sendiri</small>
                                             </span>
                                             <span class="ha-mode-mark" aria-hidden="true">

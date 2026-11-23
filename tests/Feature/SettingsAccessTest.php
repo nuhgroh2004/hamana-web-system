@@ -31,7 +31,7 @@ class SettingsAccessTest extends TestCase
         $this->assertArrayNotHasKey('pengaturan', $all);
     }
 
-    public function test_default_user_only_gets_bahasa_and_ubah_password(): void
+    public function test_default_user_gets_the_requested_modules_and_password_settings(): void
     {
         $user = $this->makeUser([
             'email' => 'settings-default@hamana.co.id',
@@ -39,13 +39,30 @@ class SettingsAccessTest extends TestCase
             'permissions' => null,
         ]);
 
-        $settings = array_values(array_intersect(self::SETTINGS, $user->permissionList()));
-
-        $this->assertSame(['bahasa', 'ubah-password'], $settings);
+        $this->assertSame([
+            'dashboard',
+            'profil-data-pribadi',
+            'profil-riwayat-pendidikan',
+            'profil-anggota-keluarga',
+            'profil-ciri-fisik',
+            'profil-kelola-file',
+            'permohonan-masuk',
+            'permohonan-saya',
+            'izin-cuti-atau-sakit',
+            'izin-keluar-kantor',
+            'izin-dinas-dalam-kota',
+            'izin-dinas-luar-kota',
+            'form-absensi',
+            'slip-gaji',
+            'buku-hamana',
+            'saran',
+            'tanda-tangan',
+            'ubah-password',
+        ], $user->permissionList());
 
         $this->actingAs($user)->get('/pengaturan')->assertOk();
-        $this->actingAs($user)->get('/pengaturan/bahasa')->assertOk();
         $this->actingAs($user)->get('/pengaturan/ubah-password')->assertOk();
+        $this->actingAs($user)->get('/pengaturan/bahasa')->assertForbidden();
         $this->actingAs($user)->get('/pengaturan/hak-akses')->assertForbidden();
         $this->actingAs($user)->get('/pengaturan/absensi-by-foto')->assertForbidden();
         $this->actingAs($user)->get('/pengaturan/daftar-hitam-presensi')->assertForbidden();
@@ -136,8 +153,8 @@ class SettingsAccessTest extends TestCase
         $this->actingAs($user)
             ->get('/pengaturan')
             ->assertOk()
-            ->assertSee('Bahasa')
             ->assertSee('Ubah Password')
+            ->assertDontSee('Bahasa')
             ->assertDontSee('Hak Akses')
             ->assertDontSee('Absensi by Foto')
             ->assertDontSee('Daftar Hitam Presensi');
@@ -173,8 +190,6 @@ class SettingsAccessTest extends TestCase
             ->assertDontSee('Tambah Pengguna')
             ->assertDontSeeHtml('wire:click="activateAll"')
             ->assertDontSeeHtml('wire:click="deactivateAll"')
-            ->assertSee('Default')
-            ->assertSee('Custom')
             ->assertSee('Daftar Hitam Presensi');
     }
 
@@ -197,6 +212,7 @@ class SettingsAccessTest extends TestCase
             ->call('selectUser', $user->id)
             ->assertSeeHtml('class="ha-mode on"')
             ->assertSeeHtml('type="radio"')
+            ->assertSee('Default User')
             ->assertDontSeeHtml('<button type="button" class="ha-mode');
 
         $component->call('useCustomAccess', $user->id);
@@ -204,10 +220,47 @@ class SettingsAccessTest extends TestCase
         $this->assertNotNull($user->fresh()->permissions);
         $this->assertSame($user->permissionList(), $user->fresh()->permissionList());
         $component->assertSeeHtml('class="ha-mode on"');
+        $component->assertSee('Custom User');
 
         $component->call('useDefaultAccess', $user->id);
 
         $this->assertNull($user->fresh()->permissions);
         $component->assertSeeHtml('class="ha-mode on"');
+    }
+
+    public function test_access_changes_are_saved_to_the_user_and_enforced_on_module_routes(): void
+    {
+        $admin = $this->makeUser([
+            'email' => 'settings-toggle-admin@hamana.co.id',
+            'nik' => '9111.00.00.11',
+            'role' => 'admin',
+        ]);
+        $user = $this->makeUser([
+            'email' => 'settings-toggle-user@hamana.co.id',
+            'nik' => '9111.00.00.12',
+            'permissions' => null,
+        ]);
+        $grantUser = $this->makeUser([
+            'email' => 'settings-toggle-grant@hamana.co.id',
+            'nik' => '9111.00.00.13',
+            'permissions' => ['dashboard'],
+        ]);
+
+        Livewire::actingAs($admin)
+            ->test(Pengaturan::class, ['panel' => 'hak-akses'])
+            ->call('toggleAccess', $user->id, 'permohonan-masuk')
+            ->assertHasNoErrors();
+
+        $this->assertNotNull($user->fresh()->permissions);
+        $this->assertFalse($user->fresh()->canAccess('permohonan-masuk'));
+        $this->actingAs($user->fresh())->get('/modul/permohonan-masuk')->assertForbidden();
+
+        Livewire::actingAs($admin)
+            ->test(Pengaturan::class, ['panel' => 'hak-akses'])
+            ->call('toggleAccess', $grantUser->id, 'data-pegawai')
+            ->assertHasNoErrors();
+
+        $this->assertContains('data-pegawai', $grantUser->fresh()->permissions);
+        $this->actingAs($grantUser->fresh())->get('/modul/data-pegawai')->assertOk();
     }
 }

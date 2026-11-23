@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Pegawai;
 use App\Http\Controllers\Controller;
 use App\Models\Employee;
 use App\Models\EmployeeDocument;
+use App\Services\Pegawai\CreateUserFromEmployeeProfileService;
 use App\Services\Pegawai\CreateWizardEmployeeService;
 use App\Services\Pegawai\GetWizardProgressService;
 use App\Services\Pegawai\GetWizardStateService;
@@ -16,6 +17,7 @@ use App\Services\Profile\SaveNomorDokumenService;
 use App\Services\Profile\SaveRiwayatPendidikanService;
 use App\Services\Profile\UploadDokumenService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 
@@ -54,11 +56,27 @@ class WizardPegawaiController extends Controller
         Request $request,
         Employee $employee,
         SaveDataPribadiService $saveDataPribadi,
+        CreateUserFromEmployeeProfileService $createUser,
         GetWizardProgressService $getProgress,
     ) {
         $data = $request->validate($this->dataPribadiRules($employee));
 
-        $employee = $saveDataPribadi->handle($employee, $data);
+        $employee = DB::transaction(function () use ($employee, $data, $saveDataPribadi, $createUser) {
+            $employee = $saveDataPribadi->handle($employee, $data);
+            $status = $createUser->handle($employee);
+
+            if (! in_array($status, [
+                CreateUserFromEmployeeProfileService::CREATED,
+                CreateUserFromEmployeeProfileService::LINKED,
+                CreateUserFromEmployeeProfileService::ALREADY_LINKED,
+            ], true)) {
+                throw ValidationException::withMessages([
+                    'email' => 'Akun pengguna tidak dapat dibuat. Periksa email, NIK, dan tanggal lahir pegawai.',
+                ]);
+            }
+
+            return $employee;
+        });
 
         return response()->json([
             'employee' => $this->employeePayload($employee),
@@ -223,17 +241,41 @@ class WizardPegawaiController extends Controller
      */
     private function dataPribadiRules(?Employee $employee = null): array
     {
+        $requiresAccount = $employee === null || $employee->user_id === null;
+        $emailRules = [
+            $requiresAccount ? 'required' : 'nullable',
+            'email',
+            'max:255',
+        ];
+        $birthDateRules = [
+            $requiresAccount ? 'required' : 'nullable',
+            'date',
+            'before:today',
+        ];
+
+        if ($employee?->user_id !== null) {
+            $emailRules[] = Rule::unique('users', 'email')->ignore($employee->user_id);
+        } else {
+            $emailRules[] = Rule::unique('users', 'email');
+        }
+
+        if ($employee?->profile !== null) {
+            $emailRules[] = Rule::unique('employee_profiles', 'email')->ignore($employee->profile->id);
+        } else {
+            $emailRules[] = Rule::unique('employee_profiles', 'email');
+        }
+
         return [
             'nik' => [
-                'nullable',
+                $requiresAccount ? 'required' : 'nullable',
                 'string',
                 'max:30',
                 Rule::unique('employees', 'nik')->ignore($employee?->id),
             ],
-            'nama' => ['nullable', 'string', 'max:255'],
+            'nama' => [$requiresAccount ? 'required' : 'nullable', 'string', 'max:255'],
             'gender' => ['nullable', 'string', 'in:Laki-Laki,Perempuan'],
             'tempat_lahir' => ['nullable', 'string', 'max:255'],
-            'tgl_lahir' => ['nullable', 'date'],
+            'tgl_lahir' => $birthDateRules,
             'agama' => ['nullable', 'string', 'max:50'],
             'status_nikah' => ['nullable', 'string', 'max:30'],
             'jml_anak' => ['nullable', 'integer', 'min:0', 'max:50'],
@@ -242,7 +284,7 @@ class WizardPegawaiController extends Controller
             'departemen' => ['nullable', 'string', 'max:255'],
             'posisi' => ['nullable', 'string', 'max:255'],
             'tgl_gabung' => ['nullable', 'date'],
-            'email' => ['nullable', 'email', 'max:255'],
+            'email' => $emailRules,
             'hp1' => ['nullable', 'string', 'max:30'],
             'hp2' => ['nullable', 'string', 'max:30'],
             'alamat_ktp' => ['nullable', 'string', 'max:2000'],

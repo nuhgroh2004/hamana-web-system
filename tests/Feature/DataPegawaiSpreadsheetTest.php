@@ -8,6 +8,7 @@ use App\Services\Pegawai\ExportPegawaiService;
 use App\Support\PegawaiSheet;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Hash;
 use OpenSpout\Common\Entity\Row;
 use OpenSpout\Reader\XLSX\Reader;
 use OpenSpout\Writer\XLSX\Writer;
@@ -16,6 +17,23 @@ use Tests\TestCase;
 class DataPegawaiSpreadsheetTest extends TestCase
 {
     use DatabaseTransactions;
+
+    public function test_new_import_rows_require_email_and_birth_date(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin', 'nik' => 'TEST.XLSX.INVALID']);
+
+        $this->actingAs($admin)
+            ->post('/api/data-pegawai/import', [
+                'file' => UploadedFile::fake()->createWithContent(
+                    'pegawai.csv',
+                    "NIK,Nama,Email,Tanggal Lahir\nTEST.XLSX.INVALID.01,Pegawai Baru,,\n",
+                ),
+            ], ['Accept' => 'application/json'])
+            ->assertStatus(422)
+            ->assertJsonValidationErrors('file');
+
+        $this->assertDatabaseMissing('employees', ['nik' => 'TEST.XLSX.INVALID.01']);
+    }
 
     public function test_admin_can_import_full_xlsx_and_export_it_again(): void
     {
@@ -54,7 +72,7 @@ class DataPegawaiSpreadsheetTest extends TestCase
             'Departemen' => 'HRD',
             'Posisi' => 'Officer HRD',
             'Tanggal Bergabung' => '2021-02-01',
-            'Status Pegawai' => 'Aktif',
+            'Status Pegawai' => null,
             'Nama Darurat 1' => 'Bapak Darurat',
             'No. Telp Darurat 1' => '081111111111',
             'Hubungan Darurat 1' => 'Ayah',
@@ -106,9 +124,14 @@ class DataPegawaiSpreadsheetTest extends TestCase
                 'file' => $this->xlsx([$headers, $row]),
             ], ['Accept' => 'application/json'])
             ->assertOk()
-            ->assertJsonPath('hasil.ditambah', 1);
+            ->assertJsonPath('hasil.ditambah', 1)
+            ->assertJsonPath('hasil.akun_dibuat', 1);
 
         $employee = Employee::query()->where('nik', 'TEST.XLSX.01')->firstOrFail();
+        $user = User::query()->findOrFail($employee->user_id);
+        $this->assertSame('karyawan', $user->role);
+        $this->assertNull($user->permissions);
+        $this->assertTrue(Hash::check('pegawai1705', $user->password));
 
         $this->assertSame('REF-XLSX-01', $employee->ref_id);
         $this->assertSame('III/A', $employee->tingkat);
@@ -116,6 +139,7 @@ class DataPegawaiSpreadsheetTest extends TestCase
         $this->assertSame('Officer', $employee->jabatan);
         $this->assertSame('Officer HRD', $employee->posisi);
         $this->assertSame('Aktif', $employee->status_pegawai);
+        $this->assertTrue($user->is_active);
 
         $profile = $employee->profile()->firstOrFail();
 

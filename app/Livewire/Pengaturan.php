@@ -3,6 +3,10 @@
 namespace App\Livewire;
 
 use App\Models\User;
+use App\Services\Access\SetUserCustomAccessService;
+use App\Services\Access\SetUserDefaultAccessService;
+use App\Services\Access\ToggleUserModuleAccessService;
+use App\Services\Access\ToggleUserModuleGroupAccessService;
 use App\Services\Employee\SyncEmployeeFromUserService;
 use App\Support\Modules;
 use Illuminate\Support\Facades\Hash;
@@ -274,13 +278,7 @@ class Pengaturan extends Component
             return;
         }
 
-        $allowed = $user->permissionList();
-        $allowed = $on
-            ? array_values(array_unique(array_merge($allowed, $group['slugs'])))
-            : array_values(array_diff($allowed, $group['slugs']));
-
-        $user->permissions = $allowed;
-        $user->save();
+        app(ToggleUserModuleGroupAccessService::class)->handle($user, $group['slugs'], $on);
     }
 
     /**
@@ -292,20 +290,7 @@ class Pengaturan extends Component
 
         $user = User::findOrFail($userId);
 
-        if ($user->isAdmin() || ! Modules::find($slug)) {
-            return;
-        }
-
-        $allowed = $user->permissionList();
-
-        if (in_array($slug, $allowed, true)) {
-            $allowed = array_values(array_diff($allowed, [$slug]));
-        } else {
-            $allowed[] = $slug;
-        }
-
-        $user->permissions = array_values(array_unique($allowed));
-        $user->save();
+        app(ToggleUserModuleAccessService::class)->handle($user, $slug);
     }
 
     /**
@@ -317,12 +302,7 @@ class Pengaturan extends Component
 
         $user = User::findOrFail($userId);
 
-        if ($user->isAdmin() || $user->permissions === null) {
-            return;
-        }
-
-        $user->permissions = null;
-        $user->save();
+        app(SetUserDefaultAccessService::class)->handle($user);
     }
 
     /**
@@ -336,12 +316,7 @@ class Pengaturan extends Component
 
         $user = User::findOrFail($userId);
 
-        if ($user->isAdmin() || $user->permissions !== null) {
-            return;
-        }
-
-        $user->permissions = $user->permissionList();
-        $user->save();
+        app(SetUserCustomAccessService::class)->handle($user);
     }
 
     /**

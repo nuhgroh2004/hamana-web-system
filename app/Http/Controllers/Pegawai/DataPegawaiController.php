@@ -30,6 +30,8 @@ class DataPegawaiController extends Controller
         $data = $request->validate([
             'nik' => ['required', 'string', 'max:30', 'unique:employees,nik'],
             'nama' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'email', 'max:255', 'unique:users,email', 'unique:employee_profiles,email'],
+            'tanggal_lahir' => ['required', 'date', 'before:today'],
             'jabatan' => ['nullable', 'string', 'max:255'],
             'posisi' => ['nullable', 'string', 'max:255'],
             'status' => ['nullable', 'string', 'in:Aktif,Tidak Aktif'],

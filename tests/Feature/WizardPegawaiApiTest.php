@@ -6,6 +6,7 @@ use App\Models\Employee;
 use App\Models\User;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
@@ -76,9 +77,11 @@ class WizardPegawaiApiTest extends TestCase
     public function test_admin_can_create_employee_through_wizard(): void
     {
         $admin = $this->makeAdmin();
+        $data = $this->dataPribadi();
+        $data['email'] = 'WIZARD@EXAMPLE.TEST';
 
         $response = $this->actingAs($admin)
-            ->postJson('/api/data-pegawai/wizard', $this->dataPribadi())
+            ->postJson('/api/data-pegawai/wizard', $data)
             ->assertCreated()
             ->assertJsonPath('employee.nik', 'WIZ.00.00.01')
             ->assertJsonPath('progress.data_pribadi', true)
@@ -96,6 +99,13 @@ class WizardPegawaiApiTest extends TestCase
             'departemen' => 'HRD',
             'code_grup_pajak' => 'A1',
         ]);
+
+        $employee = Employee::query()->findOrFail($employeeId);
+        $user = User::query()->findOrFail($employee->user_id);
+        $this->assertSame('karyawan', $user->role);
+        $this->assertNull($user->permissions);
+        $this->assertSame('wizard@example.test', $user->email);
+        $this->assertTrue(Hash::check('karyawan1102', $user->password));
 
         $this->actingAs($admin)
             ->getJson('/api/data-pegawai/wizard/'.$employeeId)
@@ -223,20 +233,19 @@ class WizardPegawaiApiTest extends TestCase
             ->assertJsonValidationErrors('nomor.KK');
     }
 
-    public function test_wizard_allows_empty_steps_during_development(): void
+    public function test_wizard_requires_account_details_and_allows_empty_optional_steps(): void
     {
         $admin = $this->makeAdmin();
 
-        $response = $this->actingAs($admin)
+        $this->actingAs($admin)
             ->postJson('/api/data-pegawai/wizard', [])
-            ->assertCreated();
+            ->assertStatus(422)
+            ->assertJsonValidationErrors(['nik', 'nama', 'tgl_lahir', 'email']);
 
-        $employeeId = $response->json('employee.id');
-
-        $employee = Employee::query()->findOrFail($employeeId);
-
-        $this->assertStringStartsWith('DEV-', $employee->nik);
-        $this->assertSame('Karyawan Baru', $employee->nama);
+        $employeeId = $this->actingAs($admin)
+            ->postJson('/api/data-pegawai/wizard', $this->dataPribadi())
+            ->assertCreated()
+            ->json('employee.id');
 
         $this->actingAs($admin)
             ->putJson('/api/data-pegawai/wizard/'.$employeeId.'/pendidikan', ['items' => []])

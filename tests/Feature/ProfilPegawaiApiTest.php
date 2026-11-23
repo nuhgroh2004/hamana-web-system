@@ -7,6 +7,7 @@ use App\Models\EmployeeDocument;
 use App\Models\User;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
@@ -170,10 +171,20 @@ class ProfilPegawaiApiTest extends TestCase
             ->assertOk()
             ->assertJsonStructure(['data', 'meta', 'counts']);
 
+        $this->actingAs($admin)
+            ->postJson('/api/data-pegawai', [
+                'nik' => 'TEST.00.00.40',
+                'nama' => 'Pegawai Tanpa Data Akun',
+            ])
+            ->assertStatus(422)
+            ->assertJsonValidationErrors(['email', 'tanggal_lahir']);
+
         $response = $this->actingAs($admin)
             ->postJson('/api/data-pegawai', [
                 'nik' => 'TEST.00.00.04',
                 'nama' => 'Pegawai Baru',
+                'email' => 'pegawai.baru@example.test',
+                'tanggal_lahir' => '1990-05-17',
                 'jabatan' => 'Officer',
                 'posisi' => 'Officer Produksi',
                 'status' => 'Aktif',
@@ -182,6 +193,10 @@ class ProfilPegawaiApiTest extends TestCase
             ->assertJsonPath('pegawai.nama', 'Pegawai Baru');
 
         $employee = Employee::query()->findOrFail($response->json('pegawai.id'));
+        $employeeUser = User::query()->findOrFail($employee->user_id);
+        $this->assertSame('karyawan', $employeeUser->role);
+        $this->assertNull($employeeUser->permissions);
+        $this->assertTrue(Hash::check('pegawai1705', $employeeUser->password));
 
         $this->actingAs($admin)
             ->putJson('/api/data-pegawai/'.$employee->id, [
@@ -204,16 +219,21 @@ class ProfilPegawaiApiTest extends TestCase
             ->post('/api/data-pegawai/import', [
                 'file' => UploadedFile::fake()->createWithContent(
                     'pegawai.csv',
-                    "NIK,Nama,Jabatan,Posisi,Status\nTEST.00.00.05,Pegawai Import,Officer,Staff,Aktif\n",
+                    "NIK,Nama,Email,Tanggal Lahir,Jabatan,Posisi,Status\nTEST.00.00.05,Pegawai Import,pegawai.import@example.test,1992-08-03,Officer,Staff,Aktif\n",
                 ),
             ], ['Accept' => 'application/json'])
             ->assertOk()
-            ->assertJsonPath('hasil.ditambah', 1);
+            ->assertJsonPath('hasil.ditambah', 1)
+            ->assertJsonPath('hasil.akun_dibuat', 1);
 
+        $importedEmployee = Employee::query()->where('nik', 'TEST.00.00.05')->firstOrFail();
         $this->assertDatabaseHas('employees', [
             'nik' => 'TEST.00.00.05',
             'nama' => 'Pegawai Import',
         ]);
+        $importedUser = User::query()->findOrFail($importedEmployee->user_id);
+        $this->assertSame('karyawan', $importedUser->role);
+        $this->assertTrue(Hash::check('pegawai0308', $importedUser->password));
 
         $this->actingAs($admin)
             ->deleteJson('/api/data-pegawai/'.$employee->id)

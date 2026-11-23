@@ -35,7 +35,7 @@ class SaveDataPribadiService
                     'jumlah_anak' => $this->number($data['jml_anak'] ?? null),
                     'departemen' => $data['departemen'] ?? null,
                     'tanggal_gabung' => $this->date($data['tgl_gabung'] ?? null),
-                    'email' => $data['email'] ?? null,
+                    'email' => $this->email($data['email'] ?? null),
                     'no_hp_1' => $data['hp1'] ?? null,
                     'no_hp_2' => $data['hp2'] ?? null,
                     'alamat_ktp' => $data['alamat_ktp'] ?? null,
@@ -89,6 +89,16 @@ class SaveDataPribadiService
     private function number(mixed $value): ?int
     {
         return $value !== null && $value !== '' ? (int) $value : null;
+    }
+
+    /**
+     * Normalize an email address for consistent login matching.
+     */
+    private function email(?string $value): ?string
+    {
+        $value = trim((string) $value);
+
+        return $value === '' ? null : mb_strtolower($value);
     }
 
     /**

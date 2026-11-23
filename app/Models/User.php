@@ -21,13 +21,14 @@ class User extends Authenticatable
 
     public const ROLE_SATPAM = 'satpam';
 
-    /**
-     * Default page access for a karyawan account.
-     *
-     * @var list<string>
-     */
+    /** @var list<string> */
     public const DEFAULT_PERMISSIONS = [
         'dashboard',
+        'profil-data-pribadi',
+        'profil-riwayat-pendidikan',
+        'profil-anggota-keluarga',
+        'profil-ciri-fisik',
+        'profil-kelola-file',
         'permohonan-masuk',
         'permohonan-saya',
         'izin-cuti-atau-sakit',
@@ -37,26 +38,8 @@ class User extends Authenticatable
         'form-absensi',
         'slip-gaji',
         'buku-hamana',
-        'profil-data-pribadi',
-        'profil-riwayat-pendidikan',
-        'profil-anggota-keluarga',
-        'profil-ciri-fisik',
-        'profil-kelola-file',
         'saran',
         'tanda-tangan',
-        'bahasa',
-        'ubah-password',
-    ];
-
-    /**
-     * Default page access for a satpam account.
-     *
-     * @var list<string>
-     */
-    public const SATPAM_PERMISSIONS = [
-        'dashboard',
-        'form-absensi',
-        'saran',
         'ubah-password',
     ];
 
@@ -130,13 +113,9 @@ class User extends Authenticatable
             return $all;
         }
 
-        $defaults = $this->role === self::ROLE_SATPAM
-            ? static::SATPAM_PERMISSIONS
-            : static::DEFAULT_PERMISSIONS;
-
         $permissions = is_array($this->permissions)
             ? $this->permissions
-            : $defaults;
+            : static::DEFAULT_PERMISSIONS;
 
         return array_values(array_intersect($permissions, $all));
     }

@@ -6,7 +6,8 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{{ $title ?? 'Masuk · Hamana Works Indonesia' }}</title>
 
-    @vite(['resources/css/auth/style.css', 'resources/js/auth/script.js'])
+    <link rel="stylesheet" href="{{ mix('css/auth/style.css') }}">
+    <script src="{{ mix('js/auth/script.js') }}" defer></script>
     @livewireStyles
 </head>
 <body>

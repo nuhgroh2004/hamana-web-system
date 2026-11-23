@@ -8,7 +8,8 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{{ $title }}</title>
 
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <link rel="stylesheet" href="{{ mix('css/app.css') }}">
+    <script src="{{ mix('js/app.js') }}" defer></script>
     @livewireStyles
 </head>
 <body>

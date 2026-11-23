@@ -14,10 +14,14 @@ use Throwable;
 
 class ImportPegawaiService
 {
+    public function __construct(
+        private readonly CreateUserFromEmployeeProfileService $createUser,
+    ) {}
+
     /**
      * Import employees from an XLSX or CSV file, updating rows by NIK.
      *
-     * @return array{ditambah: int, diperbarui: int, dilewati: int}
+     * @return array{ditambah: int, diperbarui: int, dilewati: int, akun_dibuat: int, akun_dihubungkan: int, akun_sudah_ada: int, akun_dilewati: int}
      */
     public function handle(UploadedFile $file): array
     {
@@ -42,10 +46,16 @@ class ImportPegawaiService
         $added = 0;
         $updated = 0;
         $skipped = 0;
+        $accountCounts = [
+            'akun_dibuat' => 0,
+            'akun_dihubungkan' => 0,
+            'akun_sudah_ada' => 0,
+            'akun_dilewati' => 0,
+        ];
 
-        DB::transaction(function () use ($rows, $map, &$added, &$updated, &$skipped) {
+        DB::transaction(function () use ($rows, $map, &$added, &$updated, &$skipped, &$accountCounts) {
             foreach ($rows as $row) {
-                $result = $this->importRow($row, $map);
+                $result = $this->importRow($row, $map, $accountCounts);
 
                 if ($result === 'added') {
                     $added++;
@@ -61,7 +71,7 @@ class ImportPegawaiService
             'ditambah' => $added,
             'diperbarui' => $updated,
             'dilewati' => $skipped,
-        ];
+        ] + $accountCounts;
     }
 
     /**
@@ -69,9 +79,10 @@ class ImportPegawaiService
      *
      * @param  array<int, mixed>  $row
      * @param  array<string, int>  $map
+     * @param  array<string, int>  $accountCounts
      * @return 'added'|'updated'|null
      */
-    private function importRow(array $row, array $map): ?string
+    private function importRow(array $row, array $map, array &$accountCounts): ?string
     {
         $nik = $this->text($row, $map, 'nik');
         $nama = $this->text($row, $map, 'namalengkap', 'nama');
@@ -84,7 +95,10 @@ class ImportPegawaiService
         $created = $employee === null;
 
         if ($created) {
-            $employee = new Employee(['nik' => $nik]);
+            $employee = new Employee([
+                'nik' => $nik,
+                'status_pegawai' => Employee::STATUS_AKTIF,
+            ]);
         }
 
         $employee->nik = $nik;
@@ -115,6 +129,24 @@ class ImportPegawaiService
         $this->importEducations($employee, $row, $map);
         $this->importFamily($employee, $row, $map);
         $this->importPhysical($employee, $row, $map);
+
+        $accountStatus = $this->createUser->handle($employee);
+
+        if ($accountStatus === CreateUserFromEmployeeProfileService::CREATED) {
+            $accountCounts['akun_dibuat']++;
+        } elseif ($accountStatus === CreateUserFromEmployeeProfileService::LINKED) {
+            $accountCounts['akun_dihubungkan']++;
+        } elseif ($accountStatus === CreateUserFromEmployeeProfileService::ALREADY_LINKED) {
+            $accountCounts['akun_sudah_ada']++;
+        } else {
+            $accountCounts['akun_dilewati']++;
+
+            if ($created) {
+                throw ValidationException::withMessages([
+                    'file' => "Pegawai dengan NIK {$nik} tidak dibuat karena email atau tanggal lahir tidak valid, atau email/NIK telah digunakan akun lain.",
+                ]);
+            }
+        }
 
         return $created ? 'added' : 'updated';
     }
@@ -160,7 +192,10 @@ class ImportPegawaiService
 
         foreach ($textFields as $key => $column) {
             if ($this->has($map, $key)) {
-                $data[$column] = $this->text($row, $map, $key);
+                $value = $this->text($row, $map, $key);
+                $data[$column] = $key === 'email' && $value !== null
+                    ? mb_strtolower(trim($value))
+                    : $value;
             }
         }
 
