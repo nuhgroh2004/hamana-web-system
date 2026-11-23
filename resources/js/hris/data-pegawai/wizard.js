@@ -119,11 +119,13 @@ function initDataPegawaiWizard() {
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
+    const CONTROL_SELECTOR = 'input[id^="w-"], select[id^="w-"], textarea[id^="w-"]';
+
     // ---- langkah 1: data pribadi ----
     function collectDataPribadi() {
         const data = {};
 
-        sections[0].querySelectorAll('[id^="w-"]').forEach(function (el) {
+        sections[0].querySelectorAll(CONTROL_SELECTOR).forEach(function (el) {
             if (['file', 'checkbox', 'radio'].includes(el.type)) {
                 return;
             }
@@ -145,7 +147,7 @@ function initDataPegawaiWizard() {
             return;
         }
 
-        sections[0].querySelectorAll('[id^="w-"]').forEach(function (el) {
+        sections[0].querySelectorAll(CONTROL_SELECTOR).forEach(function (el) {
             if (['file', 'checkbox', 'radio'].includes(el.type)) {
                 return;
             }
@@ -220,19 +222,23 @@ function initDataPegawaiWizard() {
         });
     }
 
-    // ---- baris dinamis: pendidikan & keluarga ----
-    function buildRow(fields, values, options) {
-        const row = document.createElement('div');
-        row.className = 'wz-row';
+    // ---- kartu dinamis: pendidikan & keluarga ----
+    function buildCard(config) {
+        const card = document.createElement('div');
+        card.className = 'wz-card';
 
-        row.innerHTML = fields
+        const fields = config.fields
             .map(function (field) {
-                const label = '<label class="lb">' + esc(field.label) + (field.required ? ' <span class="rq">*</span>' : '') + '</label>';
+                const label =
+                    '<label class="lb">' +
+                    esc(field.label) +
+                    (field.required ? ' <span class="rq">*</span>' : '') +
+                    '</label>';
+                const cls = field.wide ? 'f wide' : 'f';
+                let control;
 
                 if (field.type === 'select') {
-                    return (
-                        '<div class="f">' +
-                        label +
+                    control =
                         '<select class="fld" data-f="' +
                         field.key +
                         '">' +
@@ -241,62 +247,119 @@ function initDataPegawaiWizard() {
                                 return '<option>' + esc(option) + '</option>';
                             })
                             .join('') +
-                        '</select></div>'
-                    );
+                        '</select>';
+                } else {
+                    control =
+                        '<input class="fld" data-f="' +
+                        field.key +
+                        '" autocomplete="off"' +
+                        (field.numeric ? ' inputmode="numeric"' : '') +
+                        (field.maxlength ? ' maxlength="' + field.maxlength + '"' : '') +
+                        '>';
                 }
 
-                return (
-                    '<div class="f">' +
-                    label +
-                    '<input class="fld" data-f="' +
-                    field.key +
-                    '" autocomplete="off"' +
-                    (field.numeric ? ' inputmode="numeric"' : '') +
-                    (field.maxlength ? ' maxlength="' + field.maxlength + '"' : '') +
-                    '></div>'
-                );
+                return '<div class="' + cls + '">' + label + control + '</div>';
             })
-            .join('') +
-            '<button type="button" class="btn sm dgb" data-remove aria-label="Hapus baris">Hapus</button>';
+            .join('');
 
-        fields.forEach(function (field) {
-            const el = row.querySelector('[data-f="' + field.key + '"]');
-            const value = values[field.key];
+        card.innerHTML =
+            '<div class="wz-card-head">' +
+            '<b data-title>' +
+            esc(config.label) +
+            '</b>' +
+            '<label class="chk"><input type="checkbox" data-f="aktif"> Aktif</label>' +
+            '<button type="button" class="btn sm dgb" data-remove>Hapus</button>' +
+            '</div>' +
+            '<div class="wz-grid">' +
+            fields +
+            '</div>';
+
+        config.fields.forEach(function (field) {
+            const el = card.querySelector('[data-f="' + field.key + '"]');
+            const value = config.values ? config.values[field.key] : null;
 
             if (!el) {
                 return;
             }
 
             if (field.type === 'select') {
-                el.value = value || (options && options.defaults && options.defaults[field.key]) || field.options[0];
+                el.value = value || (config.defaults && config.defaults[field.key]) || field.options[0];
             } else {
                 el.value = value == null ? '' : value;
             }
         });
 
-        row.querySelector('[data-remove]').addEventListener('click', function () {
-            row.remove();
+        const aktif = card.querySelector('[data-f="aktif"]');
+        aktif.checked = config.values ? config.values.aktif !== false : true;
+
+        card.querySelector('[data-remove]').addEventListener('click', function () {
+            card.remove();
+            renumber(config.box, config.label);
         });
 
-        return row;
+        return card;
+    }
+
+    function renumber(box, label) {
+        Array.from(box.querySelectorAll('.wz-card')).forEach(function (card, index) {
+            const title = card.querySelector('[data-title]');
+
+            if (title) {
+                title.textContent = label + ' ' + (index + 1);
+            }
+        });
+    }
+
+    const PENDIDIKAN_FIELDS = [
+        { key: 'jenjang', label: 'Jenjang', type: 'select', options: JENJANG, required: true },
+        { key: 'nama_sekolah', label: 'Nama Sekolah', wide: true },
+        { key: 'jurusan', label: 'Jurusan' },
+        { key: 'tahun', label: 'Tahun', numeric: true, maxlength: 10 },
+    ];
+
+    const KELUARGA_FIELDS = [
+        { key: 'hubungan', label: 'Hubungan', type: 'select', options: HUBUNGAN, required: true },
+        { key: 'urutan', label: 'Urutan', numeric: true, maxlength: 3 },
+        { key: 'nama', label: 'Nama Lengkap', wide: true },
+        { key: 'usia', label: 'Usia', numeric: true, maxlength: 3 },
+        { key: 'pekerjaan', label: 'Pekerjaan' },
+    ];
+
+    function addPendidikan(values) {
+        const card = buildCard({
+            box: pendidikanBox,
+            label: 'Pendidikan',
+            fields: PENDIDIKAN_FIELDS,
+            values: values,
+            defaults: { jenjang: 'SMA/SMK' },
+        });
+
+        pendidikanBox.appendChild(card);
+        renumber(pendidikanBox, 'Pendidikan');
+
+        return card;
+    }
+
+    function addKeluarga(values) {
+        const card = buildCard({
+            box: keluargaBox,
+            label: 'Anggota Keluarga',
+            fields: KELUARGA_FIELDS,
+            values: values,
+            defaults: { hubungan: 'AYAH' },
+        });
+
+        keluargaBox.appendChild(card);
+        renumber(keluargaBox, 'Anggota Keluarga');
+
+        return card;
     }
 
     function renderPendidikan(items) {
         pendidikanBox.innerHTML = '';
 
         (items && items.length ? items : [{}]).forEach(function (item) {
-            pendidikanBox.appendChild(
-                buildRow(
-                    [
-                        { key: 'jenjang', label: 'Jenjang', type: 'select', options: JENJANG },
-                        { key: 'nama_sekolah', label: 'Nama Sekolah' },
-                        { key: 'jurusan', label: 'Jurusan' },
-                        { key: 'tahun', label: 'Tahun', numeric: true, maxlength: 10 },
-                    ],
-                    item,
-                    { defaults: { jenjang: 'SMA/SMK' } },
-                ),
-            );
+            addPendidikan(item);
         });
     }
 
@@ -304,46 +367,34 @@ function initDataPegawaiWizard() {
         keluargaBox.innerHTML = '';
 
         (items && items.length ? items : [{}]).forEach(function (item) {
-            keluargaBox.appendChild(
-                buildRow(
-                    [
-                        { key: 'hubungan', label: 'Hubungan', type: 'select', options: HUBUNGAN },
-                        { key: 'nama', label: 'Nama Lengkap' },
-                        { key: 'usia', label: 'Usia', numeric: true, maxlength: 3 },
-                        { key: 'pekerjaan', label: 'Pekerjaan' },
-                    ],
-                    item,
-                    { defaults: { hubungan: 'AYAH' } },
-                ),
-            );
+            addKeluarga(item);
         });
     }
 
-    function collectRows(box, fields) {
-        return Array.from(box.querySelectorAll('.wz-row'))
-            .map(function (row) {
+    function collectCards(box, fields) {
+        return Array.from(box.querySelectorAll('.wz-card'))
+            .map(function (card) {
                 const item = {};
 
                 fields.forEach(function (field) {
-                    const el = row.querySelector('[data-f="' + field + '"]');
+                    const el = card.querySelector('[data-f="' + field + '"]');
                     item[field] = el ? el.value.trim() : '';
                 });
+
+                const aktif = card.querySelector('[data-f="aktif"]');
+                item.aktif = aktif ? aktif.checked : true;
 
                 return item;
             })
             .filter(function (item) {
-                return fields.some(function (field) {
-                    return field !== 'jenjang' && field !== 'hubungan' && item[field] !== '';
+                return ['nama_sekolah', 'jurusan', 'tahun', 'nama', 'usia', 'pekerjaan'].some(function (field) {
+                    return item[field] !== undefined && item[field] !== '';
                 });
             });
     }
 
     function savePendidikan() {
-        const items = collectRows(pendidikanBox, ['jenjang', 'nama_sekolah', 'jurusan', 'tahun']).map(function (item) {
-            item.aktif = true;
-
-            return item;
-        });
+        const items = collectCards(pendidikanBox, ['jenjang', 'nama_sekolah', 'jurusan', 'tahun']);
 
         return window.axios
             .put('/api/data-pegawai/wizard/' + employeeId + '/pendidikan', { items: items })
@@ -354,9 +405,8 @@ function initDataPegawaiWizard() {
     }
 
     function saveKeluarga() {
-        const items = collectRows(keluargaBox, ['hubungan', 'nama', 'usia', 'pekerjaan']).map(function (item, index) {
-            item.urutan = index + 1;
-            item.aktif = true;
+        const items = collectCards(keluargaBox, ['hubungan', 'urutan', 'nama', 'usia', 'pekerjaan']).map(function (item) {
+            item.urutan = item.urutan === '' ? null : Number(item.urutan);
             item.usia = item.usia === '' ? null : Number(item.usia);
 
             return item;
@@ -512,7 +562,8 @@ function initDataPegawaiWizard() {
         btnNext.disabled = true;
         btnNext.textContent = 'Menyimpan…';
 
-        saveStep()
+        Promise.resolve()
+            .then(saveStep)
             .then(function () {
                 if (step < TOTAL) {
                     goTo(step + 1);
@@ -540,33 +591,11 @@ function initDataPegawaiWizard() {
     });
 
     document.getElementById('wz-add-pendidikan').addEventListener('click', function () {
-        pendidikanBox.appendChild(
-            buildRow(
-                [
-                    { key: 'jenjang', label: 'Jenjang', type: 'select', options: JENJANG },
-                    { key: 'nama_sekolah', label: 'Nama Sekolah' },
-                    { key: 'jurusan', label: 'Jurusan' },
-                    { key: 'tahun', label: 'Tahun', numeric: true, maxlength: 10 },
-                ],
-                {},
-                { defaults: { jenjang: 'SMA/SMK' } },
-            ),
-        );
+        addPendidikan({});
     });
 
     document.getElementById('wz-add-keluarga').addEventListener('click', function () {
-        keluargaBox.appendChild(
-            buildRow(
-                [
-                    { key: 'hubungan', label: 'Hubungan', type: 'select', options: HUBUNGAN },
-                    { key: 'nama', label: 'Nama Lengkap' },
-                    { key: 'usia', label: 'Usia', numeric: true, maxlength: 3 },
-                    { key: 'pekerjaan', label: 'Pekerjaan' },
-                ],
-                {},
-                { defaults: { hubungan: 'AYAH' } },
-            ),
-        );
+        addKeluarga({});
     });
 
     // ---- unggah & hapus dokumen ----
