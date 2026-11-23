@@ -7,6 +7,7 @@ use App\Http\Controllers\DataAdmin\ListAdminController;
 use App\Http\Controllers\DataAdmin\SatpamController;
 use App\Http\Controllers\DataAdmin\TingkatController;
 use App\Http\Controllers\Pegawai\DataPegawaiController;
+use App\Http\Controllers\Pegawai\WizardPegawaiController;
 use App\Http\Controllers\Profile\AnggotaKeluargaController;
 use App\Http\Controllers\Profile\CiriFisikController;
 use App\Http\Controllers\Profile\DataPribadiController;
@@ -16,6 +17,7 @@ use App\Livewire\Auth\Login;
 use App\Livewire\Dashboard;
 use App\Livewire\ModulePage;
 use App\Livewire\Pengaturan;
+use App\Livewire\TambahPegawai;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/login', Login::class)->middleware('guest')->name('login');
@@ -33,6 +35,10 @@ Route::middleware('auth')->group(function () {
         ->name('pengaturan.panel');
 
     Route::redirect('/modul/ubah-password', '/pengaturan/ubah-password');
+
+    Route::get('/modul/data-pegawai/tambah', TambahPegawai::class)
+        ->middleware('module.access:data-pegawai')
+        ->name('data-pegawai.tambah');
 
     Route::get('/modul/{module}', ModulePage::class)
         ->middleware('module.access')
@@ -66,6 +72,19 @@ Route::middleware('auth')->group(function () {
             Route::post('data-pegawai', [DataPegawaiController::class, 'store'])->name('data-pegawai.store');
             Route::post('data-pegawai/import', [DataPegawaiController::class, 'import'])->name('data-pegawai.import');
             Route::get('data-pegawai/export', [DataPegawaiController::class, 'export'])->name('data-pegawai.export');
+
+            Route::prefix('data-pegawai/wizard')->name('data-pegawai.wizard.')->group(function () {
+                Route::post('/', [WizardPegawaiController::class, 'store'])->name('store');
+                Route::get('{employee}', [WizardPegawaiController::class, 'show'])->name('show');
+                Route::put('{employee}/data-pribadi', [WizardPegawaiController::class, 'updateDataPribadi'])->name('data-pribadi');
+                Route::put('{employee}/pendidikan', [WizardPegawaiController::class, 'updatePendidikan'])->name('pendidikan');
+                Route::put('{employee}/keluarga', [WizardPegawaiController::class, 'updateKeluarga'])->name('keluarga');
+                Route::put('{employee}/ciri-fisik', [WizardPegawaiController::class, 'updateCiriFisik'])->name('ciri-fisik');
+                Route::put('{employee}/nomor-dokumen', [WizardPegawaiController::class, 'updateNomorDokumen'])->name('nomor-dokumen');
+                Route::post('{employee}/dokumen', [WizardPegawaiController::class, 'storeDokumen'])->name('dokumen.store');
+                Route::delete('{employee}/dokumen/{document}', [WizardPegawaiController::class, 'destroyDokumen'])->name('dokumen.destroy');
+            });
+
             Route::put('data-pegawai/{employee}', [DataPegawaiController::class, 'update'])->name('data-pegawai.update');
             Route::delete('data-pegawai/{employee}', [DataPegawaiController::class, 'destroy'])->name('data-pegawai.destroy');
         });

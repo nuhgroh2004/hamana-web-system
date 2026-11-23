@@ -14,6 +14,7 @@ import './hris/data-admin-data-jabatan/script';
 import './hris/data-admin-data-tingkat/script';
 import './hris/data-admin-list-admin/script';
 import './hris/data-pegawai/script';
+import './hris/data-pegawai/wizard';
 import './hris/slip-gaji/script';
 import './hris/saran/script';
 import './hris/saran-masuk/script';

@@ -594,45 +594,6 @@ function initDataPegawai() {
         return true;
     }
 
-    function resetList() {
-        filt = 'all';
-        DD.st.val = 'all';
-        paint('st');
-        q = '';
-        document.getElementById('q').value = '';
-        page = 1;
-    }
-
-    document.getElementById('add').onclick = function () {
-        open(
-            'Tambah Karyawan',
-            form(),
-            '<button type="button" class="btn" data-close>Batal</button><button type="button" class="btn go" id="a-save">Simpan</button>',
-        );
-
-        fillForm();
-
-        document.getElementById('a-save').onclick = function () {
-            var v = readForm();
-
-            if (!validateForm(v)) {
-                return;
-            }
-
-            window.axios
-                .post('/api/data-pegawai', v)
-                .then(function (res) {
-                    resetList();
-                    close();
-                    return load().then(function () {
-                        emit('pegawai-tambah', res.data.pegawai);
-                        say('Karyawan ' + v.nama + ' berhasil ditambahkan.');
-                    });
-                })
-                .catch(fail);
-        };
-    };
-
     function editEmployee(p) {
         open(
             'Edit Karyawan',

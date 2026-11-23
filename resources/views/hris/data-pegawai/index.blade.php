@@ -39,10 +39,10 @@
                     <svg class="i" viewBox="0 0 16 16"><path d="M8 11V2.5M4.5 6L8 2.5 11.5 6M2.5 10.5v3h11v-3"/></svg>
                     Export
                 </button>
-                <button type="button" class="btn go" id="add">
+                <a class="btn go" id="add" href="{{ route('data-pegawai.tambah') }}" wire:navigate>
                     <svg class="i" viewBox="0 0 16 16"><path d="M8 3v10M3 8h10"/></svg>
                     Tambah Karyawan
-                </button>
+                </a>
             </div>
         </div>
 
