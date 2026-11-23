@@ -623,36 +623,27 @@ function initDataPegawai() {
         };
     }
 
-    // ---- export (CSV) ----
+    // ---- export (XLSX) ----
     document.getElementById('exp').onclick = function () {
         var p = new URLSearchParams({ search: q.trim(), status: filt });
         window.location.href = '/api/data-pegawai/export?' + p.toString();
         emit('pegawai-export', params());
-        say('Data pegawai sedang diekspor.');
+        say('Data pegawai sedang diekspor ke Excel.');
     };
 
-    // ---- import (CSV) ----
+    // ---- import (XLSX / CSV) ----
     document.getElementById('imp').onclick = function () {
         open(
             'Import Data Pegawai',
-            '<p>Unggah file CSV dengan kolom: <b>NIK, Nama, Jabatan, Posisi, Status</b>. Baris dengan NIK yang sudah ada akan diperbarui, dan baris tanpa NIK atau Nama dilewati.</p>' +
-                '<input type="file" id="i-file" accept=".csv,text/csv" hidden>',
-            '<button type="button" class="btn" id="i-tpl" style="margin-right:auto">Unduh template</button><button type="button" class="btn" data-close>Batal</button><button type="button" class="btn go" id="i-pick">Pilih file CSV</button>',
+            '<p>Unggah file Excel <b>.xlsx</b> (atau CSV) sesuai template. Baris dengan NIK yang sudah ada akan diperbarui, dan baris tanpa NIK atau Nama Lengkap dilewati.</p>' +
+                '<p class="hint">Template memuat seluruh kolom data pegawai, pendidikan, keluarga, dan ciri fisik.</p>' +
+                '<input type="file" id="i-file" accept=".xlsx,.csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,text/csv" hidden>',
+            '<button type="button" class="btn" id="i-tpl" style="margin-right:auto">Unduh template XLSX</button><button type="button" class="btn" data-close>Batal</button><button type="button" class="btn go" id="i-pick">Pilih file Excel</button>',
         );
 
         document.getElementById('i-tpl').onclick = function () {
-            var a = document.createElement('a');
-
-            a.href = URL.createObjectURL(
-                new Blob(['\uFEFFNIK,Nama,Jabatan,Posisi,Status\r\n'], { type: 'text/csv;charset=utf-8' }),
-            );
-            a.download = 'template-data-pegawai.csv';
-            document.body.appendChild(a);
-            a.click();
-            a.remove();
-            setTimeout(function () {
-                URL.revokeObjectURL(a.href);
-            }, 1000);
+            window.location.href = '/api/data-pegawai/template';
+            say('Template import sedang diunduh.');
         };
 
         var inp = document.getElementById('i-file');

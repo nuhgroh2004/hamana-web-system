@@ -73,7 +73,7 @@ class DataPegawaiController extends Controller
     public function import(Request $request, ImportPegawaiService $importPegawai)
     {
         $request->validate([
-            'file' => ['required', 'file', 'mimes:csv,txt', 'max:5120'],
+            'file' => ['required', 'file', 'extensions:xlsx,csv,txt', 'max:10240'],
         ]);
 
         return response()->json([
@@ -83,15 +83,27 @@ class DataPegawaiController extends Controller
 
     public function export(Request $request, ExportPegawaiService $exportPegawai)
     {
-        $csv = $exportPegawai->handle([
+        $path = $exportPegawai->handle([
             'search' => $request->query('search'),
             'status' => $request->query('status', 'all'),
         ]);
 
-        return response($csv, 200, [
-            'Content-Type' => 'text/csv; charset=UTF-8',
-            'Content-Disposition' => 'attachment; filename="data-pegawai-'.now()->format('Ymd-His').'.csv"',
-        ]);
+        return response()
+            ->download($path, 'data-pegawai-'.now()->format('Ymd-His').'.xlsx', [
+                'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            ])
+            ->deleteFileAfterSend(true);
+    }
+
+    public function template(ExportPegawaiService $exportPegawai)
+    {
+        $path = $exportPegawai->template();
+
+        return response()
+            ->download($path, 'template-import-data-pegawai.xlsx', [
+                'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            ])
+            ->deleteFileAfterSend(true);
     }
 
     /**

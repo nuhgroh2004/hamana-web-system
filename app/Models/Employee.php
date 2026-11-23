@@ -21,11 +21,14 @@ class Employee extends Model
      */
     protected $fillable = [
         'user_id',
+        'ref_id',
         'nik',
         'nama',
         'jabatan',
         'posisi',
         'status_pegawai',
+        'tingkat',
+        'golongan',
     ];
 
     public function user(): BelongsTo

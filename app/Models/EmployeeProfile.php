@@ -25,6 +25,7 @@ class EmployeeProfile extends Model
         'no_hp_2',
         'alamat_ktp',
         'alamat_domisili',
+        'propinsi',
         'status_rumah',
         'no_ktp',
         'no_passport',

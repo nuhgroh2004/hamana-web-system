@@ -74,6 +74,7 @@ Route::middleware('auth')->group(function () {
             Route::post('data-pegawai', [DataPegawaiController::class, 'store'])->name('data-pegawai.store');
             Route::post('data-pegawai/import', [DataPegawaiController::class, 'import'])->name('data-pegawai.import');
             Route::get('data-pegawai/export', [DataPegawaiController::class, 'export'])->name('data-pegawai.export');
+            Route::get('data-pegawai/template', [DataPegawaiController::class, 'template'])->name('data-pegawai.template');
 
             Route::prefix('data-pegawai/wizard')->name('data-pegawai.wizard.')->group(function () {
                 Route::post('/', [WizardPegawaiController::class, 'store'])->name('store');

@@ -198,7 +198,7 @@ class ProfilPegawaiApiTest extends TestCase
         $this->actingAs($admin)
             ->get('/api/data-pegawai/export')
             ->assertOk()
-            ->assertHeader('Content-Type', 'text/csv; charset=UTF-8');
+            ->assertHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
 
         $this->actingAs($admin)
             ->post('/api/data-pegawai/import', [
