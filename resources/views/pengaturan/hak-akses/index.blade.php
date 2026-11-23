@@ -201,13 +201,12 @@
                                 @endif
 
                                 @unless ($locked)
-                                    <div class="ha-modes" role="radiogroup" aria-label="Mode hak akses">
-                                        <label class="ha-mode{{ $selectedUser->permissions === null ? ' on' : '' }}">
-                                            <input type="radio"
-                                                   name="access-mode-{{ $selectedUser->id }}"
-                                                   @checked($selectedUser->permissions === null)
-                                                   @disabled(! $canManage)
-                                                   wire:click="useDefaultAccess({{ $selectedUser->id }})">
+                                    <div class="ha-modes" role="group" aria-label="Mode hak akses">
+                                        <button type="button"
+                                                class="ha-mode{{ $selectedUser->permissions === null ? ' on' : '' }}"
+                                                aria-pressed="{{ $selectedUser->permissions === null ? 'true' : 'false' }}"
+                                                @disabled(! $canManage)
+                                                wire:click="useDefaultAccess({{ $selectedUser->id }})">
                                             <span class="ha-mode-text">
                                                 <b>Default User</b>
                                                 <small>Akses bawaan</small>
@@ -215,14 +214,13 @@
                                             <span class="ha-mode-mark" aria-hidden="true">
                                                 <x-master-komponen::icon name="check" />
                                             </span>
-                                        </label>
+                                        </button>
 
-                                        <label class="ha-mode{{ $selectedUser->permissions !== null ? ' on' : '' }}">
-                                            <input type="radio"
-                                                   name="access-mode-{{ $selectedUser->id }}"
-                                                   @checked($selectedUser->permissions !== null)
-                                                   @disabled(! $canManage)
-                                                   wire:click="useCustomAccess({{ $selectedUser->id }})">
+                                        <button type="button"
+                                                class="ha-mode{{ $selectedUser->permissions !== null ? ' on' : '' }}"
+                                                aria-pressed="{{ $selectedUser->permissions !== null ? 'true' : 'false' }}"
+                                                @disabled(! $canManage)
+                                                wire:click="useCustomAccess({{ $selectedUser->id }})">
                                             <span class="ha-mode-text">
                                                 <b>Custom User</b>
                                                 <small>Atur sendiri</small>
@@ -230,7 +228,7 @@
                                             <span class="ha-mode-mark" aria-hidden="true">
                                                 <x-master-komponen::icon name="check" />
                                             </span>
-                                        </label>
+                                        </button>
                                     </div>
                                 @endunless
                             </div>

@@ -185,30 +185,17 @@ function initDataPegawai() {
     }
 
     // ---- hapus pegawai ----
-    function confirmDelete(p) {
-        open(
-            'Hapus data pegawai?',
-            '<p>Pegawai <b>' +
-                esc(p.nama) +
-                '</b> (' +
-                esc(p.nik) +
-                ') akan dihapus. Tindakan ini tidak dapat dibatalkan.</p>',
-            '<button type="button" class="btn" data-close>Batal</button><button type="button" class="btn dgb" id="ok">Hapus</button>',
-        );
-
-        document.getElementById('ok').onclick = function () {
-            window.axios
-                .delete('/api/data-pegawai/' + p.id)
-                .then(function () {
-                    close();
-                    return load();
-                })
-                .then(function () {
-                    emit('pegawai-hapus', p);
-                    say('Pegawai ' + p.nama + ' berhasil dihapus.');
-                })
-                .catch(fail);
-        };
+    function deleteEmployee(p) {
+        window.axios
+            .delete('/api/data-pegawai/' + p.id)
+            .then(function () {
+                return load();
+            })
+            .then(function () {
+                emit('pegawai-hapus', p);
+                say('Pegawai ' + p.nama + ' berhasil dihapus.');
+            })
+            .catch(fail);
     }
 
     function openDD(btn) {
@@ -280,7 +267,7 @@ function initDataPegawai() {
             closeMenu();
 
             if (p && a.dataset.aksi === 'hapus') {
-                confirmDelete(p);
+                deleteEmployee(p);
                 return;
             }
 

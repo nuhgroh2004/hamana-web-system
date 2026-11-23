@@ -3,23 +3,35 @@
 namespace App\Services\Pegawai;
 
 use App\Models\Employee;
+use App\Models\User;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
 class DeletePegawaiService
 {
     /**
-     * Delete an employee together with all stored files.
+     * Delete an employee and its linked karyawan account.
      */
     public function handle(Employee $employee): void
     {
-        $employee->documents()->get()->each(function ($document) {
-            Storage::disk('local')->delete($document->path);
+        $documentPaths = $employee->documents()->pluck('path');
+        $photoPath = $employee->profile?->foto_path;
+        $user = $employee->user;
+
+        DB::transaction(function () use ($employee, $user) {
+            $employee->delete();
+
+            if ($user?->role === User::ROLE_KARYAWAN) {
+                $user->delete();
+            }
         });
 
-        if ($employee->profile?->foto_path) {
-            Storage::disk('public')->delete($employee->profile->foto_path);
+        foreach ($documentPaths as $path) {
+            Storage::disk('local')->delete($path);
         }
 
-        $employee->delete();
+        if ($photoPath) {
+            Storage::disk('public')->delete($photoPath);
+        }
     }
 }

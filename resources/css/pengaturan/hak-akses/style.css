@@ -446,6 +446,9 @@
     border: 1px solid var(--bd);
     border-radius: 6px;
     background: var(--bg2);
+    color: inherit;
+    font: inherit;
+    text-align: left;
     cursor: pointer;
     transition: border-color .12s, box-shadow .12s, background .12s;
 }
@@ -460,16 +463,14 @@
     box-shadow: inset 0 0 0 1px var(--blue);
 }
 
-#set-page .ha-mode input {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    opacity: 0;
-    pointer-events: none;
+#set-page .ha-mode:focus-visible {
+    outline: 2px solid var(--blue);
+    outline-offset: 2px;
 }
 
-#set-page .ha-mode:has(input:disabled) {
+#set-page .ha-mode:disabled {
     cursor: default;
+    opacity: .65;
 }
 
 #set-page .ha-mode-text {

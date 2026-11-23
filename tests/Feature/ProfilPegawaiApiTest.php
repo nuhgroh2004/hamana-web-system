@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Models\Employee;
 use App\Models\EmployeeDocument;
 use App\Models\User;
+use App\Services\Pegawai\DeletePegawaiService;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Hash;
@@ -240,6 +241,7 @@ class ProfilPegawaiApiTest extends TestCase
             ->assertNoContent();
 
         $this->assertDatabaseMissing('employees', ['id' => $employee->id]);
+        $this->assertDatabaseMissing('users', ['id' => $employeeUser->id]);
     }
 
     public function test_karyawan_cannot_manage_employees(): void
@@ -249,6 +251,25 @@ class ProfilPegawaiApiTest extends TestCase
         $this->actingAs($user)
             ->getJson('/api/data-pegawai')
             ->assertForbidden();
+    }
+
+    public function test_deleting_employee_does_not_delete_a_linked_admin_account(): void
+    {
+        $admin = $this->makeUser([
+            'role' => 'admin',
+            'nik' => 'TEST.00.00.60',
+        ]);
+        $employee = Employee::query()->create([
+            'user_id' => $admin->id,
+            'nik' => 'TEST.00.00.60',
+            'nama' => $admin->name,
+            'status_pegawai' => Employee::STATUS_AKTIF,
+        ]);
+
+        app(DeletePegawaiService::class)->handle($employee);
+
+        $this->assertDatabaseMissing('employees', ['id' => $employee->id]);
+        $this->assertDatabaseHas('users', ['id' => $admin->id]);
     }
 
     public function test_profile_and_employee_pages_render(): void

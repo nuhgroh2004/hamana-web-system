@@ -6,8 +6,12 @@ use App\Models\User;
 
 class ToggleUserModuleGroupAccessService
 {
+    public function __construct(
+        private readonly SaveUserAccessPermissionsService $savePermissions,
+    ) {}
+
     /**
-     * @param list<string> $slugs
+     * @param  list<string>  $slugs
      */
     public function handle(User $user, array $slugs, bool $enabled): void
     {
@@ -20,7 +24,6 @@ class ToggleUserModuleGroupAccessService
             ? array_merge($permissions, $slugs)
             : array_diff($permissions, $slugs);
 
-        $user->permissions = array_values(array_unique($permissions));
-        $user->save();
+        $this->savePermissions->handle($user, $permissions);
     }
 }

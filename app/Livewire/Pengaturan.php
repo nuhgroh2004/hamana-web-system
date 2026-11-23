@@ -278,7 +278,11 @@ class Pengaturan extends Component
             return;
         }
 
-        app(ToggleUserModuleGroupAccessService::class)->handle($user, $group['slugs'], $on);
+        app(ToggleUserModuleGroupAccessService::class)->handle(
+            $user,
+            $group['slugs'],
+            $on,
+        );
     }
 
     /**
@@ -290,7 +294,10 @@ class Pengaturan extends Component
 
         $user = User::findOrFail($userId);
 
-        app(ToggleUserModuleAccessService::class)->handle($user, $slug);
+        app(ToggleUserModuleAccessService::class)->handle(
+            $user,
+            $slug,
+        );
     }
 
     /**

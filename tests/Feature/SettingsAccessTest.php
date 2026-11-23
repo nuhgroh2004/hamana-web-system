@@ -211,9 +211,11 @@ class SettingsAccessTest extends TestCase
             ->test(Pengaturan::class, ['panel' => 'hak-akses'])
             ->call('selectUser', $user->id)
             ->assertSeeHtml('class="ha-mode on"')
-            ->assertSeeHtml('type="radio"')
+            ->assertSeeHtml('type="button"')
+            ->assertSeeHtml('wire:click="useDefaultAccess('.$user->id.')"')
+            ->assertSeeHtml('wire:click="useCustomAccess('.$user->id.')"')
             ->assertSee('Default User')
-            ->assertDontSeeHtml('<button type="button" class="ha-mode');
+            ->assertDontSeeHtml('type="radio"');
 
         $component->call('useCustomAccess', $user->id);
 
@@ -226,6 +228,33 @@ class SettingsAccessTest extends TestCase
 
         $this->assertNull($user->fresh()->permissions);
         $component->assertSeeHtml('class="ha-mode on"');
+    }
+
+    public function test_access_returns_to_default_when_toggles_match_the_baseline(): void
+    {
+        $admin = $this->makeUser([
+            'email' => 'settings-reset-admin@hamana.co.id',
+            'nik' => '9111.00.00.14',
+            'role' => 'admin',
+        ]);
+        $user = $this->makeUser([
+            'email' => 'settings-reset-user@hamana.co.id',
+            'nik' => '9111.00.00.15',
+            'permissions' => null,
+        ]);
+
+        $component = Livewire::actingAs($admin)
+            ->test(Pengaturan::class, ['panel' => 'hak-akses'])
+            ->call('toggleAccess', $user->id, 'data-pegawai');
+
+        $this->assertContains('data-pegawai', $user->fresh()->permissions);
+        $this->assertNotNull($user->fresh()->permissions);
+
+        $component->call('toggleAccess', $user->id, 'data-pegawai')
+            ->assertSee('Default User')
+            ->assertSeeHtml('class="ha-mode on"');
+
+        $this->assertNull($user->fresh()->permissions);
     }
 
     public function test_access_changes_are_saved_to_the_user_and_enforced_on_module_routes(): void

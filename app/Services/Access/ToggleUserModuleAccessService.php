@@ -7,6 +7,10 @@ use App\Support\Modules;
 
 class ToggleUserModuleAccessService
 {
+    public function __construct(
+        private readonly SaveUserAccessPermissionsService $savePermissions,
+    ) {}
+
     public function handle(User $user, string $slug): void
     {
         if ($user->isAdmin() || ! Modules::find($slug)) {
@@ -21,7 +25,6 @@ class ToggleUserModuleAccessService
             $permissions[] = $slug;
         }
 
-        $user->permissions = array_values(array_unique($permissions));
-        $user->save();
+        $this->savePermissions->handle($user, $permissions);
     }
 }
