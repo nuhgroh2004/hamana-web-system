@@ -1,0 +1,880 @@
+/* Halaman Absensi — Hitung Berangkat.
+   Tampilan mengikuti bahasa desain GitHub pada proyek ini: token warna
+   --bg/--bg2/--fg/--mute/--bd, sudut 6px, border tipis, dan tombol ringkas. */
+
+#hitung-berangkat :is(button, input, select, textarea) {
+    font: inherit;
+    color: inherit;
+}
+
+#hitung-berangkat [hidden] {
+    display: none !important;
+}
+
+#hitung-berangkat .pg {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 0 8px;
+}
+
+#hitung-berangkat h1 {
+    margin: 0 0 4px;
+    padding: 0 0 12px;
+    font-size: 24px;
+    font-weight: 600;
+    line-height: 1.25;
+    border-bottom: 1px solid var(--bd);
+}
+
+#hitung-berangkat h2 {
+    margin: 0 0 12px;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+#hitung-berangkat .sub {
+    margin: 12px 0 16px;
+    color: var(--mute);
+    font-size: 13.5px;
+}
+
+#hitung-berangkat .box {
+    border: 1px solid var(--bd);
+    border-radius: 6px;
+    background: var(--bg);
+}
+
+/* ---------- toolbar & form ---------- */
+#hitung-berangkat .toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: end;
+    gap: 12px;
+    padding: 12px 16px;
+    margin-bottom: 16px;
+}
+
+#hitung-berangkat label {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--mute);
+}
+
+#hitung-berangkat .grow {
+    flex: 1;
+    min-width: 180px;
+}
+
+#hitung-berangkat input,
+#hitung-berangkat select {
+    min-height: 32px;
+    padding: 5px 10px;
+    border: 1px solid var(--bd);
+    border-radius: 6px;
+    background: var(--bg);
+    color: var(--fg);
+    outline: 0;
+    transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+#hitung-berangkat input:focus,
+#hitung-berangkat select:focus {
+    border-color: var(--blue);
+    box-shadow: 0 0 0 1px var(--blue);
+}
+
+#hitung-berangkat .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    min-height: 32px;
+    padding: 5px 14px;
+    border: 1px solid var(--bd);
+    border-radius: 6px;
+    background: var(--bg2);
+    color: var(--fg);
+    font-size: 14px;
+    font-weight: 600;
+    white-space: nowrap;
+    transition: background 0.15s, filter 0.15s;
+}
+
+#hitung-berangkat .btn:hover {
+    background: var(--hov);
+}
+
+#hitung-berangkat .btn.pri {
+    background: var(--green);
+    border-color: var(--green);
+    color: #fff;
+}
+
+#hitung-berangkat .btn.pri:hover {
+    background: var(--green);
+    filter: brightness(1.1);
+}
+
+#hitung-berangkat .btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* ---------- pesan & statistik ---------- */
+#hitung-berangkat .msg {
+    padding: 10px 14px;
+    margin-bottom: 16px;
+    border: 1px solid var(--bd);
+    border-radius: 6px;
+    font-size: 13.5px;
+}
+
+#hitung-berangkat .msg.error {
+    color: var(--err);
+    border-color: color-mix(in srgb, var(--err) 40%, transparent);
+    background: color-mix(in srgb, var(--err) 10%, transparent);
+}
+
+#hitung-berangkat .msg.info {
+    color: var(--mute);
+    background: var(--bg2);
+}
+
+#hitung-berangkat .stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+#hitung-berangkat .stat {
+    padding: 12px 16px;
+    border: 1px solid var(--bd);
+    border-radius: 6px;
+    background: var(--bg);
+}
+
+#hitung-berangkat .stat b {
+    display: block;
+    font-size: 24px;
+    font-weight: 600;
+    line-height: 1.3;
+}
+
+#hitung-berangkat .stat span {
+    color: var(--mute);
+    font-size: 12.5px;
+}
+
+/* ---------- tab (underline nav) ---------- */
+#hitung-berangkat .tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-bottom: 16px;
+    border-bottom: 1px solid var(--bd);
+}
+
+#hitung-berangkat .tabs button {
+    margin-bottom: -1px;
+    padding: 8px 12px;
+    border: 0;
+    border-bottom: 2px solid transparent;
+    border-radius: 6px 6px 0 0;
+    background: transparent;
+    color: var(--mute);
+    font-weight: 400;
+    cursor: pointer;
+}
+
+#hitung-berangkat .tabs button:hover {
+    color: var(--fg);
+    background: var(--hov);
+}
+
+#hitung-berangkat .tabs button[aria-selected="true"] {
+    color: var(--fg);
+    font-weight: 600;
+    border-bottom-color: var(--blue);
+}
+
+/* ---------- tabel ---------- */
+#hitung-berangkat .table-wrap {
+    overflow-x: auto;
+    border: 1px solid var(--bd);
+    border-radius: 6px;
+    background: var(--bg);
+}
+
+#hitung-berangkat table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+#hitung-berangkat th,
+#hitung-berangkat td {
+    padding: 9px 12px;
+    border-bottom: 1px solid var(--bd);
+    text-align: left;
+    white-space: nowrap;
+    font-size: 13.5px;
+}
+
+#hitung-berangkat th {
+    background: var(--bg2);
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--mute);
+}
+
+#hitung-berangkat tbody tr:last-child td {
+    border-bottom: 0;
+}
+
+#hitung-berangkat tbody tr:hover td {
+    background: var(--bg2);
+}
+
+#hitung-berangkat td.num,
+#hitung-berangkat th.num {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+}
+
+#hitung-berangkat .div-tag {
+    color: var(--mute);
+    font-size: 12.5px;
+}
+
+/* ---------- badge ---------- */
+#hitung-berangkat .badge {
+    display: inline-block;
+    padding: 0 8px;
+    border: 1px solid var(--bd);
+    border-radius: 2em;
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 20px;
+    white-space: nowrap;
+}
+
+#hitung-berangkat .b-ok {
+    color: var(--green);
+    border-color: color-mix(in srgb, var(--green) 40%, transparent);
+    background: color-mix(in srgb, var(--green) 12%, transparent);
+}
+
+#hitung-berangkat .b-warn {
+    color: var(--warn);
+    border-color: color-mix(in srgb, var(--warn) 40%, transparent);
+    background: color-mix(in srgb, var(--warn) 12%, transparent);
+}
+
+#hitung-berangkat .b-bad {
+    color: var(--err);
+    border-color: color-mix(in srgb, var(--err) 40%, transparent);
+    background: color-mix(in srgb, var(--err) 12%, transparent);
+}
+
+#hitung-berangkat .b-info {
+    color: var(--blue);
+    border-color: color-mix(in srgb, var(--blue) 40%, transparent);
+    background: color-mix(in srgb, var(--blue) 12%, transparent);
+}
+
+#hitung-berangkat .b-none {
+    color: var(--mute);
+}
+
+/* ---------- hari libur ---------- */
+#hitung-berangkat .hb-libur-info {
+    margin-bottom: 12px;
+    padding: 10px 14px;
+    border: 1px solid color-mix(in srgb, var(--blue) 40%, transparent);
+    border-radius: 6px;
+    background: color-mix(in srgb, var(--blue) 8%, transparent);
+    color: var(--fg);
+    font-size: 13.5px;
+}
+
+#hitung-berangkat .hb-libur-info b {
+    color: var(--blue);
+}
+
+#hitung-berangkat .note-libur {
+    margin-top: 12px;
+    padding: 10px 12px;
+    border: 1px solid var(--bd);
+    border-left: 3px solid var(--blue);
+    border-radius: 6px;
+    background: var(--bg2);
+    font-size: 13px;
+}
+
+#hitung-berangkat .note-libur b {
+    color: var(--blue);
+}
+
+/* ---------- tab hari ini ---------- */
+#hitung-berangkat #panel-hariini th,
+#hitung-berangkat #panel-hariini td {
+    white-space: normal;
+    padding: 8px 9px;
+}
+
+#hitung-berangkat #panel-hariini :is(th, td):nth-child(1),
+#hitung-berangkat #panel-hariini :is(th, td):nth-child(4),
+#hitung-berangkat #panel-hariini :is(th, td):nth-child(6) {
+    white-space: nowrap;
+}
+
+#hitung-berangkat #panel-hariini .badge {
+    white-space: normal;
+}
+
+/* ---------- tab tabel ---------- */
+#hitung-berangkat tr.emp {
+    cursor: pointer;
+}
+
+#hitung-berangkat tr.detail > td {
+    padding: 0;
+    white-space: normal;
+    background: var(--bg2);
+}
+
+#hitung-berangkat .detail-inner {
+    padding: 12px;
+    overflow-x: auto;
+}
+
+#hitung-berangkat .detail table {
+    border: 1px solid var(--bd);
+    border-radius: 6px;
+    background: var(--bg);
+}
+
+#hitung-berangkat tr.det {
+    cursor: pointer;
+}
+
+#hitung-berangkat tr.det.is-libur td {
+    background: color-mix(in srgb, var(--blue) 5%, transparent);
+}
+
+#hitung-berangkat tr.det.is-depan td {
+    color: var(--mute);
+}
+
+#hitung-berangkat tr.det.is-depan td:first-child {
+    font-style: italic;
+}
+
+#hitung-berangkat .chev {
+    display: inline-block;
+    width: 1em;
+    color: var(--mute);
+    transition: transform 0.15s;
+}
+
+#hitung-berangkat tr.emp.open .chev {
+    transform: rotate(90deg);
+}
+
+/* ---------- tab grafik ---------- */
+#hitung-berangkat .chart {
+    padding: 16px;
+    margin-bottom: 16px;
+}
+
+#hitung-berangkat .chart svg {
+    display: block;
+    width: 100%;
+    height: auto;
+}
+
+#hitung-berangkat .chart .scroll {
+    max-height: 640px;
+    overflow-y: auto;
+}
+
+#hitung-berangkat .chart-head {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: end;
+    gap: 12px;
+    margin-bottom: 4px;
+}
+
+#hitung-berangkat .legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin: 0 0 10px;
+    font-size: 12.5px;
+    color: var(--mute);
+}
+
+#hitung-berangkat .legend i {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    margin-right: 6px;
+    border-radius: 50%;
+    vertical-align: -1px;
+}
+
+#hitung-berangkat .chart svg.wide {
+    min-width: 760px;
+}
+
+#hitung-berangkat svg text {
+    fill: var(--mute);
+    font: 11.5px -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+}
+
+#hitung-berangkat svg text.val {
+    fill: var(--fg);
+}
+
+#hitung-berangkat svg .grid {
+    stroke: var(--bd);
+    stroke-width: 1;
+}
+
+#hitung-berangkat .f-ok {
+    fill: var(--green);
+}
+
+#hitung-berangkat .f-warn {
+    fill: var(--warn);
+}
+
+#hitung-berangkat .f-bad {
+    fill: var(--err);
+}
+
+#hitung-berangkat .f-info {
+    fill: var(--blue);
+}
+
+#hitung-berangkat .s-ok {
+    stroke: var(--green);
+}
+
+#hitung-berangkat .s-warn {
+    stroke: var(--warn);
+}
+
+#hitung-berangkat .s-bad {
+    stroke: var(--err);
+}
+
+#hitung-berangkat .s-info {
+    stroke: var(--blue);
+}
+
+#hitung-berangkat .i-ok {
+    background: var(--green);
+}
+
+#hitung-berangkat .i-warn {
+    background: var(--warn);
+}
+
+#hitung-berangkat .i-bad {
+    background: var(--err);
+}
+
+#hitung-berangkat .i-info {
+    background: var(--blue);
+}
+
+/* ---------- tab rekap ---------- */
+#hitung-berangkat .hint-lap {
+    margin: 0 0 10px;
+    color: var(--mute);
+    font-size: 13px;
+}
+
+#hitung-berangkat #rekap-isi h2 {
+    margin: 0 0 4px;
+    font-size: 18px;
+}
+
+#hitung-berangkat #rekap-isi h3 {
+    margin: 22px 0 8px;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+#hitung-berangkat #rekap-isi .sub {
+    margin: 0 0 12px;
+}
+
+#hitung-berangkat #rekap-isi .note {
+    margin-top: 10px;
+    color: var(--mute);
+    font-size: 12.5px;
+    line-height: 1.6;
+}
+
+#hitung-berangkat table.rekap th,
+#hitung-berangkat table.rekap td {
+    padding: 8px;
+    white-space: normal;
+    overflow-wrap: break-word;
+    font-size: 12.5px;
+}
+
+#hitung-berangkat table.rekap tbody tr:nth-child(even) td {
+    background: var(--bg2);
+}
+
+#hitung-berangkat table.rekap td.num {
+    font-variant-numeric: tabular-nums;
+}
+
+#hitung-berangkat table.rekap tbody tr.total td {
+    font-weight: 700;
+    background: var(--bg2);
+    border-top: 2px solid var(--fg);
+}
+
+#hitung-berangkat table.rekap th.pilih,
+#hitung-berangkat table.rekap td.pilih {
+    width: 34px;
+    padding-right: 6px;
+    padding-left: 6px;
+    text-align: center;
+}
+
+#hitung-berangkat table.rekap th.pilih input,
+#hitung-berangkat table.rekap td.pilih input {
+    width: 16px;
+    height: 16px;
+    min-height: auto;
+    margin: 0;
+    padding: 0;
+    accent-color: var(--blue);
+    cursor: pointer;
+}
+
+#hitung-berangkat table.rekap tr[data-kunci] {
+    cursor: pointer;
+}
+
+#hitung-berangkat table.rekap tr[data-kunci]:hover td {
+    background: var(--hov);
+}
+
+#hitung-berangkat table.rekap tr[data-kunci]:focus-visible,
+#hitung-berangkat tr.emp:focus-visible {
+    outline: 2px solid var(--blue);
+    outline-offset: -2px;
+}
+
+/* ---------- modal ---------- */
+#hitung-berangkat .hb-ov {
+    position: fixed;
+    inset: 0;
+    z-index: 90;
+    display: none;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 24px 12px;
+    overflow: auto;
+    background: rgba(1, 4, 9, 0.6);
+}
+
+#hitung-berangkat .hb-ov.on {
+    display: flex;
+}
+
+#hitung-berangkat .hb-md {
+    width: 100%;
+    max-width: 560px;
+    max-height: calc(100dvh - 48px);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    border: 1px solid var(--bd);
+    border-radius: 12px;
+    background: var(--bg);
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.4);
+}
+
+#hitung-berangkat .hb-h {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--bd);
+    background: var(--bg2);
+}
+
+#hitung-berangkat .hb-h h2 {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 600;
+}
+
+#hitung-berangkat .hb-h button {
+    display: grid;
+    place-items: center;
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    border: 0;
+    border-radius: 6px;
+    background: transparent;
+    color: var(--mute);
+    cursor: pointer;
+}
+
+#hitung-berangkat .hb-h button:hover {
+    background: var(--hov);
+    color: var(--fg);
+}
+
+#hitung-berangkat .hb-b {
+    display: grid;
+    gap: 12px;
+    padding: 16px;
+    overflow: auto;
+}
+
+#hitung-berangkat .hb-f {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    padding: 12px 16px;
+    border-top: 1px solid var(--bd);
+    background: var(--bg2);
+}
+
+#hitung-berangkat .hb-info {
+    padding: 10px 12px;
+    border: 1px solid var(--bd);
+    border-radius: 6px;
+    background: var(--bg2);
+    font-size: 13px;
+}
+
+#hitung-berangkat .hb-g2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+#hitung-berangkat .hb-g2 label {
+    font-size: 12px;
+}
+
+#hitung-berangkat .hb-note {
+    margin: 0;
+    color: var(--mute);
+    font-size: 12.5px;
+    line-height: 1.6;
+}
+
+#hitung-berangkat .hb-note b {
+    color: var(--fg);
+}
+
+/* ---------- modal laporan ---------- */
+#hitung-berangkat .hb-md.hb-lap {
+    max-width: 1180px;
+    max-height: calc(100dvh - 48px);
+}
+
+#hitung-berangkat .hb-lap .hb-b {
+    gap: 10px;
+}
+
+#hitung-berangkat .hb-lap-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: end;
+    gap: 8px;
+}
+
+#hitung-berangkat .hb-lap-status {
+    align-self: center;
+    color: var(--mute);
+    font-size: 12.5px;
+}
+
+#hitung-berangkat .hb-lap-isi {
+    max-height: 62vh;
+    overflow: auto;
+    padding: 12px;
+    border: 1px solid var(--bd);
+    border-radius: 6px;
+    background: var(--bg2);
+}
+
+/* Dokumen pratinjau tetap memakai palet terang seperti hasil cetak. */
+#hitung-berangkat .lap-doc {
+    min-width: 1060px;
+    padding: 18px 20px 22px;
+    background: #fff;
+    color: #111;
+    font: 11px/1.35 Arial, Helvetica, sans-serif;
+}
+
+#hitung-berangkat .lap-kop {
+    margin-bottom: 10px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #333;
+    text-align: center;
+}
+
+#hitung-berangkat .lap-pt {
+    color: #0f766e;
+    font-size: 15px;
+    font-weight: 700;
+}
+
+#hitung-berangkat .lap-alamat {
+    color: #0f766e;
+    font-size: 11px;
+}
+
+#hitung-berangkat .lap-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin: 6px 0 8px;
+}
+
+#hitung-berangkat .lap-head b {
+    color: #1f3864;
+    font-size: 13px;
+    letter-spacing: 0.2px;
+}
+
+#hitung-berangkat .lap-head span {
+    font-size: 10.5px;
+}
+
+#hitung-berangkat table.lap-id {
+    width: 100%;
+    margin-bottom: 8px;
+    border-collapse: collapse;
+}
+
+#hitung-berangkat table.lap-id td {
+    width: 50%;
+    padding: 1px 0;
+    border: 0;
+    color: #111;
+    font-size: 10.5px;
+    white-space: normal;
+}
+
+#hitung-berangkat table.lap-id span {
+    color: #444;
+}
+
+#hitung-berangkat table.lap-id b {
+    color: #000;
+}
+
+#hitung-berangkat table.lap-tabel {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+}
+
+#hitung-berangkat table.lap-tabel th,
+#hitung-berangkat table.lap-tabel td {
+    padding: 3px;
+    border: 1px solid #555;
+    color: #111;
+    font-size: 9.5px;
+    text-align: center;
+    white-space: normal;
+    overflow-wrap: break-word;
+}
+
+#hitung-berangkat table.lap-tabel th {
+    background: #1a73e8;
+    color: #fff;
+    font-size: 9px;
+    font-weight: 700;
+}
+
+#hitung-berangkat table.lap-tabel td:nth-child(22) {
+    text-align: left;
+}
+
+#hitung-berangkat table.lap-tabel tbody tr:nth-child(even) td {
+    background: #f7f9fb;
+}
+
+#hitung-berangkat table.lap-tabel tr.lap-total td {
+    background: #eaf0f7 !important;
+    font-weight: 700;
+}
+
+#hitung-berangkat table.lap-tabel td.lap-kosong {
+    padding: 16px;
+    color: #6b7280;
+    text-align: center;
+}
+
+/* ---------- toast ---------- */
+#hitung-berangkat .toast {
+    position: fixed;
+    left: 50%;
+    bottom: calc(24px + env(safe-area-inset-bottom, 0px));
+    z-index: 100;
+    padding: 10px 16px;
+    border-radius: 6px;
+    background: var(--fg);
+    color: var(--bg);
+    opacity: 0;
+    pointer-events: none;
+    transform: translate(-50%, 20px);
+    transition: opacity 0.25s, transform 0.25s;
+}
+
+#hitung-berangkat .toast.on {
+    opacity: 1;
+    transform: translate(-50%, 0);
+}
+
+@media (max-width: 700px) {
+    #hitung-berangkat h1 {
+        font-size: 20px;
+    }
+
+    #hitung-berangkat .toolbar label,
+    #hitung-berangkat .toolbar .btn {
+        width: 100%;
+    }
+
+    #hitung-berangkat .toolbar .grow {
+        min-width: 100%;
+    }
+
+    #hitung-berangkat .hb-g2 {
+        grid-template-columns: 1fr;
+    }
+
+    #hitung-berangkat .hb-lap-isi {
+        max-height: 55vh;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    #hitung-berangkat .chev {
+        transition: none;
+    }
+}

@@ -4,6 +4,7 @@ import './pengaturan/pengaturan';
 import './pengaturan/bahasa/script';
 import './pengaturan/absensi-by-foto/script';
 import './hris/dashboard/script';
+import './hris/absensi/script';
 import './hris/profil-data-pribadi/script';
 import './hris/profil-anggota-keluarga/script';
 import './hris/profil-ciri-fisik/script';

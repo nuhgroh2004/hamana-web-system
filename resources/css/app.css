@@ -7,6 +7,7 @@
 @import './pengaturan/daftar-hitam-presensi/style.css';
 @import './pengaturan/ubah-password/style.css';
 @import './hris/dashboard/style.css';
+@import './hris/absensi/style.css';
 @import './hris/profil-data-pribadi/style.css';
 @import './hris/profil-anggota-keluarga/style.css';
 @import './hris/profil-ciri-fisik/style.css';
