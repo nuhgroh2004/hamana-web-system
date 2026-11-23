@@ -13,9 +13,8 @@
                 <table id="tbl">
                     <thead>
                         <tr>
-                            <th class="c1">#</th>
-                            <th class="c2">Nama Sekolah</th>
-                            <th>Kota</th>
+                            <th class="c2">Jenjang</th>
+                            <th>Nama Sekolah</th>
                             <th>Jurusan</th>
                             <th>Tahun</th>
                             <th class="c6"><span style="position:absolute;left:-9999px">Aksi</span></th>

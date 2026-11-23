@@ -190,7 +190,6 @@
                         <table class="wz-tbl">
                             <thead>
                                 <tr>
-                                    <th class="c1">#</th>
                                     <th class="c2">Jenjang</th>
                                     <th>Nama Sekolah</th>
                                     <th>Jurusan</th>
@@ -211,7 +210,6 @@
                         <table class="wz-tbl">
                             <thead>
                                 <tr>
-                                    <th class="c1">#</th>
                                     <th class="c2">Hubungan</th>
                                     <th>Nama Lengkap</th>
                                     <th class="c3">Usia</th>

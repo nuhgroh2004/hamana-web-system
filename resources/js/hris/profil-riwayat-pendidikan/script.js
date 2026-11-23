@@ -19,7 +19,7 @@ function initProfilRiwayatPendidikan() {
     var LEVELS = ['SD', 'SMP', 'SMA/SMK', 'DIPLOMA', 'SARJANA', 'MAGISTER', 'DOKTORAL'];
 
     function blank() {
-        return { nama_sekolah: '', jurusan: '', tahun: '', on: true };
+        return { nama_sekolah: '', jurusan: '', tahun: '' };
     }
 
     function groupsFrom(items) {
@@ -34,7 +34,6 @@ function initProfilRiwayatPendidikan() {
                 nama_sekolah: item.nama_sekolah || '',
                 jurusan: item.jurusan || '',
                 tahun: item.tahun || '',
-                on: item.aktif !== false,
             });
         });
 
@@ -88,7 +87,7 @@ function initProfilRiwayatPendidikan() {
 
             return g.items
                 .map(function (it, ii) {
-                    var off = !editing || !it.on ? ' disabled' : '';
+                    var off = !editing ? ' disabled' : '';
 
                     function inp(k) {
                         return (
@@ -114,16 +113,6 @@ function initProfilRiwayatPendidikan() {
                         '<tr class="' +
                         (ii === 0 ? 'gs' : '') +
                         '">' +
-                        '<td class="c1"><input type="checkbox" data-g="' +
-                        gi +
-                        '" data-i="' +
-                        ii +
-                        '" data-k="on"' +
-                        (it.on ? ' checked' : '') +
-                        (editing ? '' : ' disabled') +
-                        ' aria-label="Aktifkan ' +
-                        g.j +
-                        '"></td>' +
                         '<td class="c2">' +
                         g.j +
                         '</td>' +
@@ -168,26 +157,7 @@ function initProfilRiwayatPendidikan() {
     tb.addEventListener('input', function (e) {
         var el = e.target;
 
-        if (el.type === 'checkbox') {
-            return;
-        }
-
         G[el.dataset.g].items[el.dataset.i][el.dataset.k] = el.value;
-    });
-
-    tb.addEventListener('change', function (e) {
-        var el = e.target;
-
-        if (el.type !== 'checkbox') {
-            return;
-        }
-
-        G[el.dataset.g].items[el.dataset.i].on = el.checked;
-        el.closest('tr')
-            .querySelectorAll('.fld')
-            .forEach(function (f) {
-                f.disabled = !el.checked;
-            });
     });
 
     tb.addEventListener('click', function (e) {
@@ -241,7 +211,7 @@ function initProfilRiwayatPendidikan() {
                         nama_sekolah: it.nama_sekolah,
                         jurusan: it.jurusan,
                         tahun: it.tahun,
-                        aktif: it.on,
+                        aktif: true,
                     });
                 }
             });

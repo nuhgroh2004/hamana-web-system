@@ -244,11 +244,11 @@ function initDataPegawaiWizard() {
     ];
 
     function blankPendidikan() {
-        return { nama_sekolah: '', jurusan: '', tahun: '', on: true };
+        return { nama_sekolah: '', jurusan: '', tahun: '' };
     }
 
     function blankKeluarga() {
-        return { nama: '', usia: '', pekerjaan: '', on: true };
+        return { nama: '', usia: '', pekerjaan: '' };
     }
 
     function pendidikanGroupsFrom(items) {
@@ -265,7 +265,6 @@ function initDataPegawaiWizard() {
                 nama_sekolah: item.nama_sekolah || '',
                 jurusan: item.jurusan || '',
                 tahun: item.tahun || '',
-                on: item.aktif !== false,
             });
         });
 
@@ -312,14 +311,13 @@ function initDataPegawaiWizard() {
                         nama: item.nama || '',
                         usia: item.usia == null ? '' : String(item.usia),
                         pekerjaan: item.pekerjaan || '',
-                        on: item.aktif !== false,
                     };
                 }),
             };
         });
     }
 
-    function tableInput(groupIndex, rowIndex, key, value, disabled, cls, extra) {
+    function tableInput(groupIndex, rowIndex, key, value, cls, extra) {
         return (
             '<td' +
             (cls ? ' class="' + cls + '"' : '') +
@@ -332,7 +330,6 @@ function initDataPegawaiWizard() {
             '" value="' +
             esc(value) +
             '"' +
-            (disabled ? ' disabled' : '') +
             ' autocomplete="off"' +
             (extra || '') +
             '></td>'
@@ -345,27 +342,17 @@ function initDataPegawaiWizard() {
                 return group.items
                     .map(function (item, ii) {
                         const last = ii === group.items.length - 1;
-                        const disabled = !item.on;
 
                         return (
                             '<tr class="' +
                             (ii === 0 ? 'gs' : '') +
                             '">' +
-                            '<td class="c1"><input type="checkbox" data-g="' +
-                            gi +
-                            '" data-i="' +
-                            ii +
-                            '" data-k="on"' +
-                            (item.on ? ' checked' : '') +
-                            ' aria-label="Aktifkan ' +
-                            group.j +
-                            '"></td>' +
                             '<td class="c2">' +
                             group.j +
                             '</td>' +
-                            tableInput(gi, ii, 'nama_sekolah', item.nama_sekolah, disabled) +
-                            tableInput(gi, ii, 'jurusan', item.jurusan, disabled) +
-                            tableInput(gi, ii, 'tahun', item.tahun, disabled, 'c5', ' maxlength="10"') +
+                            tableInput(gi, ii, 'nama_sekolah', item.nama_sekolah) +
+                            tableInput(gi, ii, 'jurusan', item.jurusan) +
+                            tableInput(gi, ii, 'tahun', item.tahun, 'c5', ' maxlength="10"') +
                             '<td class="c6">' +
                             (group.items.length > 1
                                 ? '<button type="button" class="del" data-del="' +
@@ -403,28 +390,18 @@ function initDataPegawaiWizard() {
                 return group.items
                     .map(function (item, ii) {
                         const last = ii === group.items.length - 1;
-                        const disabled = !item.on;
                         const label = group.num ? group.k + ' ' + (ii + 1) : group.k;
 
                         return (
                             '<tr class="' +
                             (ii === 0 ? 'gs' : '') +
                             '">' +
-                            '<td class="c1"><input type="checkbox" data-g="' +
-                            gi +
-                            '" data-i="' +
-                            ii +
-                            '" data-k="on"' +
-                            (item.on ? ' checked' : '') +
-                            ' aria-label="Aktifkan ' +
-                            label +
-                            '"></td>' +
                             '<td class="c2">' +
                             label +
                             '</td>' +
-                            tableInput(gi, ii, 'nama', item.nama, disabled) +
-                            tableInput(gi, ii, 'usia', item.usia, disabled, 'c3', ' inputmode="numeric" maxlength="3"') +
-                            tableInput(gi, ii, 'pekerjaan', item.pekerjaan, disabled) +
+                            tableInput(gi, ii, 'nama', item.nama) +
+                            tableInput(gi, ii, 'usia', item.usia, 'c3', ' inputmode="numeric" maxlength="3"') +
+                            tableInput(gi, ii, 'pekerjaan', item.pekerjaan) +
                             '<td class="c6">' +
                             (group.add && group.items.length > 1
                                 ? '<button type="button" class="del" data-del="' +
@@ -460,7 +437,7 @@ function initDataPegawaiWizard() {
         box.addEventListener('input', function (e) {
             const el = e.target;
 
-            if (el.type === 'checkbox' || !el.dataset.k) {
+            if (!el.dataset.k) {
                 return;
             }
 
@@ -473,21 +450,6 @@ function initDataPegawaiWizard() {
             }
 
             groups()[el.dataset.g].items[el.dataset.i][el.dataset.k] = el.value;
-        });
-
-        box.addEventListener('change', function (e) {
-            const el = e.target;
-
-            if (el.type !== 'checkbox') {
-                return;
-            }
-
-            groups()[el.dataset.g].items[el.dataset.i].on = el.checked;
-            el.closest('tr')
-                .querySelectorAll('.fld')
-                .forEach(function (field) {
-                    field.disabled = !el.checked;
-                });
         });
 
         box.addEventListener('click', function (e) {
@@ -541,7 +503,7 @@ function initDataPegawaiWizard() {
                         nama_sekolah: nama,
                         jurusan: jurusan,
                         tahun: tahun,
-                        aktif: item.on,
+                        aktif: true,
                     });
                 }
             });
@@ -566,7 +528,7 @@ function initDataPegawaiWizard() {
                         nama: nama,
                         usia: usia,
                         pekerjaan: pekerjaan,
-                        aktif: item.on,
+                        aktif: true,
                     });
                 }
             });

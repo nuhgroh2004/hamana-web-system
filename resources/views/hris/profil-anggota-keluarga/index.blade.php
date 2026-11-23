@@ -13,7 +13,6 @@
                 <table id="tbl">
                     <thead>
                         <tr>
-                            <th class="c1">#</th>
                             <th class="c2"><span style="position:absolute;left:-9999px">Hubungan</span></th>
                             <th>Nama Lengkap</th>
                             <th class="c3">Usia</th>

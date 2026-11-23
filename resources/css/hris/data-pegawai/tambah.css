@@ -245,15 +245,6 @@
     border-top-style: dashed;
 }
 
-#data-pegawai-wizard .wz-tbl .c1 {
-    width: 56px;
-    text-align: center;
-}
-
-#data-pegawai-wizard .wz-tbl th.c1 {
-    text-align: center;
-}
-
 #data-pegawai-wizard .wz-tbl .c2 {
     width: 140px;
     border-right: 1px solid var(--bd);
@@ -272,13 +263,6 @@
     width: 180px;
     white-space: nowrap;
     text-align: right;
-}
-
-#data-pegawai-wizard .wz-tbl td input[type="checkbox"] {
-    width: 16px;
-    height: 16px;
-    accent-color: var(--green);
-    cursor: pointer;
 }
 
 #data-pegawai-wizard .wz-tbl .fld {

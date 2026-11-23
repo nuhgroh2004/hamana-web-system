@@ -87,11 +87,6 @@
     border-top-style: dashed;
 }
 
-#profil-riwayat-pendidikan .c1 {
-    width: 56px;
-    text-align: center;
-}
-
 #profil-riwayat-pendidikan .c2 {
     width: 140px;
     border-right: 1px solid var(--bd);
@@ -106,17 +101,6 @@
 
 #profil-riwayat-pendidikan table:not(.ed) .c6 {
     display: none;
-}
-
-#profil-riwayat-pendidikan th.c1 {
-    text-align: center;
-}
-
-#profil-riwayat-pendidikan td input[type="checkbox"] {
-    width: 16px;
-    height: 16px;
-    accent-color: var(--green);
-    cursor: pointer;
 }
 
 #profil-riwayat-pendidikan .fld {

@@ -27,7 +27,7 @@ function initProfilAnggotaKeluarga() {
     ];
 
     function blank() {
-        return { nama: '', usia: '', pekerjaan: '', on: true };
+        return { nama: '', usia: '', pekerjaan: '' };
     }
 
     function groupsFrom(items) {
@@ -59,7 +59,6 @@ function initProfilAnggotaKeluarga() {
                         nama: item.nama || '',
                         usia: item.usia == null ? '' : String(item.usia),
                         pekerjaan: item.pekerjaan || '',
-                        on: item.aktif !== false,
                     };
                 }),
             };
@@ -108,7 +107,7 @@ function initProfilAnggotaKeluarga() {
         tb.innerHTML = G.map(function (g, gi) {
             return g.items
                 .map(function (it, ii) {
-                    var off = !editing || !it.on ? ' disabled' : '';
+                    var off = !editing ? ' disabled' : '';
 
                     function inp(k, cls) {
                         return (
@@ -137,16 +136,6 @@ function initProfilAnggotaKeluarga() {
                         '<tr class="' +
                         (ii === 0 ? 'gs' : '') +
                         '">' +
-                        '<td class="c1"><input type="checkbox" data-g="' +
-                        gi +
-                        '" data-i="' +
-                        ii +
-                        '" data-k="on"' +
-                        (it.on ? ' checked' : '') +
-                        (editing ? '' : ' disabled') +
-                        ' aria-label="Aktifkan ' +
-                        label(g, ii) +
-                        '"></td>' +
                         '<td class="c2">' +
                         label(g, ii) +
                         '</td>' +
@@ -190,10 +179,6 @@ function initProfilAnggotaKeluarga() {
     tb.addEventListener('input', function (e) {
         var el = e.target;
 
-        if (el.type === 'checkbox') {
-            return;
-        }
-
         if (el.dataset.k === 'usia') {
             var v = el.value.replace(/\D/g, '');
 
@@ -203,21 +188,6 @@ function initProfilAnggotaKeluarga() {
         }
 
         G[el.dataset.g].items[el.dataset.i][el.dataset.k] = el.value;
-    });
-
-    tb.addEventListener('change', function (e) {
-        var el = e.target;
-
-        if (el.type !== 'checkbox') {
-            return;
-        }
-
-        G[el.dataset.g].items[el.dataset.i].on = el.checked;
-        el.closest('tr')
-            .querySelectorAll('.fld')
-            .forEach(function (f) {
-                f.disabled = !el.checked;
-            });
     });
 
     tb.addEventListener('click', function (e) {
@@ -272,7 +242,7 @@ function initProfilAnggotaKeluarga() {
                         nama: it.nama,
                         usia: it.usia,
                         pekerjaan: it.pekerjaan,
-                        aktif: it.on,
+                        aktif: true,
                     });
                 }
             });

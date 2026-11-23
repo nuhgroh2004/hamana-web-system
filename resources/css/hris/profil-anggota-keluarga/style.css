@@ -83,15 +83,6 @@
     border-top-style: dashed;
 }
 
-#profil-anggota-keluarga .c1 {
-    width: 56px;
-    text-align: center;
-}
-
-#profil-anggota-keluarga th.c1 {
-    text-align: center;
-}
-
 #profil-anggota-keluarga .c2 {
     width: 140px;
     font-weight: 600;
@@ -109,13 +100,6 @@
 
 #profil-anggota-keluarga table:not(.ed) .c6 {
     display: none;
-}
-
-#profil-anggota-keluarga td input[type="checkbox"] {
-    width: 16px;
-    height: 16px;
-    accent-color: var(--green);
-    cursor: pointer;
 }
 
 #profil-anggota-keluarga td input[type="checkbox"]:disabled {
