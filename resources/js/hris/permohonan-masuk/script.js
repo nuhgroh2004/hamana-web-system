@@ -42,64 +42,18 @@ function initPermohonanMasuk() {
         THIS_MON = String(TODAY.getMonth()),
         THIS_YR = String(TODAY.getFullYear());
 
-    // Data contoh (ganti dengan data dari server)
-    var REQ = [
-        {
-            id: '1',
-            nama: 'M. ALI AGUNG MULYANA ADI SAPUTRA',
-            jabatan: 'Operator',
-            jenis: 'Izin Keluar Kantor',
-            tgl: '2026-11-13',
-            status: 'menunggu',
-            files: [],
-            jam: ['09:30', '11:00'],
-            ket: 'Keperluan pribadi',
-        },
-        {
-            id: '2',
-            nama: 'Tryas Prayoga Diantoro',
-            jabatan: 'Maintenance Officer',
-            jenis: 'Izin Keluar Kantor',
-            tgl: '2026-11-13',
-            status: 'disetujui',
-            files: [],
-            jam: ['13:06', '15:15'],
-            ket: 'Keperluan pribadi',
-        },
-        {
-            id: '3',
-            nama: 'Nuhgroh Ramadani',
-            jabatan: 'Officer IT',
-            jenis: 'Izin Keluar Kantor',
-            tgl: '2026-11-13',
-            status: 'batal',
-            files: ['lampiran-1.jpg', 'lampiran-2.jpg', 'lampiran-3.pdf'],
-            jam: ['10:00', '12:00'],
-            ket: 'Keperluan pribadi',
-        },
-        {
-            id: '4',
-            nama: 'Kharisma Quintya Bilqis',
-            jabatan: 'Officer',
-            jenis: 'Form Pengajuan Absensi',
-            tgl: '2026-11-13',
-            status: 'disetujui',
-            files: [],
-            jam: ['', ''],
-            ket: 'Lupa melakukan absensi',
-        },
-        {
-            id: '5',
-            nama: 'DODDY AL FIQRI RUSDIANSYAH',
-            jabatan: 'Operator',
-            jenis: 'Izin Keluar Kantor',
-            tgl: '2026-11-13',
-            status: 'ditolak',
-            files: [],
-            jam: ['14:00', '16:00'],
-            ket: 'Keperluan pribadi',
-        },
-    ];
+    // Data permohonan masuk dari server
+    var REQ = [];
+
+    function reloadData() {
+        return window.axios
+            .get('/api/permohonan-masuk')
+            .then(function (res) {
+                REQ = (res.data && res.data.data) || [];
+                render();
+            })
+            .catch(function () {});
+    }
 
     var q = '',
         stf = 'all',
@@ -295,39 +249,10 @@ function initPermohonanMasuk() {
     }
 
     function paper(r) {
-        var keluar = r.jenis === 'Izin Keluar Kantor';
-        var h =
-            LOGO +
-            '<h4>' +
-            (keluar ? 'SURAT IZIN KELUAR KANTOR' : 'FORM PENGAJUAN ABSENSI') +
-            '</h4>' +
-            '<p>' +
-            (keluar
-                ? 'Yang bertanda tangan di bawah ini, dengan ini memberikan izin kepada tersebut karyawan yang namanya tertera di bawah ini untuk izin keluar kantor pada jam kerja:'
-                : 'Yang bertanda tangan di bawah ini, dengan ini menyetujui pengajuan absensi karyawan yang namanya tertera di bawah ini:') +
-            '</p>' +
-            fr('Nama Karyawan', r.nama) +
-            fr('Jabatan', r.jabatan) +
-            fr('Hari/Tanggal', hari(r) + ', ' + dlong(r));
-
-        if (keluar) {
-            h +=
-                '<div class="fl"><span>Jam Keluar /Masuk</span><span>:</span><div class="v2"><span>' +
-                esc(r.jam[0]) +
-                '</span><i>/</i><span>' +
-                esc(r.jam[1]) +
-                '</span></div></div>';
+        if (window.PermohonanPreview) {
+            return '<div class="paper">' + window.PermohonanPreview.render(r) + '</div>';
         }
-
-        h +=
-            fr(keluar ? 'Tujuan' : 'Keterangan', r.ket) +
-            '<div class="sg"><div><small>Pemberi Izin,</small><div class="sp">' +
-            (r.status === 'disetujui' ? '✓ Ditandatangani' : '') +
-            '</div><b>' +
-            SIGNER.nama +
-            '</b></div></div>';
-
-        return '<div class="paper">' + h + '</div>';
+        return '<div class="paper"><p>Tidak ada pratinjau.</p></div>';
     }
 
     // skala kertas A4 agar selalu utuh sesuai lebar tersedia (host = elemen pembungkus yang punya padding)
@@ -576,11 +501,16 @@ function initPermohonanMasuk() {
     }
 
     function approve(r) {
-        r.status = 'disetujui';
-        r.alasan = null;
-        render();
-        emit('permohonan-setuju', r);
-        say('Permohonan disetujui.');
+        window.axios
+            .post('/api/permohonan-masuk/' + r.id + '/approve')
+            .then(function () {
+                reloadData();
+                say('Permohonan disetujui.');
+            })
+            .catch(function (e) {
+                var msg = (e.response && e.response.data && e.response.data.message) || 'Gagal menyetujui permohonan.';
+                say(msg);
+            });
     }
 
     function openReject(r) {
@@ -608,13 +538,18 @@ function initPermohonanMasuk() {
             return;
         }
 
-        r.status = 'ditolak';
-        r.alasan = t || null;
-        rejT = null;
-        close();
-        render();
-        emit('permohonan-tolak', { permohonan: r, alasan: r.alasan });
-        say('Permohonan ditolak.');
+        window.axios
+            .post('/api/permohonan-masuk/' + r.id + '/reject', { alasan: t })
+            .then(function () {
+                rejT = null;
+                close();
+                reloadData();
+                say('Permohonan ditolak.');
+            })
+            .catch(function (e) {
+                var msg = (e.response && e.response.data && e.response.data.message) || 'Gagal menolak permohonan.';
+                say(msg);
+            });
     }
 
     // ---- aksi ----
@@ -857,6 +792,7 @@ function initPermohonanMasuk() {
     paint('mon');
     paint('yr');
     render();
+    reloadData();
 
     document.addEventListener('livewire:navigating', function () {
         if (root.isConnected) {

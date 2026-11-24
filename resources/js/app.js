@@ -1,4 +1,6 @@
 import './bootstrap';
+import './hris/permohonan-shared/api';
+import './hris/permohonan-shared/preview';
 import './master-komponen/layout';
 import './pengaturan/pengaturan';
 import './pengaturan/bahasa/script';

@@ -9,10 +9,9 @@ function initFormAbsensi() {
 
     formAbsensiRoots.add(root);
 
-    // Data contoh; ganti dengan data dari server.
-    var EMP = { nama: 'Nuhgroh Ramadani' };
-    var SIG =
-        '<svg class="sv" viewBox="0 0 120 50" width="120" height="50"><path d="M8 36c10-24 18-28 20-19s-14 25-6 21 18-25 24-19-8 21 0 17 16-12 20-6 12 2 18-4M30 44c20-4 50-5 80-2" fill="none" stroke="#1a2a6c" stroke-width="2" stroke-linecap="round"/></svg>';
+    // Data user & tanda tangan dari server
+    var EMP = { nama: '', bagian: '', jabatan: '' };
+    var userSig = null;
 
     var $ = function (id) {
         return root.querySelector('#' + id);
@@ -20,10 +19,30 @@ function initFormAbsensi() {
     var fm = $('fm');
     var sig = null;
 
-    $('en').value = EMP.nama;
-    $('n2').value = EMP.nama;
-    $('mnm').textContent = EMP.nama;
-    $('mo').querySelector('.th').innerHTML = SIG.replace('width="120" height="50"', 'width="60" height="25"');
+    if (window.PermohonanAPI) {
+        window.PermohonanAPI.loadContext()
+            .then(function (ctx) {
+                if (!ctx) return;
+                EMP = ctx.user || {};
+                if ($('en')) $('en').value = EMP.nama || '';
+                if ($('n2')) $('n2').value = EMP.nama || '';
+                if ($('bg')) $('bg').value = EMP.bagian || '';
+                if ($('ps')) $('ps').value = EMP.jabatan || '';
+                if ($('mnm')) $('mnm').textContent = EMP.nama || '';
+
+                if (ctx.signature && ctx.signature.png) {
+                    userSig = ctx.signature.png;
+                    var th = $('mo') && $('mo').querySelector('.th');
+                    if (th) th.innerHTML = '<img src="' + userSig + '" style="max-height:25px;max-width:60px" alt="TTD">';
+                    sig = userSig;
+                    if ($('sb')) {
+                        $('sb').innerHTML = '<img src="' + userSig + '" style="max-height:85px;max-width:180px;object-fit:contain" alt="TTD">';
+                        $('sb').classList.add('ok');
+                    }
+                }
+            })
+            .catch(function () {});
+    }
 
     // Area alasan menyesuaikan tinggi isinya.
     var reason = $('als');
@@ -58,8 +77,12 @@ function initFormAbsensi() {
     });
 
     $('mo').addEventListener('click', function () {
-        sig = EMP.nama;
-        $('sb').innerHTML = SIG;
+        if (!userSig) {
+            menu(false);
+            return say('Anda belum memiliki tanda tangan. Buat di menu Tanda Tangan.');
+        }
+        sig = userSig;
+        $('sb').innerHTML = '<img src="' + userSig + '" style="max-height:85px;max-width:180px;object-fit:contain" alt="TTD">';
         $('sb').classList.add('ok');
         menu(false);
     });
@@ -102,8 +125,20 @@ function initFormAbsensi() {
     };
 
     $('draft').onclick = function () {
-        root.dispatchEvent(new CustomEvent('absensi-draft', { detail: collect(), bubbles: true }));
-        say('Draft disimpan.');
+        var data = collect();
+        if (!window.PermohonanAPI) return say('API tidak tersedia.');
+        $('draft').disabled = true;
+        window.PermohonanAPI.saveDraft('form-absensi', data, [], false, sig)
+            .then(function () {
+                say('Draft berhasil disimpan.');
+            })
+            .catch(function (e) {
+                var msg = (e.response && e.response.data && e.response.data.message) || 'Gagal menyimpan draft.';
+                say(msg);
+            })
+            .finally(function () {
+                $('draft').disabled = false;
+            });
     };
 
     fm.addEventListener('submit', function (event) {
@@ -118,8 +153,25 @@ function initFormAbsensi() {
             return say('Pilih tanda tangan terlebih dahulu.');
         }
 
-        root.dispatchEvent(new CustomEvent('absensi-kirim', { detail: collect(), bubbles: true }));
-        say('Pengajuan dikirim.');
+        var submitBtn = fm.querySelector('[type=submit]');
+        if (submitBtn) submitBtn.disabled = true;
+
+        var data = collect();
+        window.PermohonanAPI.submitPermohonan(root, 'form-absensi', data, [], false, sig)
+            .then(function () {
+                say('Pengajuan berhasil dikirim.');
+                setTimeout(function () {
+                    window.location.href = '/modul/permohonan-saya';
+                }, 1000);
+            })
+            .catch(function (e) {
+                if (e && e.cancel) return;
+                var msg = (e.response && e.response.data && e.response.data.message) || 'Gagal mengirim pengajuan.';
+                say(msg);
+            })
+            .finally(function () {
+                if (submitBtn) submitBtn.disabled = false;
+            });
     });
 
     // Skala kertas A4 mengikuti lebar yang tersedia.

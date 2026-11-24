@@ -8,6 +8,8 @@ use App\Http\Controllers\DataAdmin\SatpamController;
 use App\Http\Controllers\DataAdmin\TingkatController;
 use App\Http\Controllers\Pegawai\DataPegawaiController;
 use App\Http\Controllers\Pegawai\WizardPegawaiController;
+use App\Http\Controllers\Permohonan\PermohonanController;
+use App\Http\Controllers\Permohonan\TandaTanganController;
 use App\Http\Controllers\Profile\AnggotaKeluargaController;
 use App\Http\Controllers\Profile\CiriFisikController;
 use App\Http\Controllers\Profile\DataPribadiController;
@@ -130,6 +132,22 @@ Route::middleware('auth')->group(function () {
             Route::put('list-satpam/{user}', [SatpamController::class, 'update'])->name('list-satpam.update');
             Route::delete('list-satpam/{user}', [SatpamController::class, 'destroy'])->name('list-satpam.destroy');
         });
+
+        // Tanda Tangan
+        Route::get('tanda-tangan', [TandaTanganController::class, 'show'])->name('tanda-tangan.show');
+        Route::post('tanda-tangan', [TandaTanganController::class, 'store'])->name('tanda-tangan.store');
+
+        // Permohonan
+        Route::get('user-context', [PermohonanController::class, 'getUserContext'])->name('user-context');
+        Route::get('karyawan-aktif', [PermohonanController::class, 'getActiveEmployees'])->name('karyawan-aktif');
+        Route::get('permohonan-saya', [PermohonanController::class, 'indexSaya'])->name('permohonan-saya');
+        Route::post('permohonan', [PermohonanController::class, 'store'])->name('permohonan.store');
+        Route::post('permohonan/{permohonan}/kirim', [PermohonanController::class, 'submitDraft'])->name('permohonan.kirim');
+        Route::post('permohonan/{permohonan}/batal', [PermohonanController::class, 'cancel'])->name('permohonan.batal');
+        Route::delete('permohonan/{permohonan}', [PermohonanController::class, 'destroy'])->name('permohonan.destroy');
+        Route::get('permohonan-masuk', [PermohonanController::class, 'indexMasuk'])->name('permohonan-masuk');
+        Route::post('permohonan-masuk/{permohonan}/approve', [PermohonanController::class, 'approve'])->name('permohonan-masuk.approve');
+        Route::post('permohonan-masuk/{permohonan}/reject', [PermohonanController::class, 'reject'])->name('permohonan-masuk.reject');
     });
 
     Route::post('/logout', LogoutController::class)->name('logout');

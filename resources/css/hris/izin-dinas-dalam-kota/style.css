@@ -376,9 +376,11 @@
     border-color: transparent;
 }
 
-#izin-dinas-dalam-kota .sigb svg {
+#izin-dinas-dalam-kota .sigb svg,
+#izin-dinas-dalam-kota .sigb img {
     max-width: 100%;
-    max-height: 92px;
+    max-height: 90px;
+    object-fit: contain;
 }
 
 #izin-dinas-dalam-kota .par {

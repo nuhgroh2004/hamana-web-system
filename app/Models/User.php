@@ -6,6 +6,7 @@ namespace App\Models;
 use App\Support\Modules;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -98,6 +99,21 @@ class User extends Authenticatable
     public function employee(): HasOne
     {
         return $this->hasOne(Employee::class);
+    }
+
+    public function signature(): HasOne
+    {
+        return $this->hasOne(UserSignature::class);
+    }
+
+    public function permohonanRequests(): HasMany
+    {
+        return $this->hasMany(PermohonanRequest::class);
+    }
+
+    public function incomingRequests(): HasMany
+    {
+        return $this->hasMany(PermohonanRequest::class, 'approver_id');
     }
 
     /**

@@ -243,101 +243,17 @@ function initPermohonanSaya() {
 
         var APV = { n: 'Fadhilah Fathul Janah', r: 'Atasan Langsung (Pemberi Izin)' };
 
-        // Data contoh (ganti dengan data dari server). st: draft | menunggu | disetujui | ditolak | batal
-        var all = [
-            {
-                id: 1,
-                jenis: 'Izin Keluar Kantor',
-                dibuat: '2026-11-12T09:05',
-                tgl: '2026-11-12',
-                kep: 'Test fitur form bohongan',
-                files: [],
-                st: 'draft',
-            },
-            {
-                id: 2,
-                jenis: 'Izin Keluar Kantor',
-                dibuat: '2026-11-12T10:20',
-                tgl: '2026-11-12',
-                kep: 'Tets',
-                files: [],
-                st: 'menunggu',
-                ap: APV,
-            },
-            {
-                id: 3,
-                jenis: 'Izin Keluar Kantor',
-                dibuat: '2026-11-13T08:10',
-                tgl: '2026-11-13',
-                kep: 'test fitur perbaikan senpai mohon abaikan surat izin ini',
-                files: [
-                    F('img', 'headline_img.png', 645000),
-                    F('pdf', 'Form-Kaizen-KZN-2026-0000123.pdf', 126000),
-                    F('img', 'lampiran-foto-1794541795596.png', 19000),
-                ],
-                st: 'batal',
-            },
-            {
-                id: 4,
-                jenis: 'Izin Keluar Kantor',
-                dibuat: '2026-11-12T08:45',
-                tgl: '2026-11-12',
-                kep: 'Hehe',
-                files: [],
-                st: 'ditolak',
-                alasan: 'a',
-            },
-            {
-                id: 5,
-                jenis: 'Izin Keluar Kantor',
-                dibuat: '2026-11-12T08:30',
-                tgl: '2026-11-12',
-                kep: 'Test',
-                files: [],
-                st: 'ditolak',
-                alasan: 'a',
-            },
-            {
-                id: 6,
-                jenis: 'Form Pengajuan Absensi',
-                dibuat: '2026-11-10T16:52',
-                tgl: '2026-11-10',
-                kep: 'Tidak Absen / Lupa Absen',
-                files: [],
-                st: 'disetujui',
-                ap: { n: 'DODDY AL FIQRI', r: 'Kepala Bagian' },
-            },
-            {
-                id: 7,
-                jenis: 'Izin Sakit',
-                dibuat: '2026-11-07T07:30',
-                tgl: '2026-11-07',
-                kep: 'Demam dan flu, istirahat sesuai anjuran dokter.',
-                surat: F('pdf', 'surat-dokter-0711.pdf', 312000),
-                files: [F('img', 'hasil-lab.jpg', 880000)],
-                st: 'disetujui',
-                ap: { n: 'Fadhilah Fathul Janah', r: 'Atasan Langsung (Pemberi Izin)' },
-            },
-            {
-                id: 8,
-                jenis: 'Izin Keluar Kantor',
-                dibuat: '2026-11-05T09:15',
-                tgl: '2026-11-05',
-                kep: 'Mengurus dokumen kendaraan di Samsat.',
-                files: [],
-                st: 'disetujui',
-                ap: { n: 'DODDY AL FIQRI', r: 'Kepala Bagian' },
-            },
-            {
-                id: 9,
-                jenis: 'Form Pengajuan Absensi',
-                dibuat: '2026-11-03T17:20',
-                tgl: '2026-11-03',
-                kep: 'Lupa absen pulang',
-                files: [],
-                st: 'batal',
-            },
-        ];
+        var all = [];
+
+        function reloadData() {
+            return window.axios
+                .get('/api/permohonan-saya')
+                .then(function (res) {
+                    all = (res.data && res.data.data) || [];
+                    render();
+                })
+                .catch(function () {});
+        }
 
         var $ = function (id) {
                 return root.querySelector('#' + id);
@@ -766,42 +682,27 @@ function initPermohonanSaya() {
         }
 
         function preview(r, from) {
-            var n = r.files.length;
-            var m = mdl(
-                'Detail Permohonan',
-                '<dl class="dl"><dt>Jenis</dt><dd>' +
+            var content = '';
+            if (window.PermohonanPreview) {
+                content =
+                    '<div style="background:#f4f5f7;padding:16px;border-radius:8px;max-height:70vh;overflow-y:auto">' +
+                    '<div class="paper" style="background:#fff;padding:24px;box-shadow:0 1px 4px rgba(0,0,0,.1);max-width:720px;margin:0 auto;font-size:13px;line-height:1.5">' +
+                    window.PermohonanPreview.render(r) +
+                    '</div></div>';
+            } else {
+                content =
+                    '<dl class="dl"><dt>Jenis</dt><dd>' +
                     esc(r.jenis) +
-                    '</dd><dt>Tanggal Dibuat</dt><dd>' +
-                    fmt(r.dibuat) +
-                    ', ' +
-                    fmtT(r.dibuat) +
-                    '</dd><dt>Tanggal Dilakukan</dt><dd>' +
-                    fmt(r.tgl) +
-                    '</dd><dt>Keperluan</dt><dd>' +
-                    esc(r.kep) +
                     '</dd><dt>Status</dt><dd>' +
                     badge(r) +
-                    detail(r) +
-                    '</dd><dt>Surat Dokter</dt><dd>' +
-                    (r.surat ? '<div class="fl z">' + link(r.surat) + '</div>' : '<span class="mu">-</span>') +
-                    '</dd></dl>' +
-                    '<p class="lb">Lampiran (' +
-                    n +
-                    ')</p>' +
-                    (n
-                        ? '<div class="fl">' +
-                          r.files
-                              .map(function (f) {
-                                  return link(f);
-                              })
-                              .join('') +
-                          '</div>'
-                        : '<span class="mu">Tidak ada lampiran.</span>'),
-                '<button type="button" class="btn" data-a="dl" data-id="' +
-                    r.id +
-                    '">' +
-                    I.dl +
-                    'Download</button><button type="button" class="btn go" data-c>Tutup</button>',
+                    '</dd></dl>';
+            }
+
+            var m = mdl(
+                'Detail Permohonan — ' + (r.jenis || ''),
+                content,
+                '<button type="button" class="btn" onclick="window.print()"><svg class="i" viewBox="0 0 16 16"><path d="M4 6V1.5h8V6M4 12v2.5h8V12M3 7h10v5H3z"/></svg> Cetak</button>' +
+                    '<button type="button" class="btn go" data-c>Tutup</button>',
                 from,
             );
 
@@ -845,22 +746,19 @@ function initPermohonanSaya() {
 
         // ---- aksi ----
         function kirim(r) {
-            Alert.save({
-                title: 'Kirim permohonan?',
-                message: 'Permohonan akan dikirim ke atasan untuk diproses.',
-                yes: 'Ya, kirim',
-                no: 'Batal',
-            }).then(function (ok) {
-                if (!ok) {
-                    return;
-                }
-
-                r.st = 'menunggu';
-                r.ap = APV;
-                render();
-                setTab('menunggu');
-                emit('permohonan-kirim', r);
-                Alert.success('Permohonan berhasil dikirim.');
+            if (!window.PermohonanAPI) return;
+            window.PermohonanAPI.showApproverPopup(root).then(function (approver) {
+                if (!approver) return;
+                window.PermohonanAPI.submitDraft(r.id, approver.id)
+                    .then(function () {
+                        reloadData();
+                        setTab('menunggu');
+                        Alert.success('Permohonan berhasil dikirim.');
+                    })
+                    .catch(function (e) {
+                        var msg = (e.response && e.response.data && e.response.data.message) || 'Gagal mengirim draft.';
+                        Alert.error(msg);
+                    });
             });
         }
 
@@ -872,33 +770,39 @@ function initPermohonanSaya() {
                 no: 'Tidak',
                 danger: true,
             }).then(function (ok) {
-                if (!ok) {
-                    return;
-                }
-
-                all.splice(all.indexOf(r), 1);
-                render();
-                emit('permohonan-hapus', r);
-                Alert.success('Draft berhasil dihapus.');
+                if (!ok) return;
+                if (!window.PermohonanAPI) return;
+                window.PermohonanAPI.deleteDraft(r.id)
+                    .then(function () {
+                        reloadData();
+                        Alert.success('Draft berhasil dihapus.');
+                    })
+                    .catch(function (e) {
+                        var msg = (e.response && e.response.data && e.response.data.message) || 'Gagal menghapus draft.';
+                        Alert.error(msg);
+                    });
             });
         }
 
         function batal(r) {
             Alert.confirm({
                 title: 'Batalkan permohonan?',
-                message: 'Permohonan yang sudah disetujui akan dibatalkan dan tidak dapat dikembalikan.',
+                message: 'Permohonan yang dibatalkan tidak dapat dikembalikan.',
                 yes: 'Ya, batalkan',
                 no: 'Tidak',
                 danger: true,
             }).then(function (ok) {
-                if (!ok) {
-                    return;
-                }
-
-                r.st = 'batal';
-                render();
-                emit('permohonan-batal', r);
-                Alert.success('Permohonan berhasil dibatalkan.');
+                if (!ok) return;
+                if (!window.PermohonanAPI) return;
+                window.PermohonanAPI.cancelPermohonan(r.id)
+                    .then(function () {
+                        reloadData();
+                        Alert.success('Permohonan berhasil dibatalkan.');
+                    })
+                    .catch(function (e) {
+                        var msg = (e.response && e.response.data && e.response.data.message) || 'Gagal membatalkan permohonan.';
+                        Alert.error(msg);
+                    });
             });
         }
 
@@ -1107,6 +1011,7 @@ function initPermohonanSaya() {
         }
 
         render();
+        reloadData();
 
         document.addEventListener('livewire:navigating', function () {
             if (!root.isConnected) {

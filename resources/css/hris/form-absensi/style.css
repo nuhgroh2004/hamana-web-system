@@ -219,9 +219,11 @@
     border-color: transparent;
 }
 
-#form-absensi .sigb svg {
+#form-absensi .sigb svg,
+#form-absensi .sigb img {
     max-width: 100%;
-    max-height: 92px;
+    max-height: 90px;
+    object-fit: contain;
 }
 
 #form-absensi .mn {

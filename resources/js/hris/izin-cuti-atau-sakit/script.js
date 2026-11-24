@@ -9,10 +9,9 @@ function initIzinCutiAtauSakit() {
 
     izinCutiRoots.add(root);
 
-    // Data contoh; ganti dengan data dari server.
-    var EMP = { nama: 'Nuhgroh Ramadani', bagian: 'Officer', nik: '0926.25.01.05' };
-    var SIG =
-        '<svg class="sv" viewBox="0 0 120 50" width="120" height="50"><path d="M8 36c10-24 18-28 20-19s-14 25-6 21 18-25 24-19-8 21 0 17 16-12 20-6 12 2 18-4M30 44c20-4 50-5 80-2" fill="none" stroke="#1a2a6c" stroke-width="2" stroke-linecap="round"/></svg>';
+    // Data user & tanda tangan dari server
+    var EMP = { nama: '', bagian: '', nik: '' };
+    var userSig = null;
 
     var $ = function (id) {
         return root.querySelector('#' + id);
@@ -22,11 +21,30 @@ function initIzinCutiAtauSakit() {
     var sig = null;
     var MAX = 10;
 
-    $('en').value = EMP.nama;
-    $('eb').value = EMP.bagian;
-    $('ek').value = EMP.nik;
-    $('mnm').textContent = EMP.nama;
-    $('mo').querySelector('.th').innerHTML = SIG.replace('width="120" height="50"', 'width="60" height="25"');
+    if (window.PermohonanAPI) {
+        window.PermohonanAPI.loadContext()
+            .then(function (ctx) {
+                if (!ctx) return;
+                EMP = ctx.user || {};
+                if ($('en')) $('en').value = EMP.nama || '';
+                if ($('eb')) $('eb').value = EMP.bagian || '';
+                if ($('ek')) $('ek').value = EMP.nik || '';
+                if ($('mnm')) $('mnm').textContent = EMP.nama || '';
+                if ($('n2')) $('n2').value = EMP.nama || '';
+
+                if (ctx.signature && ctx.signature.png) {
+                    userSig = ctx.signature.png;
+                    var th = $('mo') && $('mo').querySelector('.th');
+                    if (th) th.innerHTML = '<img src="' + userSig + '" style="max-height:25px;max-width:60px" alt="TTD">';
+                    sig = userSig;
+                    if ($('sb')) {
+                        $('sb').innerHTML = '<img src="' + userSig + '" style="max-height:85px;max-width:180px;object-fit:contain" alt="TTD">';
+                        $('sb').classList.add('ok');
+                    }
+                }
+            })
+            .catch(function () {});
+    }
 
     function say(message) {
         var toast = $('toast');
@@ -76,8 +94,12 @@ function initIzinCutiAtauSakit() {
     });
 
     $('mo').addEventListener('click', function () {
-        sig = EMP.nama;
-        $('sb').innerHTML = SIG;
+        if (!userSig) {
+            menu(false);
+            return say('Anda belum memiliki tanda tangan. Buat di menu Tanda Tangan.');
+        }
+        sig = userSig;
+        $('sb').innerHTML = '<img src="' + userSig + '" style="max-height:85px;max-width:180px;object-fit:contain" alt="TTD">';
         $('sb').classList.add('ok');
         if (!$('n2').value) {
             $('n2').value = EMP.nama;
@@ -254,8 +276,20 @@ function initIzinCutiAtauSakit() {
     };
 
     $('draft').onclick = function () {
-        root.dispatchEvent(new CustomEvent('cuti-draft', { detail: collect(), bubbles: true }));
-        say('Draft disimpan.');
+        var data = collect();
+        if (!window.PermohonanAPI) return say('API tidak tersedia.');
+        $('draft').disabled = true;
+        window.PermohonanAPI.saveDraft('izin-cuti-atau-sakit', data, files, $('ms') && $('ms').checked, sig)
+            .then(function () {
+                say('Draft berhasil disimpan.');
+            })
+            .catch(function (e) {
+                var msg = (e.response && e.response.data && e.response.data.message) || 'Gagal menyimpan draft.';
+                say(msg);
+            })
+            .finally(function () {
+                $('draft').disabled = false;
+            });
     };
 
     fm.addEventListener('submit', function (event) {
@@ -275,8 +309,25 @@ function initIzinCutiAtauSakit() {
             return say('Pilih tanda tangan terlebih dahulu.');
         }
 
-        root.dispatchEvent(new CustomEvent('cuti-kirim', { detail: collect(), bubbles: true }));
-        say('Pengajuan dikirim.');
+        var submitBtn = fm.querySelector('[type=submit]');
+        if (submitBtn) submitBtn.disabled = true;
+
+        var data = collect();
+        window.PermohonanAPI.submitPermohonan(root, 'izin-cuti-atau-sakit', data, files, $('ms') && $('ms').checked, sig)
+            .then(function () {
+                say('Pengajuan berhasil dikirim.');
+                setTimeout(function () {
+                    window.location.href = '/modul/permohonan-saya';
+                }, 1000);
+            })
+            .catch(function (e) {
+                if (e && e.cancel) return;
+                var msg = (e.response && e.response.data && e.response.data.message) || 'Gagal mengirim pengajuan.';
+                say(msg);
+            })
+            .finally(function () {
+                if (submitBtn) submitBtn.disabled = false;
+            });
     });
 
     // Skala kertas A4 mengikuti lebar yang tersedia.

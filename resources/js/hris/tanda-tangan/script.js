@@ -335,13 +335,9 @@ function initTandaTangan() {
             return c.toDataURL('image/png');
         }
 
-        var kirim =
-            window.ttdSimpan ||
-            function () {
-                return new Promise(function (r) {
-                    setTimeout(r, 600);
-                });
-            };
+        var kirim = function (data) {
+            return window.axios.post('/api/tanda-tangan', { png: data.png });
+        };
 
         $('sv').onclick = function () {
             if (!cur().length || busy) {
@@ -367,6 +363,10 @@ function initTandaTangan() {
                         try {
                             localStorage.setItem(KEY, JSON.stringify(saved));
                         } catch (e) {}
+
+                        if (window.PermohonanAPI) {
+                            window.PermohonanAPI.clearCache();
+                        }
 
                         states = [[]];
                         paint(cur());
@@ -410,6 +410,16 @@ function initTandaTangan() {
         showSaved();
         size();
         update();
+
+        window.axios
+            .get('/api/tanda-tangan')
+            .then(function (res) {
+                if (res.data && res.data.data) {
+                    saved = res.data.data;
+                    showSaved();
+                }
+            })
+            .catch(function () {});
     })();
 }
 

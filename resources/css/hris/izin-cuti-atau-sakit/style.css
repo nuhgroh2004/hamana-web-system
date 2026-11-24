@@ -297,9 +297,11 @@
     border-color: transparent;
 }
 
-#izin-cuti-atau-sakit .sigb svg {
+#izin-cuti-atau-sakit .sigb svg,
+#izin-cuti-atau-sakit .sigb img {
     max-width: 100%;
-    max-height: 92px;
+    max-height: 90px;
+    object-fit: contain;
 }
 
 #izin-cuti-atau-sakit .par {
