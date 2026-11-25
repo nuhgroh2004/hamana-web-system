@@ -42,6 +42,20 @@ window.axios.interceptors.request.use(function (config) {
     return config;
 });
 
+// Jika server mengembalikan 401 (sesi habis / tidak terautentikasi),
+// langsung arahkan pengguna ke halaman login agar tidak terjebak di
+// halaman yang tidak merespons.
+window.axios.interceptors.response.use(
+    function (res) { return res; },
+    function (error) {
+        if (error && error.response && error.response.status === 401) {
+            window.location.href = '/login';
+            return new Promise(function () {});
+        }
+        return Promise.reject(error);
+    }
+);
+
 // Bila token ternyata sudah tidak cocok (419), ambil token baru dari server lalu
 // ulangi permintaan satu kali. Hanya jika masih gagal, halaman dimuat ulang agar
 // pengguna tidak melihat pesan "CSRF token mismatch." berulang-ulang.

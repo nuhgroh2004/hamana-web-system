@@ -20,5 +20,15 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->redirectUsersTo('/dashboard');
     })
     ->withExceptions(function (Exceptions $exceptions) {
-        //
+        // Untuk XHR / Livewire request: kembalikan 401 JSON agar JS bisa
+        // mendeteksi sesi habis dan mengarahkan pengguna ke halaman login,
+        // alih-alih menerima HTML redirect yang membuat halaman beku.
+        $exceptions->render(function (
+            \Illuminate\Auth\AuthenticationException $e,
+            \Illuminate\Http\Request $request,
+        ) {
+            if ($request->expectsJson() || $request->ajax()) {
+                return response()->json(['message' => 'Unauthenticated.'], 401);
+            }
+        });
     })->create();

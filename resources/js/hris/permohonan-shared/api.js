@@ -197,6 +197,13 @@
         _emp = null;
     }
 
+    // Auto-clear cache on Livewire navigation so stale user/employee data
+    // is never reused after the user switches pages or the session refreshes.
+    document.addEventListener('livewire:navigating', function () {
+        _ctx = null;
+        _emp = null;
+    });
+
     // expose
     window.PermohonanAPI = {
         loadContext: loadContext,
