@@ -2,9 +2,7 @@
 
 namespace Tests\Feature;
 
-use App\Livewire\Auth\Login;
 use App\Models\User;
-use Livewire\Livewire;
 use Tests\TestCase;
 
 class AuthTest extends TestCase
@@ -22,8 +20,10 @@ class AuthTest extends TestCase
 
     public function test_remember_me_is_checked_by_default(): void
     {
-        Livewire::test(Login::class)
-            ->assertSet('remember', true);
+        $this->get(route('login'))
+            ->assertOk()
+            ->assertSee('id="remember"', false)
+            ->assertSee('checked', false);
     }
 
     public function test_csrf_token_endpoint_returns_current_session_token(): void

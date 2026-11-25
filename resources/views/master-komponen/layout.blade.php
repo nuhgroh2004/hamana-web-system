@@ -60,10 +60,17 @@
                 Livewire.hook('request', function ({ fail }) {
                     fail(function ({ status, preventDefault }) {
                         // 401 = Unauthenticated (sesi habis di Laravel)
-                        // 419 = CSRF mismatch — biarkan bootstrap.js axios interceptor yang handle
                         if (status === 401) {
                             preventDefault();
                             window.location.href = '/login';
+                            return;
+                        }
+
+                        // 419 = CSRF mismatch — cegah popup "This page has expired",
+                        // refresh otomatis halaman agar sesi & token kembali sinkron.
+                        if (status === 419) {
+                            preventDefault();
+                            window.location.reload();
                         }
                     });
                 });

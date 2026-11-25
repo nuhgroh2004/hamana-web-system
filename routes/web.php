@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\LogoutController;
 use App\Http\Controllers\DataAdmin\FaskesBpjsController;
 use App\Http\Controllers\DataAdmin\JabatanController;
@@ -15,19 +16,21 @@ use App\Http\Controllers\Profile\CiriFisikController;
 use App\Http\Controllers\Profile\DataPribadiController;
 use App\Http\Controllers\Profile\KelolaFileController;
 use App\Http\Controllers\Profile\RiwayatPendidikanController;
-use App\Livewire\Auth\Login;
 use App\Livewire\Dashboard;
 use App\Livewire\ModulePage;
 use App\Livewire\Pengaturan;
 use App\Livewire\TambahPegawai;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/login', Login::class)->middleware('guest')->name('login');
+Route::get('/csrf-token', fn () => response()->json(['token' => csrf_token()]))->name('csrf.token');
+
+Route::middleware('guest')->group(function () {
+    Route::get('/login', [LoginController::class, 'show'])->name('login');
+    Route::post('/login', [LoginController::class, 'authenticate'])->name('login.post');
+});
 
 Route::middleware('auth')->group(function () {
     Route::redirect('/', '/dashboard');
-
-    Route::get('/csrf-token', fn () => response()->json(['token' => csrf_token()]))->name('csrf.token');
 
     Route::get('/dashboard', Dashboard::class)->name('dashboard');
 

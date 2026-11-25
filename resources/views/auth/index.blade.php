@@ -1,3 +1,4 @@
+<x-layouts.auth title="Masuk · Hamana Works Indonesia">
 <div class="wrap">
     <header>
         <a class="brand" href="#" aria-label="HWI">
@@ -10,25 +11,27 @@
         <section>
             <h1>Selamat datang di <span>Hamana Works Indonesia</span></h1>
 
-            <form id="f" wire:submit="login" novalidate>
+            <form id="f" method="POST" action="{{ route('login.post') }}" novalidate>
+                @csrf
                 <div class="row">
                     <label class="lbl" for="email">Email</label>
                     <input class="fld @error('email') bad @enderror"
                            id="email"
+                           name="email"
                            type="email"
                            autocomplete="email"
                            placeholder="email@gmail.com"
-                           wire:model="email">
+                           value="{{ old('email') }}">
                 </div>
                 <div class="row">
                     <label class="lbl" for="pw">Password</label>
                     <div class="fld-wrap">
                         <input class="fld @error('password') bad @enderror"
                                id="pw"
+                               name="password"
                                type="password"
                                autocomplete="current-password"
-                               placeholder="Masukkan password"
-                               wire:model="password">
+                               placeholder="Masukkan password">
                         <button class="eye" id="toggle-pw" type="button" aria-label="Tampilkan password" aria-pressed="false">
                             <svg class="eye-show" viewBox="0 0 24 24" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8S1 12 1 12z"/><circle cx="12" cy="12" r="3"/></svg>
                             <svg class="eye-hide" viewBox="0 0 24 24" aria-hidden="true"><path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19m-6.72-1.07a3 3 0 11-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
@@ -36,13 +39,13 @@
                     </div>
                 </div>
                 <label class="rem" for="remember">
-                    <input id="remember" type="checkbox" wire:model="remember" @checked($remember)>
+                    <input type="hidden" name="remember" value="0">
+                    <input id="remember" name="remember" type="checkbox" value="1" @checked(old('remember', true))>
                     <span>Ingat saya</span>
                 </label>
                 <div class="err" id="err" role="alert" aria-live="polite">@if ($errors->any()){{ $errors->first() }}@endif</div>
-                <button class="go" id="go" type="submit" wire:loading.attr="disabled" wire:target="login">
-                    <span wire:loading.remove wire:target="login">Login</span>
-                    <span wire:loading wire:target="login">Memproses…</span>
+                <button class="go" id="go" type="submit">
+                    <span>Login</span>
                 </button>
             </form>
         </section>
@@ -68,3 +71,4 @@
         </aside>
     </main>
 </div>
+</x-layouts.auth>

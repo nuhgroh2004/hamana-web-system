@@ -31,4 +31,17 @@ return Application::configure(basePath: dirname(__DIR__))
                 return response()->json(['message' => 'Unauthenticated.'], 401);
             }
         });
+
+        // Jika form biasa (mis. login) terlanjur mengirim token lama (419),
+        // arahkan kembali ke halaman sebelumnya tanpa layar 419 Page Expired.
+        $exceptions->render(function (
+            \Illuminate\Session\TokenMismatchException $e,
+            \Illuminate\Http\Request $request,
+        ) {
+            if (! $request->expectsJson() && ! $request->ajax()) {
+                return back()
+                    ->withInput($request->except('password', '_token'))
+                    ->withErrors(['email' => 'Sesi halaman diperbarui. Silakan coba lagi.']);
+            }
+        });
     })->create();

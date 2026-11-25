@@ -8,10 +8,8 @@
 
     <link rel="stylesheet" href="{{ mix('css/auth/style.css') }}">
     <script src="{{ mix('js/auth/script.js') }}" defer></script>
-    @livewireStyles
 </head>
 <body>
     {{ $slot }}
-    @livewireScripts
 </body>
 </html>
