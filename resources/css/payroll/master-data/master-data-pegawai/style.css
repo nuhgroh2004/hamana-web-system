@@ -1,0 +1,79 @@
+#payroll-master-data-pegawai{--bg:#fff;--bg2:#f6f8fa;--fg:#1f2328;--mute:#59636e;--bd:#d1d9e0;--hov:#eff2f5;--blue:#0969da;--green:#1f883d;--gtx:#116329;--gbg:#e9f7ee;--err:#cf222e;color-scheme:light}
+@media (prefers-color-scheme:dark){#payroll-master-data-pegawai{--bg:#0d1117;--bg2:#151b23;--fg:#f0f6fc;--mute:#9198a1;--bd:#3d444d;--hov:#262c36;--blue:#4493f8;--green:#238636;--gtx:#56d364;--gbg:#10261a;--err:#ff7b72;color-scheme:dark}}
+#payroll-master-data-pegawai *{box-sizing:border-box}
+#payroll-master-data-pegawai{margin:0;background:var(--bg);color:var(--fg);font:14px/1.5 -apple-system,"Segoe UI",Helvetica,Arial,sans-serif}
+#payroll-master-data-pegawai button,#payroll-master-data-pegawai input,#payroll-master-data-pegawai select{font:inherit;color:inherit}
+#payroll-master-data-pegawai svg.i{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;flex:none}
+#payroll-master-data-pegawai .pg{max-width:1280px;margin:0 auto;padding:24px 20px calc(48px + env(safe-area-inset-bottom,0px))}
+#payroll-master-data-pegawai .top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding-bottom:12px;margin-bottom:16px;border-bottom:1px solid var(--bd)}
+#payroll-master-data-pegawai h1{margin:0;font-size:28px;font-weight:400;line-height:1.25}
+#payroll-master-data-pegawai .acts{display:flex;gap:8px;flex-wrap:wrap}
+#payroll-master-data-pegawai .box{border:1px solid var(--bd);border-radius:6px;overflow:hidden;background:var(--bg);margin-bottom:16px}
+#payroll-master-data-pegawai .stats{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+#payroll-master-data-pegawai .st{padding:12px 16px;border:1px solid var(--bd);border-radius:6px;background:var(--bg2)}
+#payroll-master-data-pegawai .st span{display:block;font-size:12.5px;color:var(--mute)}#payroll-master-data-pegawai .st b{font-size:28px;font-weight:400;line-height:1.3}
+#payroll-master-data-pegawai .tl{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:12px 16px;border-bottom:1px solid var(--bd)}
+#payroll-master-data-pegawai .sw{position:relative;flex:1 1 280px;max-width:380px}#payroll-master-data-pegawai .sw svg{position:absolute;left:10px;top:9px;color:var(--mute)}
+#payroll-master-data-pegawai .fld{width:100%;height:34px;padding:5px 12px;border:1px solid var(--bd);border-radius:6px;background:var(--bg);outline:0;transition:border-color .15s,box-shadow .15s}
+#payroll-master-data-pegawai .sw .fld{padding-left:34px}
+#payroll-master-data-pegawai .fld:focus{border-color:var(--blue);box-shadow:0 0 0 1px var(--blue)}
+#payroll-master-data-pegawai .seg{display:inline-flex;border:1px solid var(--bd);border-radius:6px;overflow:hidden}
+#payroll-master-data-pegawai .seg button{white-space:nowrap;height:32px;padding:0 14px;border:0;border-left:1px solid var(--bd);background:var(--bg);font-size:12.5px;font-weight:600;cursor:pointer;color:var(--mute)}
+#payroll-master-data-pegawai .seg button:first-child{border-left:0}
+#payroll-master-data-pegawai .seg button:hover{background:var(--hov)}
+#payroll-master-data-pegawai .seg button.on{background:var(--fg);color:var(--bg)}
+#payroll-master-data-pegawai .srt{display:none;width:auto;height:32px}
+#payroll-master-data-pegawai .btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;height:32px;padding:0 14px;border:1px solid var(--bd);border-radius:6px;background:var(--bg);font-weight:600;font-size:13px;cursor:pointer;transition:background .15s,filter .15s}
+#payroll-master-data-pegawai .btn:hover{background:var(--hov)}
+#payroll-master-data-pegawai .btn.sm{height:28px;padding:0 10px;font-size:12.5px}
+#payroll-master-data-pegawai .btn.go{background:var(--blue);border-color:var(--blue);color:#fff}#payroll-master-data-pegawai .btn.go:hover{filter:brightness(1.1);background:var(--blue)}
+#payroll-master-data-pegawai table{width:100%;border-collapse:collapse;font-size:13px}
+#payroll-master-data-pegawai th{padding:10px 14px;background:var(--bg2);border-bottom:1px solid var(--bd);text-align:left;font-weight:600;white-space:nowrap;cursor:default}
+#payroll-master-data-pegawai th.s{cursor:pointer;user-select:none}#payroll-master-data-pegawai th.s:hover{background:var(--hov)}
+#payroll-master-data-pegawai th .so{margin-left:4px;font-size:9px;color:var(--mute);opacity:.6}#payroll-master-data-pegawai th.on .so{opacity:1;color:var(--fg)}
+#payroll-master-data-pegawai .r{text-align:right}
+#payroll-master-data-pegawai tr.m>td{padding:10px 14px;border-top:1px solid var(--bd);vertical-align:middle}
+#payroll-master-data-pegawai tbody tr.m:first-child>td{border-top:0}
+#payroll-master-data-pegawai .pw{display:flex;align-items:center;gap:10px}
+#payroll-master-data-pegawai .tg{display:inline-grid;place-items:center;width:20px;height:20px;color:var(--mute);pointer-events:none}
+#payroll-master-data-pegawai .tg svg{transition:transform .15s}#payroll-master-data-pegawai tr.m[aria-expanded=true] .tg svg{transform:rotate(90deg)}
+#payroll-master-data-pegawai tr.m{cursor:pointer;transition:background .15s}#payroll-master-data-pegawai tr.m:hover{background:var(--hov)}#payroll-master-data-pegawai tr.m:focus-visible{outline:2px solid var(--blue);outline-offset:-2px}
+#payroll-master-data-pegawai tr.m .btn{cursor:pointer}
+#payroll-master-data-pegawai .av{display:grid;place-items:center;width:36px;height:36px;border-radius:6px;background:var(--bg2);border:1px solid var(--bd);color:var(--blue);font-weight:600;font-size:12.5px;flex:none}
+#payroll-master-data-pegawai .nm{font-weight:600;text-transform:uppercase;line-height:1.3}#payroll-master-data-pegawai .em{color:var(--mute);font-size:12px;overflow-wrap:anywhere}
+#payroll-master-data-pegawai .bg{display:inline-block;padding:1px 8px;border-radius:999px;background:var(--gbg);color:var(--gtx);font-size:11px;font-weight:600;text-transform:uppercase}
+#payroll-master-data-pegawai .bg.off{background:var(--hov);color:var(--mute)}
+#payroll-master-data-pegawai .gj{font-weight:700;white-space:nowrap}
+#payroll-master-data-pegawai tr.d>td{padding:12px 14px 16px 58px;background:var(--bg);border-top:1px solid var(--bd)}
+#payroll-master-data-pegawai .gd{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+#payroll-master-data-pegawai .c{padding:8px 12px;border:1px solid var(--bd);border-radius:6px;background:var(--bg);min-width:0}
+#payroll-master-data-pegawai .c span{display:block;font-size:11.5px;color:var(--mute)}#payroll-master-data-pegawai .c b{display:block;font-weight:600;overflow-wrap:anywhere}#payroll-master-data-pegawai .c b.z{font-weight:400;color:var(--mute)}
+#payroll-master-data-pegawai .empty{padding:36px 16px;text-align:center;color:var(--mute)}
+#payroll-master-data-pegawai .toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translate(-50%,20px);width:max-content;max-width:calc(100vw - 32px);padding:10px 16px;border-radius:6px;background:var(--fg);color:var(--bg);opacity:0;pointer-events:none;transition:opacity .25s,transform .25s}
+#payroll-master-data-pegawai .toast.on{opacity:1;transform:translate(-50%,0)}
+
+@media (max-width:1100px){#payroll-master-data-pegawai .gd{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:860px){
+  #payroll-master-data-pegawai .srt{display:block}
+  #payroll-master-data-pegawai thead{display:none}
+  #payroll-master-data-pegawai table,#payroll-master-data-pegawai tbody{display:block}
+  #payroll-master-data-pegawai tr.m{position:relative;display:grid;grid-template-columns:1fr;gap:4px;padding:14px 16px;border-top:1px solid var(--bd)}
+  #payroll-master-data-pegawai tbody tr.m:first-child{border-top:0}
+  #payroll-master-data-pegawai tr.m>td{display:flex;justify-content:space-between;align-items:baseline;gap:16px;padding:0;border:0;text-align:right}
+  #payroll-master-data-pegawai tr.m>td[data-l]::before{content:attr(data-l);color:var(--mute);font-weight:400;text-align:left;flex:none}
+  #payroll-master-data-pegawai tr.m>td.pc{display:block;text-align:left;padding:0 64px 8px 0;margin-bottom:4px;border-bottom:1px solid var(--bd)}
+  #payroll-master-data-pegawai tr.m>td.ac{position:absolute;top:14px;right:16px}
+  #payroll-master-data-pegawai tr.d{display:block}
+  #payroll-master-data-pegawai tr.d>td{display:block;padding:0 16px 16px;border:0;margin-top:-2px}
+  #payroll-master-data-pegawai .gd{gap:8px}
+}
+@media (max-width:700px){
+  #payroll-master-data-pegawai .pg{padding:16px 12px calc(40px + env(safe-area-inset-bottom,0px))}#payroll-master-data-pegawai h1{font-size:22px}
+  #payroll-master-data-pegawai .acts{display:grid;grid-template-columns:1fr 1fr;width:100%}
+  #payroll-master-data-pegawai .acts .btn{height:36px;padding:0 8px}#payroll-master-data-pegawai .acts .go{grid-column:1/-1}
+  #payroll-master-data-pegawai .tl{padding:12px;gap:10px}#payroll-master-data-pegawai .sw{max-width:none;flex:1 1 100%}
+  #payroll-master-data-pegawai .sw .fld{height:38px;padding:5px 8px 5px 32px;font-size:13px}#payroll-master-data-pegawai .sw svg{top:11px}
+  #payroll-master-data-pegawai .seg{flex:1 1 100%}#payroll-master-data-pegawai .seg button{flex:1;height:36px;padding:0 6px}
+  #payroll-master-data-pegawai .srt{flex:1 1 100%;width:100%;height:38px}
+  #payroll-master-data-pegawai .gd{grid-template-columns:repeat(2,minmax(0,1fr))}
+}

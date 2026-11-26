@@ -38,7 +38,7 @@ class ModulePage extends Component
     {
         // Sebagian modul memakai folder view yang berbeda dari slug-nya.
         $data = Modules::find($this->slug);
-        $view = 'hris.'.($data['view'] ?? $this->slug).'.index';
+        $view = $data['view_path'] ?? 'hris.'.($data['view'] ?? $this->slug).'.index';
 
         return view(view()->exists($view) ? $view : 'livewire.module-page')->layout('components.layouts.app', [
             'title' => $this->title,

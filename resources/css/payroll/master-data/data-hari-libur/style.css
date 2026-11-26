@@ -1,0 +1,59 @@
+#payroll-data-hari-libur{--bg:#fff;--bg2:#f6f8fa;--fg:#1f2328;--mute:#59636e;--bd:#d1d9e0;--hov:#eff2f5;--blue:#0969da;--green:#1f883d;--err:#cf222e;color-scheme:light}
+@media (prefers-color-scheme:dark){#payroll-data-hari-libur{--bg:#0d1117;--bg2:#151b23;--fg:#f0f6fc;--mute:#9198a1;--bd:#3d444d;--hov:#262c36;--blue:#4493f8;--green:#238636;--err:#ff7b72;color-scheme:dark}}
+#payroll-data-hari-libur *{box-sizing:border-box}
+#payroll-data-hari-libur{margin:0;background:var(--bg);color:var(--fg);font:14px/1.5 -apple-system,"Segoe UI",Helvetica,Arial,sans-serif}
+#payroll-data-hari-libur button,#payroll-data-hari-libur input,#payroll-data-hari-libur select{font:inherit;color:inherit}
+#payroll-data-hari-libur svg.i{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;flex:none}
+#payroll-data-hari-libur .pg{max-width:1100px;margin:0 auto;padding:24px 20px calc(48px + env(safe-area-inset-bottom,0px))}
+#payroll-data-hari-libur h1{margin:0 0 20px;padding:0 0 12px;font-size:28px;font-weight:400;line-height:1.25;border-bottom:1px solid var(--bd)}
+#payroll-data-hari-libur .two{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+#payroll-data-hari-libur .box{border:1px solid var(--bd);border-radius:6px;overflow:hidden;background:var(--bg)}
+#payroll-data-hari-libur .two .box{display:flex;flex-direction:column}
+#payroll-data-hari-libur .hd{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 16px;background:var(--bg2);border-bottom:1px solid var(--bd);font-weight:600}
+#payroll-data-hari-libur .bd{padding:16px;display:flex;flex-direction:column;gap:14px;flex:1}
+#payroll-data-hari-libur .row{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:end}
+#payroll-data-hari-libur .f{display:flex;flex-direction:column;gap:6px;min-width:0}
+#payroll-data-hari-libur .f label{font-size:13px;font-weight:600}
+#payroll-data-hari-libur .fld{width:100%;height:34px;padding:5px 12px;border:1px solid var(--bd);border-radius:6px;background:var(--bg);outline:0;transition:border-color .15s,box-shadow .15s}
+#payroll-data-hari-libur .fld:focus{border-color:var(--blue);box-shadow:0 0 0 1px var(--blue)}
+#payroll-data-hari-libur .btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;height:34px;padding:0 16px;border:1px solid var(--bd);border-radius:6px;background:var(--bg2);font-weight:600;cursor:pointer;transition:background .15s,filter .15s}
+#payroll-data-hari-libur .btn:hover{background:var(--hov)}
+#payroll-data-hari-libur .btn.go{background:var(--green);border-color:var(--green);color:#fff}#payroll-data-hari-libur .btn.go:hover{filter:brightness(1.1);background:var(--green)}
+#payroll-data-hari-libur .btn[disabled]{opacity:.6;cursor:progress}
+#payroll-data-hari-libur .tl{display:flex;justify-content:flex-start;flex-wrap:wrap;align-items:center;gap:8px;padding:12px 16px;border-bottom:1px solid var(--bd)}
+#payroll-data-hari-libur .tl label{font-weight:600;color:var(--mute)}#payroll-data-hari-libur .tl .fld{width:240px}
+#payroll-data-hari-libur table{width:100%;border-collapse:collapse}
+#payroll-data-hari-libur th{padding:10px 14px;background:var(--bg2);border-bottom:1px solid var(--bd);text-align:left;font-size:12px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--mute)}
+#payroll-data-hari-libur td{padding:10px 14px;border-top:1px solid var(--bd);vertical-align:middle}
+#payroll-data-hari-libur tbody tr:first-child td{border-top:0}
+#payroll-data-hari-libur .ck{width:56px}#payroll-data-hari-libur input[type=checkbox]{width:16px;height:16px;accent-color:var(--green);cursor:pointer;vertical-align:middle}
+#payroll-data-hari-libur tr.sel td{background:var(--hov)}
+#payroll-data-hari-libur .sc{color:var(--mute);font-weight:600;white-space:nowrap}#payroll-data-hari-libur .yr{margin-left:8px;font-weight:600;color:var(--mute)}#payroll-data-hari-libur .tl select.fld{width:120px}#payroll-data-hari-libur .sa{display:none;align-items:center;gap:8px;font-weight:600;cursor:pointer}#payroll-data-hari-libur .tg{width:150px;white-space:nowrap}#payroll-data-hari-libur .ac{width:110px;white-space:nowrap}
+#payroll-data-hari-libur .ib{display:inline-grid;place-items:center;width:30px;height:30px;margin-right:4px;border:1px solid var(--bd);border-radius:6px;background:var(--bg);color:var(--fg);cursor:pointer;transition:background .15s}
+#payroll-data-hari-libur .ib:hover{background:var(--hov)}
+#payroll-data-hari-libur .ib.rm{color:var(--err)}
+#payroll-data-hari-libur .ib.cf{width:auto;padding:0 10px;background:var(--err);border-color:var(--err);color:#fff;font-size:12px;font-weight:600}
+#payroll-data-hari-libur .ft{padding:12px 16px;border-top:1px solid var(--bd);color:var(--mute)}
+#payroll-data-hari-libur .empty{padding:32px 16px;text-align:center;color:var(--mute)}
+#payroll-data-hari-libur .toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translate(-50%,20px);width:max-content;max-width:calc(100vw - 32px);padding:10px 16px;border-radius:6px;background:var(--fg);color:var(--bg);opacity:0;pointer-events:none;transition:opacity .25s,transform .25s}
+#payroll-data-hari-libur .toast.on{opacity:1;transform:translate(-50%,0)}
+
+@media (max-width:860px){#payroll-data-hari-libur .two{grid-template-columns:1fr}}
+@media (max-width:700px){
+  #payroll-data-hari-libur .pg{padding:16px 12px calc(40px + env(safe-area-inset-bottom,0px))}#payroll-data-hari-libur h1{font-size:22px}
+  #payroll-data-hari-libur .fld,#payroll-data-hari-libur .btn{height:38px}
+  #payroll-data-hari-libur .row{grid-template-columns:1fr}#payroll-data-hari-libur .row .btn{width:100%}
+  #payroll-data-hari-libur .tl{padding:12px}#payroll-data-hari-libur .tl label[for=q],#payroll-data-hari-libur .tl .yr{display:none}#payroll-data-hari-libur .tl .fld,#payroll-data-hari-libur .tl select.fld{width:100%}#payroll-data-hari-libur .sa{display:flex}#payroll-data-hari-libur .sc{margin-right:0}
+  #payroll-data-hari-libur thead{display:none}#payroll-data-hari-libur table,#payroll-data-hari-libur tbody{display:block}
+  #payroll-data-hari-libur tbody tr{position:relative;display:grid;gap:2px;padding:14px 16px;border-top:1px solid var(--bd)}
+  #payroll-data-hari-libur tbody tr:first-child{border-top:0}
+  #payroll-data-hari-libur td{display:block;padding:0;border:0}
+  #payroll-data-hari-libur tbody tr{padding-left:48px}
+  #payroll-data-hari-libur td.ck{position:absolute;top:15px;left:16px;width:auto}
+  #payroll-data-hari-libur td.jd{font-weight:600;padding-right:132px}
+  #payroll-data-hari-libur tr.sel{background:var(--hov)}#payroll-data-hari-libur tr.sel td{background:transparent}
+  #payroll-data-hari-libur .tl{justify-content:space-between}#payroll-data-hari-libur .sa{margin-right:auto}#payroll-data-hari-libur .sc{order:0}#payroll-data-hari-libur .tl .fld{flex:1 1 100%;order:3}#payroll-data-hari-libur .tl select.fld{order:4}#payroll-data-hari-libur .sc{margin-left:auto}
+  #payroll-data-hari-libur td.tg{width:auto;color:var(--mute)}
+  #payroll-data-hari-libur td.ac{position:absolute;top:12px;right:12px;width:auto}
+  #payroll-data-hari-libur tr.er{display:block}
+}

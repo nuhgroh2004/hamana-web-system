@@ -1,0 +1,39 @@
+#payroll-pengaturan-bpjs-kesehatan{--bg:#fff;--bg2:#f6f8fa;--fg:#1f2328;--mute:#59636e;--bd:#d1d9e0;--hov:#eff2f5;--blue:#0969da;--green:#1f883d;--err:#cf222e;color-scheme:light}
+@media (prefers-color-scheme:dark){#payroll-pengaturan-bpjs-kesehatan{--bg:#0d1117;--bg2:#151b23;--fg:#f0f6fc;--mute:#9198a1;--bd:#3d444d;--hov:#262c36;--blue:#4493f8;--green:#238636;--err:#ff7b72;color-scheme:dark}}
+#payroll-pengaturan-bpjs-kesehatan *{box-sizing:border-box}
+#payroll-pengaturan-bpjs-kesehatan{margin:0;background:var(--bg);color:var(--fg);font:14px/1.5 -apple-system,"Segoe UI",Helvetica,Arial,sans-serif}
+#payroll-pengaturan-bpjs-kesehatan button,#payroll-pengaturan-bpjs-kesehatan input,#payroll-pengaturan-bpjs-kesehatan select{font:inherit;color:inherit}
+#payroll-pengaturan-bpjs-kesehatan svg.i{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;flex:none}
+#payroll-pengaturan-bpjs-kesehatan .pg{max-width:900px;margin:0 auto;padding:24px 20px calc(48px + env(safe-area-inset-bottom,0px))}
+#payroll-pengaturan-bpjs-kesehatan h1{margin:0;padding:0 0 12px;font-size:28px;font-weight:400;line-height:1.25;border-bottom:1px solid var(--bd)}
+#payroll-pengaturan-bpjs-kesehatan .ds{margin:12px 0 20px;color:var(--mute)}
+#payroll-pengaturan-bpjs-kesehatan .box{border:1px solid var(--bd);border-radius:6px;overflow:hidden;background:var(--bg);margin-bottom:16px}
+#payroll-pengaturan-bpjs-kesehatan .hd{padding:12px 16px;background:var(--bg2);border-bottom:1px solid var(--bd);font-weight:600}
+#payroll-pengaturan-bpjs-kesehatan .bd{padding:16px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+#payroll-pengaturan-bpjs-kesehatan .f{display:flex;flex-direction:column;gap:6px;min-width:0}
+#payroll-pengaturan-bpjs-kesehatan .f label{font-size:13px;font-weight:600}
+#payroll-pengaturan-bpjs-kesehatan .f label i{color:var(--err);font-style:normal;margin-left:2px}
+#payroll-pengaturan-bpjs-kesehatan .fld{width:100%;height:34px;padding:5px 12px;border:1px solid var(--bd);border-radius:6px;background:var(--bg);outline:0;transition:border-color .15s,box-shadow .15s}
+#payroll-pengaturan-bpjs-kesehatan .fld:focus{border-color:var(--blue);box-shadow:0 0 0 1px var(--blue)}
+#payroll-pengaturan-bpjs-kesehatan .f.bad .fld,#payroll-pengaturan-bpjs-kesehatan .f.bad .ig{border-color:var(--err)}
+#payroll-pengaturan-bpjs-kesehatan .f.bad .fld:focus{box-shadow:0 0 0 1px var(--err)}
+#payroll-pengaturan-bpjs-kesehatan .ig{display:flex;align-items:stretch;border:1px solid var(--bd);border-radius:6px;background:var(--bg);overflow:hidden;transition:border-color .15s,box-shadow .15s}
+#payroll-pengaturan-bpjs-kesehatan .ig:focus-within{border-color:var(--blue);box-shadow:0 0 0 1px var(--blue)}
+#payroll-pengaturan-bpjs-kesehatan .f.bad .ig:focus-within{border-color:var(--err);box-shadow:0 0 0 1px var(--err)}
+#payroll-pengaturan-bpjs-kesehatan .ig .fld{border:0;border-radius:0;box-shadow:none;height:32px;min-width:0}
+#payroll-pengaturan-bpjs-kesehatan .ig span{display:grid;place-items:center;padding:0 12px;background:var(--bg2);color:var(--mute);font-weight:600;font-size:13px}
+#payroll-pengaturan-bpjs-kesehatan .ig span.l{border-right:1px solid var(--bd)}#payroll-pengaturan-bpjs-kesehatan .ig span.r{border-left:1px solid var(--bd)}
+#payroll-pengaturan-bpjs-kesehatan .er{min-height:0;font-size:12px;color:var(--err)}
+#payroll-pengaturan-bpjs-kesehatan .note{grid-column:1/-1;margin:0;color:var(--mute);font-size:12.5px}
+#payroll-pengaturan-bpjs-kesehatan .btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;height:34px;padding:0 18px;border:1px solid var(--bd);border-radius:6px;background:var(--bg2);font-weight:600;cursor:pointer;transition:background .15s,filter .15s}
+#payroll-pengaturan-bpjs-kesehatan .btn.go{background:var(--green);border-color:var(--green);color:#fff}#payroll-pengaturan-bpjs-kesehatan .btn.go:hover{filter:brightness(1.1);background:var(--green)}
+#payroll-pengaturan-bpjs-kesehatan .act{display:flex}
+#payroll-pengaturan-bpjs-kesehatan .toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translate(-50%,20px);width:max-content;max-width:calc(100vw - 32px);padding:10px 16px;border-radius:6px;background:var(--fg);color:var(--bg);opacity:0;pointer-events:none;transition:opacity .25s,transform .25s}
+#payroll-pengaturan-bpjs-kesehatan .toast.on{opacity:1;transform:translate(-50%,0)}
+@media (max-width:760px){#payroll-pengaturan-bpjs-kesehatan .bd{grid-template-columns:1fr 1fr}}
+@media (max-width:560px){
+  #payroll-pengaturan-bpjs-kesehatan .pg{padding:16px 12px calc(40px + env(safe-area-inset-bottom,0px))}#payroll-pengaturan-bpjs-kesehatan h1{font-size:22px}
+  #payroll-pengaturan-bpjs-kesehatan .bd{grid-template-columns:1fr}
+  #payroll-pengaturan-bpjs-kesehatan .fld{height:38px}#payroll-pengaturan-bpjs-kesehatan .ig .fld{height:36px}
+  #payroll-pengaturan-bpjs-kesehatan .btn{width:100%;height:38px}
+}

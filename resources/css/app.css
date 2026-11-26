@@ -35,6 +35,17 @@
 @import './hris/form-absensi/style.css';
 @import './hris/list-satpam/style.css';
 @import './hris/page-satpam/style.css';
+@import './payroll/master-data/master-data-pegawai/style.css';
+@import './payroll/master-data/data-hari-libur/style.css';
+@import './payroll/master-data/pengaturan-bpjs-tk/style.css';
+@import './payroll/master-data/pengaturan-bpjs-kesehatan/style.css';
+@import './payroll/master-data/golongan-bpjs/style.css';
+@import './payroll/generate-payroll/style.css';
+@import './payroll/slip-gaji-payroll/style.css';
+@import './payroll/data-transaksi/makan-lembur/style.css';
+@import './payroll/data-transaksi/data-lembur/style.css';
+@import './payroll/data-transaksi/data-rapel/style.css';
+@import './payroll/data-transaksi/data-kehadiran/style.css';
 
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';
