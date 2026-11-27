@@ -18,3 +18,43 @@
     margin-top: 2px;
     flex: none;
 }
+
+#set-page .pw-wrap {
+    position: relative;
+    margin-top: 4px;
+}
+
+#set-page .pw-wrap input {
+    margin-top: 0;
+    padding-right: 38px;
+}
+
+#set-page .pw-eye {
+    position: absolute;
+    top: 50%;
+    right: 6px;
+    transform: translateY(-50%);
+    display: grid;
+    place-items: center;
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    border: 0;
+    border-radius: 5px;
+    background: transparent;
+    color: var(--mute);
+    cursor: pointer;
+}
+
+#set-page .pw-eye:hover {
+    color: var(--fg);
+}
+
+#set-page .pw-eye .eye-hide,
+#set-page .pw-eye.is-visible .eye-show {
+    display: none;
+}
+
+#set-page .pw-eye.is-visible .eye-hide {
+    display: block;
+}

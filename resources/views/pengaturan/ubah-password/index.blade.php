@@ -1,6 +1,14 @@
 <div class="set-panel" data-panel="ubah-password">
     <h2>Ubah Password</h2>
-    <p class="ds">Perbarui kata sandi akun Anda.</p>
+    <p class="ds">
+        @if ($passwordTargetMissing)
+            Pegawai {{ $passwordTargetName !== '' ? $passwordTargetName.' ' : '' }}({{ $passwordTargetNik }}) belum memiliki akun pengguna.
+        @elseif ($passwordTargetUserId !== null && $passwordTargetUserId !== auth()->id())
+            Perbarui kata sandi untuk <strong>{{ $passwordTargetName }}</strong> ({{ $passwordTargetNik }}).
+        @else
+            Perbarui kata sandi akun Anda.
+        @endif
+    </p>
 
     <div class="cd">
         @if ($passwordStatus)
@@ -14,20 +22,16 @@
 
         <form class="ufm" wire:submit="updatePassword">
             <div class="ufm-g">
-                <label>
-                    Password Saat Ini
-                    <input type="password" wire:model="currentPassword" autocomplete="current-password" placeholder="Masukkan password saat ini">
-                    @error('currentPassword') <span class="err-line">{{ $message }}</span> @enderror
-                </label>
-                <label>
+                <label for="new-password">
                     Password Baru
-                    <input type="password" wire:model="newPassword" autocomplete="new-password" placeholder="Masukkan password baru">
+                    <div class="pw-wrap">
+                        <input id="new-password" type="password" wire:model="newPassword" autocomplete="new-password" placeholder="Masukkan password baru">
+                        <button class="pw-eye" type="button" data-pw-toggle="#new-password" aria-label="Tampilkan password" aria-pressed="false">
+                            <x-master-komponen::icon name="eye-slash" class="eye-show" />
+                            <x-master-komponen::icon name="eye" class="eye-hide" />
+                        </button>
+                    </div>
                     @error('newPassword') <span class="err-line">{{ $message }}</span> @enderror
-                </label>
-                <label>
-                    Konfirmasi Password Baru
-                    <input type="password" wire:model="newPasswordConfirmation" autocomplete="new-password" placeholder="Ulangi password baru">
-                    @error('newPasswordConfirmation') <span class="err-line">{{ $message }}</span> @enderror
                 </label>
             </div>
 

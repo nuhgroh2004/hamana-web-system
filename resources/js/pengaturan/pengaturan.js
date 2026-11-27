@@ -9,6 +9,28 @@ function initPengaturan() {
 
     initializedRoots.add(root);
 
+    root.addEventListener('click', (event) => {
+        const toggle = event.target.closest('[data-pw-toggle]');
+
+        if (!toggle) {
+            return;
+        }
+
+        const input = root.querySelector(toggle.dataset.pwToggle);
+
+        if (!input) {
+            return;
+        }
+
+        const visible = input.type === 'text';
+
+        input.type = visible ? 'password' : 'text';
+        toggle.classList.toggle('is-visible', !visible);
+        toggle.setAttribute('aria-label', visible ? 'Tampilkan password' : 'Sembunyikan password');
+        toggle.setAttribute('aria-pressed', String(!visible));
+        input.focus();
+    });
+
     const search = root.querySelector('#sq');
     const links = Array.from(root.querySelectorAll('#sl .si'));
 

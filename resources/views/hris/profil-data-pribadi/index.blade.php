@@ -16,7 +16,14 @@
                 Edit Profil
             </button>
             @if (auth()->user()?->canAccess('ubah-password'))
-                <a class="btn" href="{{ route('pengaturan.panel', 'ubah-password') }}" wire:navigate>Ubah Password</a>
+                @php
+                    $targetNik = trim((string) request()->query('nik', ''));
+                    $ubahPasswordUrl = route('pengaturan.panel', array_filter([
+                        'panel' => 'ubah-password',
+                        'nik' => $targetNik !== '' ? $targetNik : null,
+                    ]));
+                @endphp
+                <a class="btn" href="{{ $ubahPasswordUrl }}" wire:navigate>Ubah Password</a>
             @endif
         </div>
 

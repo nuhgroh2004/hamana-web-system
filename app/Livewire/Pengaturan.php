@@ -2,13 +2,14 @@
 
 namespace App\Livewire;
 
+use App\Models\Employee;
 use App\Models\User;
 use App\Services\Access\ToggleUserModuleAccessService;
 use App\Services\Access\ToggleUserModuleGroupAccessService;
 use App\Services\Employee\SyncEmployeeFromUserService;
 use App\Support\Modules;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
+use Livewire\Attributes\Locked;
 use Livewire\Component;
 
 class Pengaturan extends Component
@@ -41,13 +42,21 @@ class Pengaturan extends Component
 
     public string $moduleQuery = '';
 
-    public string $currentPassword = '';
-
     public string $newPassword = '';
 
-    public string $newPasswordConfirmation = '';
-
     public string $passwordStatus = '';
+
+    #[Locked]
+    public ?int $passwordTargetUserId = null;
+
+    #[Locked]
+    public string $passwordTargetName = '';
+
+    #[Locked]
+    public string $passwordTargetNik = '';
+
+    #[Locked]
+    public bool $passwordTargetMissing = false;
 
     /**
      * Set the active settings panel from the URL.
@@ -70,6 +79,10 @@ class Pengaturan extends Component
                 ->orderBy('name')
                 ->value('id')
                 ?? User::query()->orderBy('name')->value('id');
+        }
+
+        if ($this->panel === 'ubah-password') {
+            $this->resolvePasswordTarget(trim((string) request()->query('nik', '')));
         }
     }
 
@@ -405,38 +418,73 @@ class Pengaturan extends Component
     }
 
     /**
-     * Change the authenticated user's password.
+     * Change the authenticated user's password, or the selected employee's password when opened via ?nik=.
      */
     public function updatePassword(): void
     {
         $this->resetErrorBag();
         $this->passwordStatus = '';
 
-        $this->validate([
-            'currentPassword' => ['required', 'string'],
-            'newPassword' => ['required', 'string', 'min:6', 'same:newPasswordConfirmation'],
-            'newPasswordConfirmation' => ['required', 'string'],
-        ], [
-            'currentPassword.required' => 'Password saat ini wajib diisi.',
-            'newPassword.required' => 'Password baru wajib diisi.',
-            'newPassword.min' => 'Password baru minimal 6 karakter.',
-            'newPassword.same' => 'Konfirmasi password baru tidak cocok.',
-            'newPasswordConfirmation.required' => 'Konfirmasi password baru wajib diisi.',
-        ]);
-
-        $user = auth()->user();
-
-        if (! Hash::check($this->currentPassword, $user->password)) {
-            $this->addError('currentPassword', 'Password saat ini tidak sesuai.');
+        if ($this->passwordTargetMissing) {
+            $this->addError('newPassword', 'Pegawai ini belum memiliki akun pengguna.');
 
             return;
+        }
+
+        $this->validate([
+            'newPassword' => ['required', 'string', 'min:6'],
+        ], [
+            'newPassword.required' => 'Password baru wajib diisi.',
+            'newPassword.min' => 'Password baru minimal 6 karakter.',
+        ]);
+
+        $authUser = auth()->user();
+
+        if ($this->passwordTargetUserId !== null && $this->passwordTargetUserId !== $authUser->id) {
+            abort_unless($authUser->isAdmin() || $authUser->canAccess('data-pegawai'), 403);
+            $user = User::query()->findOrFail($this->passwordTargetUserId);
+        } else {
+            $user = $authUser;
         }
 
         $user->password = $this->newPassword;
         $user->save();
 
-        $this->reset(['currentPassword', 'newPassword', 'newPasswordConfirmation']);
+        $this->reset('newPassword');
         $this->passwordStatus = 'Password berhasil diubah.';
+    }
+
+    /**
+     * Resolve the target user when Ubah Password is opened from another employee's profile.
+     */
+    private function resolvePasswordTarget(string $nik): void
+    {
+        if ($nik === '') {
+            return;
+        }
+
+        $authUser = auth()->user();
+
+        if ($authUser->nik === $nik) {
+            return;
+        }
+
+        abort_unless($authUser->isAdmin() || $authUser->canAccess('data-pegawai'), 403);
+
+        $employee = Employee::query()->with('user')->where('nik', $nik)->first();
+        $targetUser = $employee?->user ?? User::query()->where('nik', $nik)->first();
+
+        if (! $targetUser) {
+            $this->passwordTargetMissing = true;
+            $this->passwordTargetNik = $nik;
+            $this->passwordTargetName = $employee?->nama ?? '';
+
+            return;
+        }
+
+        $this->passwordTargetUserId = $targetUser->id;
+        $this->passwordTargetName = $targetUser->name;
+        $this->passwordTargetNik = $targetUser->nik ?: $nik;
     }
 
     public function render()

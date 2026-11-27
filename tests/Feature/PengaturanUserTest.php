@@ -261,9 +261,7 @@ class PengaturanUserTest extends TestCase
 
         Livewire::actingAs($user)
             ->test(Pengaturan::class)
-            ->set('currentPassword', 'password')
             ->set('newPassword', 'rahasia123')
-            ->set('newPasswordConfirmation', 'rahasia123')
             ->call('updatePassword')
             ->assertHasNoErrors()
             ->assertSet('passwordStatus', 'Password berhasil diubah.');
@@ -271,28 +269,60 @@ class PengaturanUserTest extends TestCase
         $this->assertTrue(Hash::check('rahasia123', $user->refresh()->password));
     }
 
-    public function test_password_change_requires_current_password_and_matching_confirmation(): void
+    public function test_password_change_validates_new_password_minimum_length(): void
     {
-        $user = $this->makeUser(['email' => 'password-salah@hamana.co.id', 'password' => 'password']);
+        $user = $this->makeUser(['email' => 'password-pendek@hamana.co.id', 'password' => 'password']);
 
         Livewire::actingAs($user)
             ->test(Pengaturan::class)
-            ->set('currentPassword', 'salah')
-            ->set('newPassword', 'rahasia123')
-            ->set('newPasswordConfirmation', 'rahasia123')
+            ->set('newPassword', '123')
             ->call('updatePassword')
-            ->assertHasErrors(['currentPassword']);
+            ->assertHasErrors(['newPassword' => 'min']);
 
         $this->assertTrue(Hash::check('password', $user->refresh()->password));
+    }
 
-        Livewire::actingAs($user)
-            ->test(Pengaturan::class)
-            ->set('currentPassword', 'password')
-            ->set('newPassword', 'rahasia123')
-            ->set('newPasswordConfirmation', 'beda123')
+    public function test_admin_can_change_selected_employee_password_via_nik_query(): void
+    {
+        $admin = $this->makeUser([
+            'nik' => '9000.00.00.01',
+            'email' => 'admin-ubah-pw@hamana.co.id',
+            'password' => 'admin123',
+            'role' => User::ROLE_ADMIN,
+        ]);
+        $target = $this->makeUser([
+            'nik' => '9623.11.01.99',
+            'name' => 'Pegawai Target',
+            'email' => 'target-ubah-pw@hamana.co.id',
+            'password' => 'lama1234',
+        ]);
+        Employee::query()->create([
+            'user_id' => $target->id,
+            'nik' => '9623.11.01.99',
+            'nama' => 'Pegawai Target',
+            'status_pegawai' => Employee::STATUS_AKTIF,
+        ]);
+
+        Livewire::withQueryParams(['nik' => '9623.11.01.99'])
+            ->actingAs($admin)
+            ->test(Pengaturan::class, ['panel' => 'ubah-password'])
+            ->assertSee('Pegawai Target')
+            ->set('newPassword', 'baru12345')
             ->call('updatePassword')
-            ->assertHasErrors(['newPassword' => 'same']);
+            ->assertHasNoErrors()
+            ->assertSet('passwordStatus', 'Password berhasil diubah.');
 
-        $this->assertTrue(Hash::check('password', $user->refresh()->password));
+        $this->assertTrue(Hash::check('baru12345', $target->refresh()->password));
+        $this->assertTrue(Hash::check('admin123', $admin->refresh()->password));
+    }
+
+    public function test_regular_user_cannot_open_ubah_password_for_another_nik(): void
+    {
+        $user = $this->makeUser(['nik' => '1111.11.11.11', 'email' => 'biasa@hamana.co.id']);
+        $other = $this->makeUser(['nik' => '2222.22.22.22', 'email' => 'lain@hamana.co.id']);
+
+        $this->actingAs($user)
+            ->get('/pengaturan/ubah-password?nik='.$other->nik)
+            ->assertForbidden();
     }
 }

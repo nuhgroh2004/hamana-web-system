@@ -49,6 +49,8 @@
     $libraryIcons = [
         'pin' => 'pin-angle.svg',
         'pin-fill' => 'pin-angle-fill.svg',
+        'eye' => 'eye.svg',
+        'eye-slash' => 'eye-slash.svg',
     ];
 
     $fillIcons = [];
