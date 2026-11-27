@@ -43,8 +43,32 @@
     $boxes = [
         'guard' => '0 0 122.88 120.23',
     ];
+
+    // Ikon semat diambil langsung dari library Bootstrap Icons agar bentuknya
+    // konsisten dengan paket aslinya. Berkas SVG disalin ke resources/icons.
+    $libraryIcons = [
+        'pin' => 'pin-angle.svg',
+        'pin-fill' => 'pin-angle-fill.svg',
+    ];
+
+    $fillIcons = [];
+
+    if ($name && isset($libraryIcons[$name])) {
+        $markup = @file_get_contents(resource_path('icons/'.$libraryIcons[$name]));
+
+        if ($markup !== false && preg_match('/<svg[^>]*>(.*?)<\/svg>/s', $markup, $matches)) {
+            $paths[$name] = $matches[1];
+
+            if (preg_match('/viewBox="([^"]+)"/', $markup, $box)) {
+                $boxes[$name] = $box[1];
+            }
+
+            // Ikon Bootstrap Icons memakai fill, bukan stroke.
+            $fillIcons[] = $name;
+        }
+    }
 @endphp
 
 @if ($name && isset($paths[$name]))
-    <svg {{ $attributes->merge(['class' => 'i']) }} viewBox="{{ $boxes[$name] ?? '0 0 16 16' }}" aria-hidden="true">{!! $paths[$name] !!}</svg>
+    <svg {{ $attributes->merge(['class' => 'i'.(in_array($name, $fillIcons, true) ? ' i-fill' : '')]) }} viewBox="{{ $boxes[$name] ?? '0 0 16 16' }}" aria-hidden="true">{!! $paths[$name] !!}</svg>
 @endif

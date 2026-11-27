@@ -15,7 +15,7 @@
     $current = $current ?: 'dashboard';
 @endphp
 
-<nav id="nav" aria-label="Menu utama">
+<nav id="nav" aria-label="Menu utama" data-user="{{ auth()->id() }}">
     <ul>
         @foreach ($groups as $group)
             @if (! empty($group['separator']))
@@ -41,16 +41,28 @@
                     $childActive = $hasChildren && collect($item['children'])->contains(
                         fn ($child) => $current === ($child['slug'] ?? null)
                     );
+                    // Kunci stabil untuk menyimpan status semat (pin) di browser.
+                    // Item grup (mis. "Profil") tidak punya slug, jadi label dipakai.
+                    $key = $item['slug'] ?? \Illuminate\Support\Str::slug($item['label'] ?? '');
                 @endphp
 
-                <li class="t{{ $hasChildren ? ' has' : '' }}{{ $isActive ? ' act' : '' }}{{ $childActive ? ' has-act open' : '' }}">
-                    <a href="{{ $href }}" @if ($href === '#') data-placeholder="true" @else wire:navigate @endif @if ($isActive) aria-current="page" @endif>
-                        <x-master-komponen::icon :name="$item['icon']" />
-                        {{ $item['label'] }}
-                        @if ($hasChildren)
-                            <x-master-komponen::icon name="down" class="ch" />
+                <li class="t{{ $hasChildren ? ' has' : '' }}{{ $isActive ? ' act' : '' }}{{ $childActive ? ' has-act open' : '' }}" data-key="{{ $key }}" wire:key="nav-{{ $key }}">
+                    <div class="row">
+                        <a href="{{ $href }}" @if ($href === '#') data-placeholder="true" @else wire:navigate @endif @if ($isActive) aria-current="page" @endif>
+                            <x-master-komponen::icon :name="$item['icon']" />
+                            {{ $item['label'] }}
+                            @if ($hasChildren)
+                                <x-master-komponen::icon name="down" class="ch" />
+                            @endif
+                        </a>
+
+                        @if ($key !== '')
+                            <button type="button" class="pin" data-pin="{{ $key }}" aria-pressed="false" aria-label="Sematkan {{ $item['label'] }}" title="Sematkan {{ $item['label'] }}">
+                                <x-master-komponen::icon name="pin" class="pin-off" />
+                                <x-master-komponen::icon name="pin-fill" class="pin-on" />
+                            </button>
                         @endif
-                    </a>
+                    </div>
 
                     @if ($hasChildren)
                         <div class="sw">

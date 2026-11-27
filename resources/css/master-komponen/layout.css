@@ -68,6 +68,12 @@ svg.i {
     flex: none;
 }
 
+/* Ikon dari library (mis. Bootstrap Icons) berbasis fill, bukan stroke. */
+svg.i-fill {
+    fill: currentColor;
+    stroke: none;
+}
+
 button {
     font: inherit;
     color: inherit;
@@ -198,17 +204,102 @@ nav a .ch {
     transition: transform 0.25s;
 }
 
-nav li.open > a .ch {
+nav li.open > .row > a .ch {
     transform: rotate(180deg);
 }
 
-nav li.act > a {
+nav li.act > .row > a,
+nav .sw li.act > a {
     font-weight: 600;
     background: var(--hov);
 }
 
+/* Baris menu tingkat atas: tautan + tombol semat. */
+nav li.t > .row {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+nav li.t > .row > a {
+    flex: 1 1 auto;
+    min-width: 0;
+    /* Ruang untuk tombol semat di sisi kanan. */
+    padding-right: 40px;
+}
+
+/* Tombol semat disembunyikan sampai baris disentuh, tetapi item yang
+   sudah disematkan selalu menampilkannya. */
+nav li.t > .row > .pin {
+    position: absolute;
+    top: 50%;
+    right: 6px;
+    transform: translateY(-50%);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    border: 0;
+    border-radius: 6px;
+    background: transparent;
+    color: var(--mute);
+    opacity: 0;
+    transition: opacity 0.15s, background 0.15s, color 0.15s;
+}
+
+nav li.t:hover > .row > .pin,
+nav li.t:focus-within > .row > .pin,
+nav li.t > .row > .pin[aria-pressed="true"] {
+    opacity: 1;
+}
+
+nav li.t > .row > .pin:hover {
+    background: var(--hov);
+    color: var(--fg);
+}
+
+/* Jaga latar baris tetap menyala saat kursor berada di tombol semat. */
+nav li.t > .row:has(> .pin:hover) > a {
+    background: var(--hov);
+}
+
+nav li.t > .row > .pin[aria-pressed="true"] {
+    color: var(--blue);
+}
+
+/* Dua ikon: outline saat belum disematkan, terisi saat disematkan. */
+nav li.t > .row > .pin .pin-on {
+    display: none;
+}
+
+nav li.t > .row > .pin[aria-pressed="true"] .pin-off {
+    display: none;
+}
+
+nav li.t > .row > .pin[aria-pressed="true"] .pin-on {
+    display: block;
+}
+
+/* Perangkat sentuh tidak punya status hover: tampilkan semua tombol semat. */
+@media (hover: none) {
+    nav li.t > .row > .pin {
+        opacity: 1;
+    }
+}
+
+/* Grup yang seluruh menunya disematkan disembunyikan agar tidak kosong. */
+nav li.pin-empty {
+    display: none;
+}
+
+nav li.pin-slot {
+    display: none;
+}
+
 /* Penanda menu aktif: hanya pada halaman yang sedang dibuka. */
-nav li.t.act > a::before {
+nav li.t.act > .row > a::before {
     content: "";
     position: absolute;
     left: -10px;
@@ -222,14 +313,14 @@ nav li.t.act > a::before {
 /* Grup dropdown tidak pernah memakai penanda aktif (hanya anak menunya).
    Aturan ini sekaligus menetralkan sisa CSS lama yang masih termuat
    pada halaman yang belum dimuat ulang setelah aset dibangun ulang. */
-nav li.t.has > a::before,
-nav li.t.has-act > a::before {
+nav li.t.has > .row > a::before,
+nav li.t.has-act > .row > a::before {
     content: none;
     background: none;
 }
 
-nav li.t.has > a,
-nav li.t.has-act > a {
+nav li.t.has > .row > a,
+nav li.t.has-act > .row > a {
     font-weight: 400;
 }
 
