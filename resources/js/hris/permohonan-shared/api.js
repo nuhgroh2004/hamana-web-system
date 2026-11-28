@@ -44,56 +44,93 @@
         });
     }
 
-    // ---- Approver Popup ----
+    // ---- Approver Popup (Pilih Penerima -> Tombol Kirim -> Alert.confirm) ----
 
-    function showApproverPopup(root) {
+    function showApproverPopup() {
         return loadKaryawanAktif().then(function (list) {
             return new Promise(function (resolve) {
+                var selected = null;
                 var ov = document.createElement('div');
-                ov.className = 'ov2';
-                ov.style.cssText = 'position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.45)';
+                ov.className = 'ap-ov';
                 ov.innerHTML = buildPopupHtml(list);
                 document.body.appendChild(ov);
                 document.body.style.overflow = 'hidden';
 
                 var inp = ov.querySelector('.ap-search');
+                var pickEl = ov.querySelector('.ap-pick');
+                var sendBtn = ov.querySelector('[data-pop-send]');
                 if (inp) inp.focus();
 
                 function close(result) {
+                    document.removeEventListener('keydown', onKey);
                     ov.remove();
                     document.body.style.overflow = '';
                     resolve(result || null);
                 }
 
-                // close on backdrop click
-                ov.addEventListener('click', function (e) {
-                    if (e.target === ov) close(null);
-                });
-
-                // close button
-                var btnClose = ov.querySelector('[data-pop-close]');
-                if (btnClose) btnClose.addEventListener('click', function () { close(null); });
-
-                // employee list click
-                ov.querySelector('.ap-list').addEventListener('click', function (e) {
-                    var item = e.target.closest('[data-id]');
-                    if (!item) return;
-                    close({ id: +item.dataset.id, nama: item.dataset.nama, jabatan: item.dataset.jabatan });
-                });
-
-                // keyboard escape
                 function onKey(e) {
-                    if (e.key === 'Escape') { document.removeEventListener('keydown', onKey); close(null); }
+                    if (e.key === 'Escape') {
+                        close(null);
+                    }
                 }
                 document.addEventListener('keydown', onKey);
 
-                // search filter
+                ov.addEventListener('click', function (e) {
+                    if (e.target === ov || e.target.closest('[data-pop-close]')) {
+                        close(null);
+                        return;
+                    }
+
+                    var item = e.target.closest('.ap-item[data-id]');
+                    if (item) {
+                        ov.querySelectorAll('.ap-item.on').forEach(function (el) {
+                            el.classList.remove('on');
+                        });
+                        item.classList.add('on');
+                        selected = {
+                            id: +item.dataset.id,
+                            nama: item.dataset.nama,
+                            jabatan: item.dataset.jabatan,
+                        };
+                        if (pickEl) {
+                            pickEl.innerHTML = 'Penerima: <b>' + esc(selected.nama) + '</b> — ' + esc(selected.jabatan);
+                        }
+                        if (sendBtn) {
+                            sendBtn.disabled = false;
+                        }
+                        return;
+                    }
+
+                    if (e.target.closest('[data-pop-send]') && selected) {
+                        var target = selected;
+                        var confirmPromise = window.Alert && typeof window.Alert.confirm === 'function'
+                            ? window.Alert.confirm({
+                                title: 'Kirim Permohonan?',
+                                message: 'Permohonan akan dikirim ke ' + target.nama + ' (' + target.jabatan + ').',
+                                yes: 'Kirim',
+                                no: 'Batal',
+                            })
+                            : Promise.resolve(window.confirm('Kirim permohonan ke ' + target.nama + '?'));
+
+                        confirmPromise.then(function (ok) {
+                            if (ok) {
+                                close(target);
+                            }
+                        });
+                    }
+                });
+
                 if (inp) {
                     inp.addEventListener('input', function () {
-                        var q = inp.value.toLowerCase();
-                        ov.querySelectorAll('[data-id]').forEach(function (el) {
-                            el.hidden = !!q && el.textContent.toLowerCase().indexOf(q) === -1;
+                        var q = inp.value.trim().toLowerCase();
+                        var visible = 0;
+                        ov.querySelectorAll('.ap-item[data-id]').forEach(function (el) {
+                            var match = !q || el.textContent.toLowerCase().indexOf(q) !== -1;
+                            el.hidden = !match;
+                            if (match) visible++;
                         });
+                        var emptyEl = ov.querySelector('.ap-none');
+                        if (emptyEl) emptyEl.hidden = visible > 0;
                     });
                 }
             });
@@ -106,46 +143,87 @@
                 '" data-nama="' + esc(e.nama) + '" data-jabatan="' + esc(e.jabatan) + '">' +
                 '<span class="ap-av">' + esc(ini(e.nama)) + '</span>' +
                 '<span class="ap-info"><b>' + esc(e.nama) + '</b><small>' + esc(e.jabatan) + '</small></span>' +
+                '<span class="ap-ck" aria-hidden="true">&#10003;</span>' +
                 '</button>';
         }).join('');
 
-        return '<div class="ap-dlg" style="background:#fff;border-radius:12px;padding:20px;width:min(420px,92vw);max-height:80vh;display:flex;flex-direction:column;gap:12px">' +
-            '<div style="display:flex;justify-content:space-between;align-items:center">' +
-            '<h2 style="margin:0;font-size:1rem">Pilih Atasan / Pemberi Izin</h2>' +
-            '<button type="button" class="btn sm" data-pop-close aria-label="Tutup" style="padding:4px 8px;line-height:1">✕</button></div>' +
-            '<input type="search" class="ap-search fld" placeholder="Cari nama…" autocomplete="off" style="width:100%;box-sizing:border-box">' +
-            '<div class="ap-list" style="overflow-y:auto;flex:1;display:flex;flex-direction:column;gap:4px">' +
-            (items || '<p style="color:#888;text-align:center">Tidak ada karyawan aktif.</p>') +
-            '</div></div>';
+        return '<div class="ap-dlg" role="dialog" aria-modal="true" aria-labelledby="ap-ttl">' +
+            '<div class="ap-hd">' +
+            '<div><span class="ap-eyebrow">Tujuan Pengiriman</span><h2 id="ap-ttl">Pilih Penerima Permohonan</h2></div>' +
+            '<button type="button" class="ap-x" data-pop-close aria-label="Tutup">&times;</button>' +
+            '</div>' +
+            '<div class="ap-searchw">' +
+            '<input type="search" class="ap-search" placeholder="Cari nama atau jabatan…" autocomplete="off">' +
+            '</div>' +
+            '<div class="ap-list">' +
+            items +
+            '<p class="ap-none"' + (list.length ? ' hidden' : '') + '>Tidak ada karyawan aktif yang cocok.</p>' +
+            '</div>' +
+            '<div class="ap-ft">' +
+            '<p class="ap-pick">Pilih salah satu penerima di atas untuk mengaktifkan tombol Kirim.</p>' +
+            '<div class="ap-fb">' +
+            '<button type="button" class="ap-btn" data-pop-close>Batal</button>' +
+            '<button type="button" class="ap-btn go" data-pop-send disabled>Kirim</button>' +
+            '</div></div></div>';
     }
 
     // ---- signature display on form ----
 
     /**
-     * Tampilkan signature pada elemen sb/mo (dropdown signature picker).
-     * Jika user sudah punya signature, langsung tampil dan sig di-set.
-     * @returns {string|null} png data url jika ada, null jika tidak
+     * Isi opsi dropdown tanda tangan (mo) tanpa memilih otomatis pada tombol sb.
+     * User tetap harus klik "Pilih tanda tangan" secara manual.
      */
     function applySigToForm(root, ctx) {
         var $ = function (id) { return root.querySelector('#' + id); };
-        var sb = $('sb'), mo = $('mo'), mnm = $('mnm');
+        var mo = $('mo'), mnm = $('mnm');
         if (!ctx || !ctx.signature || !ctx.user) return null;
 
         var png = ctx.signature.png;
-        var thumb = sigImg(png, 25);
-
-        // Update thumbnail in dropdown option
         var th = mo && mo.querySelector('.th');
-        if (th) th.innerHTML = thumb;
+        if (th) th.innerHTML = sigImg(png, 25, 60);
         if (mnm) mnm.textContent = ctx.user.nama;
 
-        // Set button to show signature (pre-selected)
-        if (sb) {
-            sb.innerHTML = sigImg(png, 85, 180);
-            sb.classList.add('ok');
+        return null;
+    }
+
+    // ---- A4 stage scaler (dipakai semua form) ----
+
+    function fitPaper(stage) {
+        if (!stage) return null;
+        var fit = stage.firstElementChild;
+        var paper = fit && fit.firstElementChild;
+        if (!fit || !paper) return null;
+
+        var frame = 0;
+
+        function resize() {
+            var w = stage.clientWidth;
+            if (!w) return;
+            var scale = Math.min(1, w / 794);
+            paper.style.transform = 'scale(' + scale + ')';
+            fit.style.width = Math.round(794 * scale) + 'px';
+            fit.style.height = Math.round(paper.offsetHeight * scale) + 'px';
         }
 
-        return png;
+        function schedule() {
+            cancelAnimationFrame(frame);
+            frame = requestAnimationFrame(resize);
+        }
+
+        var observer = null;
+        if (window.ResizeObserver) {
+            observer = new ResizeObserver(schedule);
+            observer.observe(stage);
+            observer.observe(paper);
+        }
+        window.addEventListener('resize', schedule);
+        resize();
+
+        return function cleanup() {
+            cancelAnimationFrame(frame);
+            if (observer) observer.disconnect();
+            window.removeEventListener('resize', schedule);
+        };
     }
 
     // ---- form submission ----
@@ -210,6 +288,7 @@
         loadKaryawanAktif: loadKaryawanAktif,
         showApproverPopup: showApproverPopup,
         applySigToForm: applySigToForm,
+        fitPaper: fitPaper,
         saveDraft: saveDraft,
         submitPermohonan: submitPermohonan,
         submitDraft: submitDraft,

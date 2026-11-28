@@ -524,6 +524,25 @@ main {
         padding: 16px 16px var(--mpb);
     }
 
+    /* Izinkan zoom dan geser bebas ke segala arah hingga ujung formulir di mobile. */
+    body:has(#izin-cuti-atau-sakit, #izin-keluar-kantor, #izin-dinas-dalam-kota, #izin-dinas-luar-kota, #form-absensi) .shell {
+        position: static;
+        inset: auto;
+        min-height: 100dvh;
+        padding-top: var(--hh);
+        overflow: visible;
+    }
+
+    body:has(#izin-cuti-atau-sakit, #izin-keluar-kantor, #izin-dinas-dalam-kota, #izin-dinas-luar-kota, #form-absensi) main {
+        overflow: visible;
+    }
+
+    :is(#izin-cuti-atau-sakit, #izin-keluar-kantor, #izin-dinas-dalam-kota, #izin-dinas-luar-kota, #form-absensi) .stage {
+        overflow: auto;
+        -webkit-overflow-scrolling: touch;
+        touch-action: pan-x pan-y pinch-zoom;
+    }
+
     :root {
         --mpb: calc(48px + env(safe-area-inset-bottom, 0px));
     }

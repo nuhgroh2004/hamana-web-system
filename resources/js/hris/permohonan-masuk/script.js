@@ -15,18 +15,8 @@ function initPermohonanMasuk() {
 
     var BL = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
     var BF = [
-        'Januari',
-        'Februari',
-        'Maret',
-        'April',
-        'Mei',
-        'Juni',
-        'Juli',
-        'Agustus',
-        'September',
-        'Oktober',
-        'November',
-        'Desember',
+        'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+        'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember',
     ];
     var ST = {
         menunggu: ['Menunggu', 'w'],
@@ -34,40 +24,72 @@ function initPermohonanMasuk() {
         ditolak: ['Ditolak', 'x'],
         batal: ['Dibatalkan Pemohon', 'g'],
     };
-    var SIGNER = { nama: 'ERWIN SUNUNTO', peran: 'Atasan Langsung (Pemberi Izin)' };
-    var A4W = 794,
-        CPW = 500;
+    var A4W = 794;
 
     var TODAY = new Date(),
-        THIS_MON = String(TODAY.getMonth()),
         THIS_YR = String(TODAY.getFullYear());
 
-    // Data permohonan masuk dari server
+    // State pagination & filter server-side (hanya memuat halaman yang dibuka)
     var REQ = [];
-
-    function reloadData() {
-        return window.axios
-            .get('/api/permohonan-masuk')
-            .then(function (res) {
-                REQ = (res.data && res.data.data) || [];
-                render();
-            })
-            .catch(function () {});
-    }
+    var META = {
+        day_page: 1,
+        use_day_pagination: true,
+        target_label: 'Hari ini',
+        total_pages: 4,
+        counts: { all: 0, menunggu: 0, disetujui: 0, ditolak: 0 },
+    };
 
     var q = '',
         stf = 'all',
-        mon = THIS_MON,
-        yr = THIS_YR,
+        mon = 'all',
+        yr = 'all',
         dt = '',
-        sel = '2';
+        dayPage = 1,
+        sel = null,
+        loading = false,
+        reqSeq = 0;
+
     var lst = $('lst'),
+        pgr = $('pgr'),
         dp = $('dpane'),
         wrap = $('wrap'),
         mn = $('mn'),
         ov = $('ov'),
         dtEl = $('dt'),
         dtx = $('dtx');
+
+    function reloadData() {
+        var seq = ++reqSeq;
+        loading = true;
+        renderPager();
+
+        var params = {
+            day_page: dayPage,
+            status: stf,
+        };
+        if (q.trim()) params.q = q.trim();
+        if (dt) {
+            params.date = dt;
+        } else {
+            if (mon !== 'all') params.month = mon;
+            if (yr !== 'all') params.year = yr;
+        }
+
+        return window.axios
+            .get('/api/permohonan-masuk', { params: params })
+            .then(function (res) {
+                if (seq !== reqSeq) return;
+                REQ = (res.data && res.data.data) || [];
+                META = (res.data && res.data.meta) || META;
+                loading = false;
+                render();
+            })
+            .catch(function () {
+                if (seq !== reqSeq) return;
+                loading = false;
+                renderPager();
+            });
+    }
 
     function syncDtBtn() {
         dtx.hidden = !dt;
@@ -86,39 +108,17 @@ function initPermohonanMasuk() {
 
     function D(r) {
         var p = r.tgl.split('-');
-
         return new Date(+p[0], +p[1] - 1, +p[2]);
     }
 
     function dshort(r) {
         var d = D(r);
-
         return d.getDate() + ' ' + BL[d.getMonth()] + ' ' + d.getFullYear();
     }
 
     function dlong(r) {
         var d = D(r);
-
         return d.getDate() + ' ' + BF[d.getMonth()] + ' ' + d.getFullYear();
-    }
-
-    function hari(r) {
-        return D(r).toLocaleDateString('id-ID', { weekday: 'long' });
-    }
-
-    function base() {
-        var s = q.trim().toLowerCase();
-
-        return REQ.filter(function (r) {
-            var d = D(r);
-
-            return (
-                String(d.getFullYear()) === yr &&
-                (mon === 'all' || String(d.getMonth()) === mon) &&
-                (!dt || r.tgl === dt) &&
-                (!s || r.nama.toLowerCase().indexOf(s) >= 0)
-            );
-        });
     }
 
     function cur() {
@@ -188,18 +188,14 @@ function initPermohonanMasuk() {
     }
 
     document.addEventListener('click', function (e) {
-        if (!root.isConnected) {
-            return;
-        }
+        if (!root.isConnected) return;
 
         var b = e.target.closest('[data-dd]');
-
         if (b) {
             if (curBtn === b) {
                 closeMenu();
                 return;
             }
-
             closeMenu();
             openDD(b);
             return;
@@ -212,7 +208,6 @@ function initPermohonanMasuk() {
 
     mn.addEventListener('click', function (e) {
         var o = e.target.closest('[data-opt]');
-
         if (o && curDD) {
             var id = curDD,
                 d = DD[id];
@@ -235,19 +230,10 @@ function initPermohonanMasuk() {
     );
 
     window.addEventListener('resize', function () {
-        if (root.isConnected) {
-            closeMenu();
-        }
+        if (root.isConnected) closeMenu();
     });
 
-    // ---- surat (A4) ----
-    var LOGO =
-        '<svg class="lg" viewBox="0 0 140 56" role="img" aria-label="Hamana Works"><ellipse cx="70" cy="28" rx="66" ry="24" fill="none" stroke="currentColor" stroke-width="2.4"/><g fill="currentColor" font-family="\'Arial Black\',\'Helvetica Neue\',Arial,sans-serif" font-weight="900" font-style="italic" font-size="19"><text x="24" y="30" textLength="92" lengthAdjust="spacingAndGlyphs">HAMANA</text><text x="36" y="46" textLength="76" lengthAdjust="spacingAndGlyphs">WORKS</text></g></svg>';
-
-    function fr(l, v) {
-        return '<div class="fl"><span>' + l + '</span><span>:</span><div class="v">' + esc(v) + '</div></div>';
-    }
-
+    // ---- surat (A4 identik 794px) ----
     function paper(r) {
         if (window.PermohonanPreview) {
             return '<div class="paper">' + window.PermohonanPreview.render(r) + '</div>';
@@ -255,55 +241,38 @@ function initPermohonanMasuk() {
         return '<div class="paper"><p>Tidak ada pratinjau.</p></div>';
     }
 
-    // skala kertas A4 agar selalu utuh sesuai lebar tersedia (host = elemen pembungkus yang punya padding)
     function fit(host, zoom, cap) {
         var f = host.querySelector('.fit'),
             p = f && f.firstElementChild;
 
-        if (!p) {
-            return 1;
-        }
+        if (!p) return 1;
 
         var cs = getComputedStyle(host),
             avail = host.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
-        var cp = avail < 640,
-            pw = cp ? CPW : A4W;
 
-        p.classList.toggle('cp', cp);
-        p.style.width = pw + 'px';
-        p.style.minHeight = Math.round(pw * 1.4142) + 'px';
+        p.style.width = A4W + 'px';
+        p.style.minHeight = Math.round(A4W * 1.4142) + 'px';
 
-        var s = zoom || Math.min(cap || 1, Math.max(0.3, avail / pw));
+        var s = zoom || Math.min(cap || 1, Math.max(0.3, avail / A4W));
 
         p.style.transform = 'scale(' + s + ')';
-        f.style.width = pw * s + 'px';
-        f.style.height = p.offsetHeight * s + 'px';
+        f.style.width = Math.round(A4W * s) + 'px';
+        f.style.height = Math.round(p.offsetHeight * s) + 'px';
         return s;
     }
 
-    // hanya bereaksi pada perubahan LEBAR dan ditunda ke frame berikutnya (menghindari "ResizeObserver loop")
     var ro = null,
         raf = 0,
         lw = -1;
 
     function watch(host, fn) {
-        if (ro) {
-            ro.disconnect();
-        }
-
+        if (ro) ro.disconnect();
         lw = -1;
-
-        if (!window.ResizeObserver) {
-            return;
-        }
+        if (!window.ResizeObserver) return;
 
         ro = new ResizeObserver(function () {
             var w = host.clientWidth;
-
-            if (w === lw) {
-                return;
-            }
-
+            if (w === lw) return;
             lw = w;
             cancelAnimationFrame(raf);
             raf = requestAnimationFrame(fn);
@@ -313,14 +282,7 @@ function initPermohonanMasuk() {
 
     // ---- render ----
     function chips() {
-        var b = base(),
-            c = { all: b.length, menunggu: 0, disetujui: 0, ditolak: 0 };
-
-        b.forEach(function (r) {
-            if (c[r.status] != null) {
-                c[r.status]++;
-            }
-        });
+        var c = META.counts || { all: REQ.length, menunggu: 0, disetujui: 0, ditolak: 0 };
 
         $('chips').innerHTML = [
             ['all', 'Semua'],
@@ -336,7 +298,7 @@ function initPermohonanMasuk() {
                     x[0] +
                     '">' +
                     x[1] +
-                    (x[0] === 'menunggu' ? '<em>' + c.menunggu + '</em>' : '') +
+                    (x[0] === 'menunggu' ? '<em>' + (c.menunggu || 0) + '</em>' : '') +
                     '</button>'
                 );
             })
@@ -346,26 +308,16 @@ function initPermohonanMasuk() {
     var CHK = '<svg class="i" viewBox="0 0 16 16"><path d="M3 8.5l3.5 3.5L13 4.5"/></svg>';
 
     function renderList() {
-        var L = base().filter(function (r) {
-            return stf === 'all' || r.status === stf;
-        });
-
-        if (
-            L.length &&
-            !L.some(function (r) {
-                return r.id === sel;
-            })
-        ) {
-            sel = L[0].id;
+        if (REQ.length && !REQ.some(function (r) { return r.id === sel; })) {
+            sel = REQ[0].id;
         }
-
-        if (!L.length) {
+        if (!REQ.length) {
             sel = null;
         }
 
-        lst.innerHTML = L.length
-            ? L.map(function (r) {
-                  var s = ST[r.status];
+        lst.innerHTML = REQ.length
+            ? REQ.map(function (r) {
+                  var s = ST[r.status] || ['Menunggu', 'w'];
 
                   return (
                       '<button type="button" class="it' +
@@ -380,7 +332,7 @@ function initPermohonanMasuk() {
                       '<div class="j">' +
                       esc(r.jenis) +
                       '</div><div class="b">' +
-                      (r.files.length ? '<span class="bdg ok">' + CHK + 'Lampiran: ' + r.files.length + ' berkas</span>' : '') +
+                      (r.files && r.files.length ? '<span class="bdg ok">' + CHK + 'Lampiran: ' + r.files.length + ' berkas</span>' : '') +
                       '<span class="bdg ' +
                       s[1] +
                       '">' +
@@ -388,7 +340,33 @@ function initPermohonanMasuk() {
                       '</span></div></button>'
                   );
               }).join('')
-            : '<div class="none">Tidak ada permohonan yang cocok.</div>';
+            : '<div class="none">Tidak ada permohonan pada hari ini.</div>';
+    }
+
+    function renderPager() {
+        if (!pgr) return;
+
+        if (!META.use_day_pagination) {
+            pgr.innerHTML = '<div class="pgr-info"><span>Menampilkan hasil filter</span><span>' + REQ.length + ' data</span></div>';
+            return;
+        }
+
+        var curPage = META.day_page || dayPage;
+        var total = Math.max(curPage, META.total_pages || 4);
+        var start = Math.max(1, curPage - 1);
+        var end = Math.min(total, start + 3);
+        if (end - start < 3) start = Math.max(1, end - 3);
+
+        var btns = '<button type="button" class="pgb" data-page="' + (curPage - 1) + '"' + (curPage <= 1 || loading ? ' disabled' : '') + '>&lsaquo;</button>';
+        for (var i = start; i <= end; i++) {
+            btns += '<button type="button" class="pgb' + (i === curPage ? ' on' : '') + '" data-page="' + i + '"' + (loading ? ' disabled' : '') + '>' + i + '</button>';
+        }
+        btns += '<button type="button" class="pgb" data-page="' + (curPage + 1) + '"' + (loading ? ' disabled' : '') + '>&rsaquo;</button>';
+
+        pgr.innerHTML =
+            '<div class="pgr-info"><span>Hal <b>' + curPage + '</b> · ' + esc(META.target_label || '') + '</span>' +
+            '<span>' + (loading ? 'Memuat…' : REQ.length + ' data') + '</span></div>' +
+            '<div class="pgr-btns">' + btns + '</div>';
     }
 
     var PIC =
@@ -400,16 +378,11 @@ function initPermohonanMasuk() {
         if (!r) {
             dp.innerHTML =
                 '<button type="button" class="btn back" id="back">← Kembali</button><div class="none">Pilih permohonan untuk melihat detail.</div>';
-
-            if (ro) {
-                ro.disconnect();
-            }
-
+            if (ro) ro.disconnect();
             return;
         }
 
         var sg;
-
         if (r.status === 'disetujui') {
             sg = ['Sudah tanda tangan', 'ok', 'ok'];
         } else if (r.status === 'ditolak') {
@@ -419,6 +392,21 @@ function initPermohonanMasuk() {
         } else {
             sg = ['Menunggu tanda tangan', '', ''];
         }
+
+        var approverName = (r.ap && r.ap.n) || '-';
+        var approverRole = (r.ap && r.ap.r) || 'Atasan Langsung (Pemberi Izin)';
+        var filesHtml = r.files && r.files.length
+            ? '<div class="fl2">' +
+              r.files
+                  .map(function (f) {
+                      var name = typeof f === 'string' ? f : (f && f.name) || 'Berkas';
+                      return f && f.url
+                          ? '<a class="fch" href="' + esc(f.url) + '" target="_blank" rel="noopener">' + PIC + esc(name) + '</a>'
+                          : '<span class="fch">' + PIC + esc(name) + '</span>';
+                  })
+                  .join('') +
+              '</div>'
+            : '<p class="em">Tidak ada lampiran.</p>';
 
         dp.innerHTML =
             '<button type="button" class="btn back" id="back">← Kembali</button>' +
@@ -440,17 +428,9 @@ function initPermohonanMasuk() {
             '<div class="info"><div class="box"><h3>' +
             PIC +
             'Lampiran <span class="bdg">' +
-            (r.files.length ? r.files.length + ' berkas' : 'Belum ada') +
+            (r.files && r.files.length ? r.files.length + ' berkas' : 'Belum ada') +
             '</span></h3>' +
-            (r.files.length
-                ? '<div class="fl2">' +
-                  r.files
-                      .map(function (n) {
-                          return '<span class="fch">' + PIC + esc(n) + '</span>';
-                      })
-                      .join('') +
-                  '</div>'
-                : '<p class="em">Tidak ada lampiran.</p>') +
+            filesHtml +
             '</div>' +
             '<div class="box"><h3 class="u">Penandatanganan</h3>' +
             '<div class="sgr"><span class="ic ' +
@@ -458,9 +438,9 @@ function initPermohonanMasuk() {
             '">' +
             (sg[2] === 'ok' ? CHK : '') +
             '</span><div class="tx"><span class="nm">' +
-            SIGNER.nama +
+            esc(approverName) +
             '</span><span class="rl">' +
-            SIGNER.peran +
+            esc(approverRole) +
             '</span><span class="stt ' +
             sg[1] +
             '">' +
@@ -474,20 +454,20 @@ function initPermohonanMasuk() {
             '</div></div>';
 
         var cv = $('cv');
-
-        fit(cv, null, 0.8);
+        fit(cv, null, 0.85);
         watch(cv, function () {
-            fit(cv, null, 0.8);
+            fit(cv, null, 0.85);
         });
     }
 
     function render() {
         chips();
         renderList();
+        renderPager();
         renderDetail();
     }
 
-    // ---- setujui & tolak ----
+    // ---- setujui & tolak dengan Alert.confirm ----
     var toast = $('toast'),
         rejT = null;
 
@@ -500,17 +480,33 @@ function initPermohonanMasuk() {
         }, 2600);
     }
 
+    function confirmAction(opts) {
+        if (window.Alert && typeof window.Alert.confirm === 'function') {
+            return window.Alert.confirm(opts);
+        }
+        return Promise.resolve(window.confirm(opts.message || opts.title || 'Lanjutkan?'));
+    }
+
     function approve(r) {
-        window.axios
-            .post('/api/permohonan-masuk/' + r.id + '/approve')
-            .then(function () {
-                reloadData();
-                say('Permohonan disetujui.');
-            })
-            .catch(function (e) {
-                var msg = (e.response && e.response.data && e.response.data.message) || 'Gagal menyetujui permohonan.';
-                say(msg);
-            });
+        confirmAction({
+            title: 'Setujui Permohonan?',
+            message: 'Anda yakin menyetujui permohonan ' + r.nama + ' (' + r.jenis + ')?',
+            yes: 'Setujui',
+            no: 'Batal',
+        }).then(function (ok) {
+            if (!ok) return;
+
+            window.axios
+                .post('/api/permohonan-masuk/' + r.id + '/approve')
+                .then(function () {
+                    reloadData();
+                    say('Permohonan disetujui.');
+                })
+                .catch(function (e) {
+                    var msg = (e.response && e.response.data && e.response.data.message) || 'Gagal menyetujui permohonan.';
+                    say(msg);
+                });
+        });
     }
 
     function openReject(r) {
@@ -522,8 +518,8 @@ function initPermohonanMasuk() {
             '</b> (' +
             esc(r.jenis) +
             ').</p>' +
-            '<label for="rj-t">Alasan penolakan <span class="opt">(opsional)</span></label>' +
-            '<textarea class="fld" id="rj-t" rows="4" maxlength="500" placeholder="Tulis alasan penolakan (boleh dikosongkan)"></textarea></div>' +
+            '<label for="rj-t">Alasan penolakan</label>' +
+            '<textarea class="fld" id="rj-t" rows="4" maxlength="500" placeholder="Tulis alasan penolakan"></textarea></div>' +
             '<div class="dlf"><button type="button" class="btn" data-close>Batal</button><button type="button" class="btn dgb" id="rj-ok">Tolak</button></div></div>';
         ov.hidden = false;
         document.body.style.overflow = 'hidden';
@@ -534,31 +530,40 @@ function initPermohonanMasuk() {
         var r = rejT,
             t = $('rj-t').value.trim();
 
-        if (!r) {
-            return;
+        if (!r) return;
+        if (!t) {
+            $('rj-t').focus();
+            return say('Tulis alasan penolakan terlebih dahulu.');
         }
 
-        window.axios
-            .post('/api/permohonan-masuk/' + r.id + '/reject', { alasan: t })
-            .then(function () {
-                rejT = null;
-                close();
-                reloadData();
-                say('Permohonan ditolak.');
-            })
-            .catch(function (e) {
-                var msg = (e.response && e.response.data && e.response.data.message) || 'Gagal menolak permohonan.';
-                say(msg);
-            });
+        confirmAction({
+            title: 'Tolak Permohonan?',
+            message: 'Permohonan ' + r.nama + ' (' + r.jenis + ') akan ditolak.',
+            yes: 'Tolak',
+            no: 'Batal',
+            danger: true,
+        }).then(function (ok) {
+            if (!ok) return;
+
+            window.axios
+                .post('/api/permohonan-masuk/' + r.id + '/reject', { alasan: t })
+                .then(function () {
+                    rejT = null;
+                    close();
+                    reloadData();
+                    say('Permohonan ditolak.');
+                })
+                .catch(function (e) {
+                    var msg = (e.response && e.response.data && e.response.data.message) || 'Gagal menolak permohonan.';
+                    say(msg);
+                });
+        });
     }
 
     // ---- aksi ----
     lst.addEventListener('click', function (e) {
         var b = e.target.closest('[data-id]');
-
-        if (!b) {
-            return;
-        }
+        if (!b) return;
 
         sel = b.dataset.id;
         renderList();
@@ -568,20 +573,32 @@ function initPermohonanMasuk() {
         emit('permohonan-pilih', cur());
     });
 
+    if (pgr) {
+        pgr.addEventListener('click', function (e) {
+            var b = e.target.closest('[data-page]');
+            if (!b || b.disabled) return;
+            var next = Math.max(1, +b.dataset.page || 1);
+            if (next === dayPage) return;
+            dayPage = next;
+            sel = null;
+            reloadData();
+        });
+    }
+
     $('chips').addEventListener('click', function (e) {
         var b = e.target.closest('[data-st]');
-
-        if (!b) {
-            return;
-        }
-
+        if (!b) return;
         stf = b.dataset.st;
-        render();
+        reloadData();
     });
 
+    var searchTimer = null;
     $('q').addEventListener('input', function () {
         q = this.value;
-        render();
+        clearTimeout(searchTimer);
+        searchTimer = setTimeout(function () {
+            reloadData();
+        }, 250);
     });
 
     dtEl.addEventListener('input', function () {
@@ -590,74 +607,37 @@ function initPermohonanMasuk() {
 
         if (dt) {
             var p = dt.split('-');
-
             mon = String(+p[1] - 1);
             yr = p[0];
 
-            if (
-                !DD.yr.opts.some(function (o) {
-                    return o[0] === yr;
-                })
-            ) {
+            if (!DD.yr.opts.some(function (o) { return o[0] === yr; })) {
                 DD.yr.opts.push([yr, yr]);
                 DD.yr.opts.sort(function (a, b) {
-                    return +b[0] - +a[0];
+                    return a[0] === 'all' ? -1 : b[0] === 'all' ? 1 : +b[0] - +a[0];
                 });
             }
-
             DD.mon.val = mon;
             DD.yr.val = yr;
             paint('mon');
             paint('yr');
         }
 
-        render();
+        reloadData();
     });
 
     dtx.addEventListener('click', function () {
         dt = '';
         dtEl.value = '';
-        mon = THIS_MON;
-        yr = THIS_YR;
+        mon = 'all';
+        yr = 'all';
+        dayPage = 1;
         DD.mon.val = mon;
         DD.yr.val = yr;
         paint('mon');
         paint('yr');
         syncDtBtn();
-        render();
+        reloadData();
     });
-
-    // tampilan penuh dengan zoom
-    var zoom = null,
-        lastS = 1;
-
-    function openFull(r) {
-        zoom = null;
-        ov.innerHTML =
-            '<div class="dlg" role="dialog" aria-modal="true" aria-label="Surat"><div class="dlh"><span>' +
-            esc(r.jenis) +
-            ' — ' +
-            esc(r.nama) +
-            '</span>' +
-            '<div class="zc"><button type="button" class="x" data-z="-" aria-label="Perkecil">−</button><span class="zp" id="zp">100%</span><button type="button" class="x" data-z="+" aria-label="Perbesar">+</button><button type="button" class="btn sm" data-z="fit">Fit</button>' +
-            '<button type="button" class="x" data-close aria-label="Tutup"><svg class="i" viewBox="0 0 16 16"><path d="M4 4l8 8M12 4l-8 8"/></svg></button></div></div>' +
-            '<div class="dlb" id="dlb"><div class="fit">' +
-            paper(r) +
-            '</div></div></div>';
-        ov.hidden = false;
-        document.body.style.overflow = 'hidden';
-
-        var b = $('dlb');
-
-        function upd() {
-            lastS = fit(b, zoom);
-            $('zp').textContent = Math.round(lastS * 100) + '%';
-        }
-
-        upd();
-        watch(b, upd);
-        ov._upd = upd;
-    }
 
     function close() {
         ov.hidden = true;
@@ -666,10 +646,9 @@ function initPermohonanMasuk() {
         ov._upd = null;
 
         var cv = $('cv');
-
         if (cv) {
             watch(cv, function () {
-                fit(cv, null, 0.8);
+                fit(cv, null, 0.85);
             });
         }
     }
@@ -679,34 +658,13 @@ function initPermohonanMasuk() {
             close();
             return;
         }
-
         if (e.target.closest('#rj-ok')) {
             doReject();
-            return;
         }
-
-        var z = e.target.closest('[data-z]');
-
-        if (!z) {
-            return;
-        }
-
-        var v = z.dataset.z;
-
-        if (v === 'fit') {
-            zoom = null;
-        } else {
-            zoom = Math.min(2, Math.max(0.3, Math.round((lastS + (v === '+' ? 0.1 : -0.1)) * 10) / 10));
-        }
-
-        ov._upd && ov._upd();
     });
 
     document.addEventListener('keydown', function (e) {
-        if (!root.isConnected || e.key !== 'Escape') {
-            return;
-        }
-
+        if (!root.isConnected || e.key !== 'Escape') return;
         if (!mn.hidden) {
             closeMenu();
         } else if (!ov.hidden) {
@@ -723,9 +681,7 @@ function initPermohonanMasuk() {
             return;
         }
 
-        if (!r) {
-            return;
-        }
+        if (!r) return;
 
         if (e.target.closest('#setuju')) {
             approve(r);
@@ -737,8 +693,9 @@ function initPermohonanMasuk() {
             return;
         }
 
+        // Full -> arahkan ke tab baru dengan pembuka PDF bawaan browser
         if (e.target.closest('#full')) {
-            openFull(r);
+            window.open('/permohonan/' + encodeURIComponent(r.id) + '/pdf', '_blank', 'noopener');
         } else if (e.target.closest('#pdf')) {
             var pa = $('pa'),
                 t = document.title;
@@ -769,22 +726,23 @@ function initPermohonanMasuk() {
             dt = '';
             dtEl.value = '';
             syncDtBtn();
-            render();
+            reloadData();
         },
     };
     DD.yr = {
-        opts: [0, 1, 2, 3, 4].map(function (i) {
-            var y = String(+THIS_YR - i);
-
-            return [y, y];
-        }),
+        opts: [['all', 'Semua Tahun']].concat(
+            [0, 1, 2, 3, 4].map(function (i) {
+                var y = String(+THIS_YR - i);
+                return [y, y];
+            }),
+        ),
         val: yr,
         cb: function (v) {
             yr = v;
             dt = '';
             dtEl.value = '';
             syncDtBtn();
-            render();
+            reloadData();
         },
     };
     dtEl.value = dt;

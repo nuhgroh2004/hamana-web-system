@@ -8,6 +8,7 @@ use App\Services\Permohonan\ApprovePermohonanService;
 use App\Services\Permohonan\CancelPermohonanService;
 use App\Services\Permohonan\DeleteDraftService;
 use App\Services\Permohonan\FormatPermohonanService;
+use App\Services\Permohonan\GeneratePermohonanPdfService;
 use App\Services\Permohonan\GetActiveEmployeesService;
 use App\Services\Permohonan\GetPermohonanMasukService;
 use App\Services\Permohonan\GetPermohonanSayaService;
@@ -130,10 +131,28 @@ class PermohonanController extends Controller
 
     public function indexMasuk(Request $request): JsonResponse
     {
+        $result = ($this->getPermohonanMasuk)($request->user(), $request);
+
         return response()->json([
             'success' => true,
-            'data' => ($this->getPermohonanMasuk)($request->user(), $request),
+            'data' => $result['items'],
+            'meta' => $result['meta'],
         ]);
+    }
+
+    public function pdf(
+        Request $request,
+        PermohonanRequest $permohonan,
+        GeneratePermohonanPdfService $pdfService,
+    ) {
+        $user = $request->user();
+        $allowed = $user->isAdmin()
+            || $permohonan->user_id === $user->id
+            || $permohonan->approver_id === $user->id;
+
+        abort_unless($allowed, 403);
+
+        return ($pdfService)($permohonan);
     }
 
     public function approve(Request $request, PermohonanRequest $permohonan): JsonResponse

@@ -24,6 +24,13 @@
         </main>
     </div>
 
+    <x-alert.confirm />
+    <x-alert.success />
+    <x-alert.error />
+    <x-alert.save />
+    <x-alert.update />
+    <x-alert.logout />
+
     @livewireScripts
 
     {{-- Offline / disconnected indicator --}}

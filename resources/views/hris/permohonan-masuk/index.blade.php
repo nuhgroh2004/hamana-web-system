@@ -31,6 +31,7 @@
                     <div class="chips" id="chips"></div>
                 </div>
                 <div class="lst" id="lst"></div>
+                <div class="pgr" id="pgr" aria-label="Navigasi halaman per hari"></div>
             </section>
 
             <section class="pane" id="dpane" aria-label="Detail permohonan"></section>

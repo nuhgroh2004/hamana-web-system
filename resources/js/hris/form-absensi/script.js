@@ -32,13 +32,7 @@ function initFormAbsensi() {
 
                 if (ctx.signature && ctx.signature.png) {
                     userSig = ctx.signature.png;
-                    var th = $('mo') && $('mo').querySelector('.th');
-                    if (th) th.innerHTML = '<img src="' + userSig + '" style="max-height:25px;max-width:60px" alt="TTD">';
-                    sig = userSig;
-                    if ($('sb')) {
-                        $('sb').innerHTML = '<img src="' + userSig + '" style="max-height:85px;max-width:180px;object-fit:contain" alt="TTD">';
-                        $('sb').classList.add('ok');
-                    }
+                    window.PermohonanAPI.applySigToForm(root, ctx);
                 }
             })
             .catch(function () {});
@@ -175,48 +169,22 @@ function initFormAbsensi() {
     });
 
     // Skala kertas A4 mengikuti lebar yang tersedia.
-    var stage = $('stage');
-    var fit = stage.firstElementChild;
-    var paper = fit.firstElementChild;
-    var frame = 0;
-
-    function resize() {
-        var scale = Math.min(1, stage.clientWidth / 794);
-        paper.style.transform = 'scale(' + scale + ')';
-        fit.style.width = Math.round(794 * scale) + 'px';
-        fit.style.height = Math.round(paper.offsetHeight * scale) + 'px';
-    }
-
-    function schedule() {
-        cancelAnimationFrame(frame);
-        frame = requestAnimationFrame(resize);
-    }
-
-    var observer = null;
-
-    if (window.ResizeObserver) {
-        observer = new ResizeObserver(schedule);
-        observer.observe(stage);
-        observer.observe(paper);
-    }
-
-    window.addEventListener('resize', schedule);
+    var cleanupFit = window.PermohonanAPI
+        ? window.PermohonanAPI.fitPaper($('stage'))
+        : null;
 
     document.addEventListener('livewire:navigating', function () {
         if (!root.isConnected) {
             return;
         }
 
-        if (observer) {
-            observer.disconnect();
+        if (cleanupFit) {
+            cleanupFit();
         }
 
-        window.removeEventListener('resize', schedule);
         document.removeEventListener('click', onDocClick);
         document.removeEventListener('keydown', onDocKey);
     });
-
-    resize();
 }
 
 if (document.readyState === 'loading') {

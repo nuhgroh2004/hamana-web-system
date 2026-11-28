@@ -2,6 +2,7 @@ import './bootstrap';
 import './hris/permohonan-shared/api';
 import './hris/permohonan-shared/preview';
 import './master-komponen/layout';
+import './alert/script';
 import './pengaturan/pengaturan';
 import './pengaturan/bahasa/script';
 import './pengaturan/absensi-by-foto/script';

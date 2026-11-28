@@ -1,0 +1,557 @@
+/* Dialog pilih penerima (dipakai semua form permohonan). */
+.ap-ov {
+    position: fixed;
+    inset: 0;
+    z-index: 85;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    background: rgba(1, 4, 9, 0.55);
+    -webkit-backdrop-filter: blur(4px);
+    backdrop-filter: blur(4px);
+    animation: ap-fade 0.16s ease-out;
+}
+
+@keyframes ap-fade {
+    from { opacity: 0; }
+}
+
+.ap-dlg {
+    display: flex;
+    flex-direction: column;
+    width: min(460px, 100%);
+    max-height: min(660px, calc(100dvh - 32px));
+    background: var(--bg);
+    color: var(--fg);
+    border: 1px solid var(--bd);
+    border-radius: 14px;
+    box-shadow: 0 24px 64px rgba(1, 4, 9, 0.35);
+    overflow: hidden;
+    animation: ap-pop 0.18s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes ap-pop {
+    from { opacity: 0; transform: translateY(8px) scale(0.98); }
+}
+
+.ap-hd {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 16px 16px 10px;
+}
+
+.ap-eyebrow {
+    display: block;
+    margin-bottom: 2px;
+    color: var(--mute);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+
+.ap-hd h2 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 1.3;
+}
+
+.ap-x {
+    display: grid;
+    place-items: center;
+    width: 30px;
+    height: 30px;
+    padding: 0;
+    border: 0;
+    border-radius: 8px;
+    background: transparent;
+    color: var(--mute);
+    cursor: pointer;
+    flex: none;
+}
+
+.ap-x:hover {
+    background: var(--hov);
+    color: var(--fg);
+}
+
+.ap-searchw {
+    padding: 0 16px 10px;
+}
+
+.ap-search {
+    width: 100%;
+    min-height: 38px;
+    padding: 7px 12px;
+    border: 1px solid var(--bd);
+    border-radius: 8px;
+    background: var(--bg2);
+    color: var(--fg);
+    font: inherit;
+    outline: 0;
+}
+
+.ap-search:focus {
+    border-color: var(--blue);
+    box-shadow: 0 0 0 1px var(--blue);
+    background: var(--bg);
+}
+
+.ap-list {
+    flex: 1;
+    min-height: 80px;
+    overflow-y: auto;
+    padding: 0 8px 8px;
+    border-top: 1px solid var(--bd);
+}
+
+.ap-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    padding: 10px 8px;
+    border: 0;
+    border-radius: 8px;
+    background: transparent;
+    color: var(--fg);
+    text-align: left;
+    cursor: pointer;
+}
+
+.ap-item + .ap-item {
+    border-top: 1px solid var(--bd);
+}
+
+.ap-item:hover {
+    background: var(--hov);
+}
+
+.ap-item.on {
+    background: color-mix(in srgb, var(--blue) 12%, transparent);
+}
+
+.ap-av {
+    display: grid;
+    place-items: center;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: color-mix(in srgb, var(--blue) 14%, transparent);
+    color: var(--blue);
+    font-size: 12px;
+    font-weight: 700;
+    flex: none;
+}
+
+.ap-info {
+    display: grid;
+    min-width: 0;
+    flex: 1;
+}
+
+.ap-info b {
+    font-size: 13.5px;
+    font-weight: 600;
+    overflow-wrap: anywhere;
+}
+
+.ap-info small {
+    color: var(--mute);
+    font-size: 12px;
+    overflow-wrap: anywhere;
+}
+
+.ap-ck {
+    display: grid;
+    place-items: center;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--blue);
+    color: #fff;
+    font-size: 12px;
+    font-weight: 700;
+    opacity: 0;
+    flex: none;
+}
+
+.ap-item.on .ap-ck {
+    opacity: 1;
+}
+
+.ap-none {
+    margin: 0;
+    padding: 28px 16px;
+    color: var(--mute);
+    text-align: center;
+}
+
+.ap-ft {
+    display: grid;
+    gap: 10px;
+    padding: 12px 16px 16px;
+    border-top: 1px solid var(--bd);
+    background: var(--bg2);
+}
+
+.ap-pick {
+    margin: 0;
+    color: var(--mute);
+    font-size: 12.5px;
+    overflow-wrap: anywhere;
+}
+
+.ap-pick b {
+    color: var(--fg);
+}
+
+.ap-fb {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+}
+
+.ap-btn {
+    height: 36px;
+    padding: 0 16px;
+    border: 1px solid var(--bd);
+    border-radius: 8px;
+    background: var(--bg);
+    color: var(--fg);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.ap-btn:hover:not(:disabled) {
+    background: var(--hov);
+}
+
+.ap-btn.go {
+    background: var(--green);
+    border-color: var(--green);
+    color: #fff;
+}
+
+.ap-btn.go:hover:not(:disabled) {
+    background: var(--green);
+    filter: brightness(1.08);
+}
+
+.ap-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.ap-btn:focus-visible,
+.ap-x:focus-visible,
+.ap-item:focus-visible {
+    outline: 2px solid var(--blue);
+    outline-offset: 1px;
+}
+
+@media (max-width: 520px) {
+    .ap-ov {
+        padding: 8px;
+        align-items: flex-end;
+    }
+
+    .ap-dlg {
+        max-height: calc(100dvh - 16px);
+        border-radius: 14px 14px 0 0;
+    }
+}
+
+/* ============================================================================
+   Preview Surat A4 (.pv) — identik dengan kelima formulir asal
+   ============================================================================ */
+:is(#permohonan-masuk, #permohonan-saya) .paper {
+    width: 794px;
+    min-height: 1123px;
+    padding: 44px 52px;
+    transform-origin: 0 0;
+    background: #fff;
+    color: #111;
+    font: 13px/1.45 Arial, Helvetica, sans-serif;
+    box-shadow: 0 1px 3px rgba(31, 35, 40, 0.18), 0 8px 24px rgba(31, 35, 40, 0.08);
+    color-scheme: light;
+}
+
+:is(#permohonan-masuk, #permohonan-saya) .paper:has(.pv.dk) {
+    padding: 28px 34px;
+}
+
+.pv {
+    color: #111;
+    font: 13px/1.45 Arial, Helvetica, sans-serif;
+}
+
+.pv .hd {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 52px;
+    margin-bottom: 18px;
+}
+
+.pv .hd img {
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    height: 52px;
+    width: auto;
+}
+
+.pv .hd h1 {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    text-align: center;
+    text-decoration: underline;
+    color: #111;
+}
+
+.pv .tt {
+    margin: 2px 0 18px;
+    font-size: 18px;
+    font-weight: 700;
+    text-align: center;
+    text-decoration: underline;
+    color: #111;
+}
+
+.pv .jus {
+    margin: 0 0 14px;
+    text-align: justify;
+    line-height: 1.55;
+}
+
+.pv .cb {
+    display: flex;
+    justify-content: center;
+    gap: 36px;
+    margin-bottom: 18px;
+}
+
+.pv .ck {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+}
+
+.pv .rw {
+    display: grid;
+    grid-template-columns: 162px 10px minmax(0, 1fr);
+    gap: 0 6px;
+    align-items: end;
+    margin: 10px 0;
+}
+
+.pv .rw .lb {
+    white-space: nowrap;
+}
+
+.pv .rw .cl {
+    text-align: center;
+}
+
+.pv .rw .v {
+    min-height: 22px;
+    padding: 1px 4px 2px;
+    border-bottom: 1px solid #111;
+    overflow-wrap: anywhere;
+}
+
+.pv .note {
+    margin: 8px 0 0 178px;
+    font-size: 12.5px;
+    font-style: italic;
+}
+
+.pv .kt {
+    margin: 16px 0 6px;
+    font-weight: 700;
+    text-decoration: underline;
+}
+
+.pv ol.ket {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.pv ol.ket li {
+    display: grid;
+    grid-template-columns: 18px minmax(0, 1fr);
+    gap: 6px;
+    margin-bottom: 8px;
+    text-align: justify;
+}
+
+.pv .sg,
+.pv .sg2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
+    margin-top: 28px;
+    align-items: end;
+    text-align: center;
+}
+
+.pv .col .cap {
+    margin: 0 0 4px;
+    min-height: 34px;
+    line-height: 1.35;
+}
+
+.pv .col .sig {
+    height: 92px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 4px 0;
+}
+
+.pv .col .sig img {
+    max-height: 88px;
+    max-width: 180px;
+    object-fit: contain;
+}
+
+.pv .col .sig .ln {
+    display: block;
+    width: 180px;
+    height: 1px;
+    margin-top: 64px;
+    border-bottom: 1px solid #111;
+}
+
+.pv .col .nm {
+    margin: 2px 0 0;
+    font-weight: 600;
+}
+
+.pv .col .dt {
+    margin: 2px 0 0;
+    font-size: 12px;
+    color: #333;
+}
+
+/* Varian berbingkai (Dinas Dalam Kota, Dinas Luar Kota, Form Absensi) */
+.pv.dk .frm {
+    border: 1.5px solid #111;
+    padding: 18px 22px 20px;
+}
+
+.pv.dk .hd {
+    margin-bottom: 10px;
+}
+
+.pv.dk .tt {
+    margin: 0 0 14px;
+    font-size: 16px;
+}
+
+.pv.dk .ib {
+    border: 1px solid #111;
+    padding: 6px 10px;
+    margin-bottom: 12px;
+}
+
+.pv.dk .ib p {
+    margin: 0 0 4px;
+    font-weight: 700;
+    font-size: 12.5px;
+}
+
+.pv.dk .ib .ck {
+    display: flex;
+    margin: 4px 0;
+}
+
+.pv.dk .ib .rw {
+    margin: 4px 0;
+    grid-template-columns: 110px 10px minmax(0, 1fr);
+}
+
+.pv.dk .tb {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 10px 0 12px;
+    font-size: 11.5px;
+}
+
+.pv.dk .tb th,
+.pv.dk .tb td {
+    border: 1px solid #111;
+    padding: 5px 6px;
+    vertical-align: top;
+    overflow-wrap: anywhere;
+}
+
+.pv.dk .tb th {
+    background: #f6f8fa;
+    font-weight: 700;
+    text-align: center;
+    vertical-align: middle;
+}
+
+.pv.dk .tb td.n {
+    text-align: center;
+}
+
+.pv.dk .kv {
+    margin: 8px 0 10px;
+}
+
+.pv.dk .ln2 {
+    display: inline-block;
+    min-width: 140px;
+    border-bottom: 1px solid #111;
+    padding: 0 4px;
+}
+
+.pv.dk .kt2 {
+    margin: 10px 0 14px;
+    font-size: 11.5px;
+}
+
+.pv.dk .kt2 ul {
+    margin: 4px 0 0;
+    padding-left: 18px;
+}
+
+.pv.dk .kt2 li {
+    margin-bottom: 3px;
+    text-align: justify;
+}
+
+.pv.dk .no {
+    margin: -8px 0 14px;
+    text-align: center;
+}
+
+.pv.dk .nj {
+    margin: 10px 0 12px;
+}
+
+.pv.dk .sh {
+    margin: 10px 0 4px;
+    font-weight: 700;
+}
+
+.pv.dk .tg {
+    margin: 14px 0 6px;
+    text-align: right;
+}

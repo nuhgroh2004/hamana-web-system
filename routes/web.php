@@ -51,6 +51,9 @@ Route::middleware('auth')->group(function () {
         ->middleware('module.access')
         ->name('module');
 
+    Route::get('/permohonan/{permohonan}/pdf', [PermohonanController::class, 'pdf'])
+        ->name('permohonan.pdf');
+
     Route::prefix('api')->name('api.')->group(function () {
         Route::prefix('profil')->name('profil.')->group(function () {
             Route::get('data-pribadi', [DataPribadiController::class, 'show'])->name('data-pribadi.show');

@@ -1,5 +1,6 @@
 @import 'tailwindcss';
 @import './master-komponen/layout.css';
+@import './alert/style.css';
 @import './pengaturan/pengaturan.css';
 @import './pengaturan/bahasa/style.css';
 @import './pengaturan/hak-akses/style.css';
@@ -24,6 +25,7 @@
 @import './hris/saran-masuk/style.css';
 @import './hris/tanda-tangan/style.css';
 @import './hris/permohonan-masuk/style.css';
+@import './hris/permohonan-shared/style.css';
 @import './hris/permohonan-saya/style.css';
 @import './hris/input-buku-hamana/style.css';
 @import './hris/buku-hamana/style.css';

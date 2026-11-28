@@ -210,7 +210,7 @@
         <div class="acts">
             <button type="button" class="btn" id="cetak">Cetak</button>
             <button type="button" class="btn" id="draft">Simpan Draft</button>
-            <button type="submit" class="btn go" id="kirim">Kirim Pengajuan</button>
+            <button type="submit" class="btn go" id="kirim">Pilih Penerima</button>
         </div>
     </form>
 
